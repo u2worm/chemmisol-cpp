@@ -4,73 +4,112 @@
 #include <iostream>
 #include <limits>
 
-namespace newton {
-	template<>
-		double abs(const X& x) {
-			double a = std::numeric_limits<double>::min();
-			for(auto& v : x) {
-				double abs_v = std::abs(v);
-				if (abs_v > a)
-					a = abs_v;
-			}
-			return a;
-		}
-}
-
+namespace mineral {
 const double ChemicalSystem::bulk_density = 1.17*gram/cm3;
 const double ChemicalSystem::V = std::pow(1*cm, 3);
 const double ChemicalSystem::mineral_weight  = V*bulk_density;
 
-double deltaH(const X& x) {
-	return x[0];
-}
-double dH(const X& x) {
-	return x[1];
-}
-double dP(const X& x) {
-	return x[2];
-}
-double dC(const X& x) {
-	return x[3];
-}
-
-float trace(const M& m) {
-	float t = 0;
-	for(std::size_t i = 0; i < 4; i++)
-		t += m[i][i];
-	return t;
-}
-
-X operator*(const M& m, const X& x) {
-	X x1;
-	for(std::size_t i = 0; i < 4; i++) {
-		x1[i] = 0;
-		for(std::size_t j = 0; j < 4; j++) {
-			x1[i] += m[i][j] * x[j];
-		}
+namespace pHSolver {
+	double deltaH(const X& x) {
+		return x[0];
 	}
-	return x1;
-}
+	double dH(const X& x) {
+		return x[1];
+	}
+	double dP(const X& x) {
+		return x[2];
+	}
+	double dC(const X& x) {
+		return x[3];
+	}
+	
+	X F::f(const X& x) {
+		return X({
+			deltaH(x) - (dH(x)+dP(x)) - alpha,
+				(system.nSH() + dH(x)) /
+					((system.nS()-dH(x)-dP(x)-dC(x))*(system.nH()+deltaH(x)-dH(x)-dP(x)))
+					/ system.K1() - 1,
+				(system.nSP() + dP(x)) /
+					((system.nS()-dH(x)-dP(x)-dC(x))*(system.nH()+deltaH(x)-dH(x)-dP(x))*(system.nP()-dP(x)))
+					/ system.K2() - 1,
+				(system.nSC() + dC(x)) /
+					((system.nS()-dH(x)-dP(x)-dC(x))*(system.nC()-dC(x)))
+					/ system.K3() - 1
+		});
+	}
 
-X operator-(const X& x) {
-	X x1;
-	for(std::size_t i = 0; i < 4; i++)
-		x1[i] = -x[i];
-	return x1;
-}
+	X solve(const ChemicalSystem& system, double pH) {
+		double alpha = ChemicalSystem::V*std::pow(10, -pH)*mol/l - system.nH();
+		std::cout << "alpha: " << alpha << std::endl;
 
-X operator+(const X& x1, const X& x2) {
-	X x3;
-	for(std::size_t i = 0; i < 4; i++)
-		x3[i] = x1[i]+x2[i];
-	return x3;
-}
+		F f(alpha, system);
+		return Newton<X, M>(
+				{{0, 0, 0, 0}},
+				[&f] (const X& x) {return f.f(x);},
+				[&f] (const X& x) {return f.df(x);}
+				).solve_iter(10);
+	}
 
-std::ostream& operator<<(std::ostream& o, const X& x) {
-	for(std::size_t i = 0; i < x.size()-1; i++)
-		o << x[i] << ", ";
-	o << x[x.size()-1];
-	return o;
+	M F::df(const X& x) {
+		// utils
+		double v;
+		double v2;
+
+		double DS = system.nS()-dH(x)-dP(x)-dC(x);
+		double DH = system.nH()+deltaH(x)-dH(x)-dP(x);
+		double DP = system.nP()-dP(x);
+		double DC = system.nC()-dC(x);
+		std::cout << "  DP: " << DP << ", DH: " << DH << ", DS: " << DS << ", DC: " << DC << std::endl;
+
+		// f1
+		double df1_dx1 = 1;
+		double df1_dx2 = -1;
+		double df1_dx3 = -1;
+		double df1_dx4 = 0;
+
+		std::cout << "df1" << std::endl;
+		std::cout << "  df1_dx2: " << df1_dx2 << std::endl;
+
+		// f2
+		v = DS*DH;
+		v2 = std::pow(v, 2);
+		double df2_dx1 = 1/system.K1()*(-DS*(system.nSH() + dH(x))/v2);
+		double df2_dx2 = 1/system.K1()*((DS*DH + (DH+DS)*(system.nSH()+dH(x)))/v2);
+		double df2_dx3 = 1/system.K1()*(((DH+DS)*(system.nSH()+dH(x)))/v2);
+		double df2_dx4 = 1/system.K1()*(DH*(system.nSH()+dH(x))/v2);
+		std::cout << "df3" << std::endl;
+		std::cout << "  v2: " << v2 << std::endl;
+		std::cout << "  df2_dx2: " << df2_dx2 << std::endl;
+
+		// f3
+		v = DS*DH*DP;
+		v2 = std::pow(v, 2);
+		double df3_dx1 = 1/system.K2()*(-DP*DS*(system.nSP()+dP(x))/v2);
+		double df3_dx2 = 1/system.K2()*(DP*(DH+DS)*(system.nSP()+dP(x))/v2);
+		double df3_dx3 = 1/system.K2()*((v+(DS*DH + DP*DH + DS*DP)*(system.nSP()+dP(x)))/v2);
+		double df3_dx4 = 1/system.K2()*(DH*DP*(system.nSP()+dP(x))/v2);
+		std::cout << "df3" << std::endl;
+		std::cout << "  v2: " << v2 << std::endl;
+		std::cout << "  df3_dx2: " << df3_dx2 << std::endl;
+
+		// f4
+		v = DS*DC;
+		v2 = std::pow(v, 2);
+		double df4_dx1 = 0;
+		double df4_dx2 = 1/system.K3()*(DC * (system.nSC()+dC(x))/v2);
+		double df4_dx3 = df4_dx2;
+		double df4_dx4 = 1/system.K3()*((DS*DC + (DC+DS)*(system.nSC()+dC(x)))/v2);
+		std::cout << "df4" << std::endl;
+		std::cout << "  v2: " << v2 << std::endl;
+		std::cout << "  df4_dx2: " << df2_dx2 << std::endl;
+
+		return M({
+			{df1_dx1, df1_dx2, df1_dx3, df1_dx4},
+			{df2_dx1, df2_dx2, df2_dx3, df2_dx4},
+			{df3_dx1, df3_dx2, df3_dx3, df3_dx4},
+			{df4_dx1, df4_dx2, df4_dx3, df4_dx4}
+		});
+	}
 }
 
 ChemicalSystem::ChemicalSystem(
@@ -228,37 +267,44 @@ double ChemicalSystem::nSC() const {
 	return SC;
 }
 
-X ChemicalSystem::reactionQuotient() const {
-	return {{
-		0,
-		SH / (S*H),
-		SP / (S*H*P),
-		SC / (S*C)
-	}};
+double ChemicalSystem::K1() const {
+	return _K1;
 }
 
-void ChemicalSystem::distanceToEquilibrium() const {
-	X reaction_quotient = reactionQuotient();
-	std::cout << "pH: " << -std::log10((H/V)/(mol/l)) << std::endl;
-	std::cout << "K1: " << reaction_quotient[1]/_K1 << std::endl;
-	std::cout << "K2: " << reaction_quotient[2]/_K2 << std::endl;
-	std::cout << "K3: " << reaction_quotient[3]/_K3 << std::endl;
+double ChemicalSystem::K2() const {
+	return _K2;
 }
+
+double ChemicalSystem::K3() const {
+	return _K3;
+}
+
+/*
+ *X ChemicalSystem::reactionQuotient() const {
+ *    return {{
+ *        0,
+ *        SH / (S*H),
+ *        SP / (S*H*P),
+ *        SC / (S*C)
+ *    }};
+ *}
+ *
+ *void ChemicalSystem::distanceToEquilibrium() const {
+ *    X reaction_quotient = reactionQuotient();
+ *    std::cout << "pH: " << -std::log10((H/V)/(mol/l)) << std::endl;
+ *    std::cout << "K1: " << reaction_quotient[1]/_K1 << std::endl;
+ *    std::cout << "K2: " << reaction_quotient[2]/_K2 << std::endl;
+ *    std::cout << "K3: " << reaction_quotient[3]/_K3 << std::endl;
+ *}
+ */
 
 void ChemicalSystem::incrementP(double dP) {
 	P += dP;
 }
 
 void ChemicalSystem::setPH(double pH) {
-	double alpha = V*std::pow(10, -pH)*mol/l - H;
-	std::cout << "alpha: " << alpha << std::endl;
-
-	F f(alpha, *this);
-	X dx = Newton<X, M>(
-			{{0, 0, 0, 0}},
-			[&f] (const X& x) {return f.f(x);},
-			[&f] (const X& x) {return f.df(x);}
-			).solve_iter(10);
+	using namespace pHSolver;
+	pHSolver::X dx = solve(*this, pH);
 	S = S - dH(dx) - dP(dx) - dC(dx);
 	H = H + deltaH(dx) - dH(dx) - dP(dx);
 	P = P  - dP(dx);
@@ -269,80 +315,5 @@ void ChemicalSystem::setPH(double pH) {
 	SC = SC + dC(dx);
 	std::cout << "alpha end: " << V*std::pow(10, -pH)*mol/l - H << std::endl;
 }
-
-X ChemicalSystem::F::f(const X& x) {
-	return {{
-		deltaH(x) - (dH(x)+dP(x)) - alpha,
-		(problem.SH + dH(x)) /
-			((problem.S-dH(x)-dP(x)-dC(x))*(problem.H+deltaH(x)-dH(x)-dP(x)))
-			/ problem._K1 - 1,
-		(problem.SP + dP(x)) /
-			((problem.S-dH(x)-dP(x)-dC(x))*(problem.H+deltaH(x)-dH(x)-dP(x))*(problem.P-dP(x)))
-			/ problem._K2 - 1,
-		(problem.SC + dC(x)) /
-			((problem.S-dH(x)-dP(x)-dC(x))*(problem.C-dC(x)))
-			/ problem._K3 - 1
-	}};
-}
-
-M ChemicalSystem::F::df(const X& x) {
-	// utils
-	double v;
-	double v2;
-
-	double DS = problem.S-dH(x)-dP(x)-dC(x);
-	double DH = problem.H+deltaH(x)-dH(x)-dP(x);
-	double DP = problem.P-dP(x);
-	double DC = problem.C-dC(x);
-	std::cout << "  DP: " << DP << ", DH: " << DH << ", DS: " << DS << ", DC: " << DC << std::endl;
-
-	// f1
-	double df1_dx1 = 1;
-	double df1_dx2 = -1;
-	double df1_dx3 = -1;
-	double df1_dx4 = 0;
-
-	std::cout << "df1" << std::endl;
-	std::cout << "  df1_dx2: " << df1_dx2 << std::endl;
-
-	// f2
-	v = DS*DH;
-	v2 = std::pow(v, 2);
-	double df2_dx1 = 1/problem._K1*(-DS*(problem.SH + dH(x))/v2);
-	double df2_dx2 = 1/problem._K1*((DS*DH + (DH+DS)*(problem.SH+dH(x)))/v2);
-	double df2_dx3 = 1/problem._K1*(((DH+DS)*(problem.SH+dH(x)))/v2);
-	double df2_dx4 = 1/problem._K1*(DH*(problem.SH+dH(x))/v2);
-	std::cout << "df3" << std::endl;
-	std::cout << "  v2: " << v2 << std::endl;
-	std::cout << "  df2_dx2: " << df2_dx2 << std::endl;
-
-	// f3
-	v = DS*DH*DP;
-	v2 = std::pow(v, 2);
-	double df3_dx1 = 1/problem._K2*(-DP*DS*(problem.SP+dP(x))/v2);
-	double df3_dx2 = 1/problem._K2*(DP*(DH+DS)*(problem.SP+dP(x))/v2);
-	double df3_dx3 = 1/problem._K2*((v+(DS*DH + DP*DH + DS*DP)*(problem.SP+dP(x)))/v2);
-	double df3_dx4 = 1/problem._K2*(DH*DP*(problem.SP+dP(x))/v2);
-	std::cout << "df3" << std::endl;
-	std::cout << "  v2: " << v2 << std::endl;
-	std::cout << "  df3_dx2: " << df3_dx2 << std::endl;
-
-	// f4
-	v = DS*DC;
-	v2 = std::pow(v, 2);
-	double df4_dx1 = 0;
-	double df4_dx2 = 1/problem._K3*(DC * (problem.SC+dC(x))/v2);
-	double df4_dx3 = df4_dx2;
-	double df4_dx4 = 1/problem._K3*((DS*DC + (DC+DS)*(problem.SC+dC(x)))/v2);
-	std::cout << "df4" << std::endl;
-	std::cout << "  v2: " << v2 << std::endl;
-	std::cout << "  df4_dx2: " << df2_dx2 << std::endl;
-	
-	return {{
-		{{df1_dx1, df1_dx2, df1_dx3, df1_dx4}},
-		{{df2_dx1, df2_dx2, df2_dx3, df2_dx4}},
-		{{df3_dx1, df3_dx2, df3_dx3, df3_dx4}},
-		{{df4_dx1, df4_dx2, df4_dx3, df4_dx4}}
-	}};
 }
 

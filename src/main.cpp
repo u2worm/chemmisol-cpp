@@ -1,5 +1,7 @@
 #include "experiment.h"
 
+using namespace mineral;
+
 int main(int, char *[])
 {
 	/*

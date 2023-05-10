@@ -1,8 +1,8 @@
 #include "gauss.h"
 
-namespace gauss {
+namespace mineral { namespace gauss {
 	template<>
 		double solve<double,double>(const double& f, const double& y) {
 			return y/f;
 		}
-}
+}}

@@ -1,38 +1,7 @@
 #include <iostream>
 #include <array>
 
-namespace gauss {
-
-	template<typename T, int N>
-		struct Augmented {
-			typedef std::array<std::array<T, N+1>, N> type;
-
-			static std::array<std::array<T, N+1>, N> augment(
-					const std::array<std::array<T, N>, N>& m,
-					const std::array<T, N>& x) {
-				std::array<std::array<T, N+1>, N> a;
-				for(std::size_t i = 0; i < N; i++) {
-					for(std::size_t j = 0; j < N; j++) {
-						a[i][j] = m[i][j];
-					}
-					a[i][N] = x[i];
-				}
-				return a;
-			}
-		};
-
-	template<typename M, typename X>
-		typename Augmented<
-				 typename X::value_type, std::tuple_size<X>::value
-				 //M, X
-				 >::type augment(const M& m, const X& x) {
-			return Augmented<
-				typename X::value_type, std::tuple_size<X>::value
-			//M, X
-			>::augment(m, x);
-		};
-
-
+namespace mineral { namespace gauss {
 	template<typename X, typename A>
 		X solve(const A& a);
 
@@ -82,12 +51,12 @@ namespace gauss {
 				x[i] = x[i]/_m[i][i];
 			}
 			std::cout << "Step 2:" << std::endl;
-			for(std::size_t i = 0; i < x.size(); i++)
+			for(std::size_t i = 0; i < X::n; i++)
 				std::cout << "x[" << i << "]=" << x[i] << std::endl;
 			std::cout << "[GAUSS END]" << std::endl << std::endl;
 			return x;
 		}
-		
+
 	template<>
 		double solve<double, double>(const double& f, const double& y);
-}
+}}

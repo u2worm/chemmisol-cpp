@@ -35,6 +35,7 @@ enable_testing()
 
 add_executable(
   newton_test
+  tests/linear.cpp
   tests/newton.cpp
   tests/chemical.cpp
   tests/gauss.cpp
