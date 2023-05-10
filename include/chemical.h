@@ -34,7 +34,7 @@ static const double u = 1.66053906660e-27*kg;
 
 std::ostream& operator<<(std::ostream& o, const X& x);
 
-class Problem {
+class ChemicalSystem {
 	static const double bulk_density;
 	static const double V;
 	static const double mineral_weight;
@@ -53,28 +53,63 @@ class Problem {
 	double SP;
 	double SC;
 
+	double concentration(const double& n) const;
+
+	private:
+	ChemicalSystem(
+			double K1, double K2, double K3,
+			double H, double P, double C,
+			double N,
+			double S, double SH, double SP, double SC
+			);
 	public:
 	class F {
 		double alpha;
-		const Problem& problem;
+		const ChemicalSystem& problem;
 
 		public:
-		F(double alpha, const Problem& problem)
+		F(double alpha, const ChemicalSystem& problem)
 			: alpha(alpha), problem(problem) {
 			}
 		X f(const X& x);
 		M df(const X& x);
 	};
 
-	Problem(
+	static ChemicalSystem equilibrium(
 			double K1, double K2, double K3,
-			double pH, double mineral_P, double mineral_C,
+			double pH, double solution_P, double solution_C,
 			double mineral_N
 			);
-	Problem();
+	static ChemicalSystem defaultEquilibrium();
 
+	//static ChemicalSystem soilParameters(
+			//double K1, double K2, double K3,
+			//double pH, double soil_P, double soil_C,
+			//double mineral_N
+			//);
+	//static ChemicalSystem defaultSoil();
+
+
+	void incrementP(double P);
 	void setPH(double pH);
 
 	X reactionQuotient() const;
 	void distanceToEquilibrium() const;
+
+	double cH() const;
+	double cP() const;
+	double cC() const;
+	double cS() const;
+	double cSH() const;
+	double cSP() const;
+	double cSC() const;
+
+	double nH() const;
+	double nP() const;
+	double nC() const;
+	double nS() const;
+	double nSH() const;
+	double nSP() const;
+	double nSC() const;
+
 };

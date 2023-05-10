@@ -29,12 +29,18 @@ TEST(MTest, product) {
 				));
 }
 
+/*
+ *TEST(ChemicalSystem, defaultSoil) {
+ *    ChemicalSystem::defaultSoil();
+ *}
+ */
+
 class DerivativeTest : public testing::TestWithParam<int> {
 };
 
 TEST_P(DerivativeTest, dx) {
-	Problem problem;
-	Problem::F f(0, problem);
+	ChemicalSystem problem = ChemicalSystem::defaultEquilibrium();
+	ChemicalSystem::F f(0, problem);
 
 	int dxn = GetParam();
 	double delta = std::numeric_limits<double>::epsilon();

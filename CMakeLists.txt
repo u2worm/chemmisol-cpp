@@ -14,6 +14,7 @@ ${CMAKE_CXX_FLAGS_DEBUG} -std=c++14 \
 add_library(newton-chemical-lib
 	src/chemical.cpp
 	src/gauss.cpp
+	src/experiment.cpp
 	)
 target_include_directories(newton-chemical-lib PUBLIC include)
 add_executable(newton-chemical
