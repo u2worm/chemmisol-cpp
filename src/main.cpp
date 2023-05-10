@@ -16,7 +16,7 @@ int main(int, char *[])
 	{
 		double init_pH = 7.5;
 		double end_pH = 2;
-		unsigned long n = 1000;
+		unsigned long n = 100;
 		Experiment ph_experiment(
 				"ph_output.csv",
 				[init_pH, end_pH, n] (unsigned long time) {

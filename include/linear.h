@@ -4,6 +4,17 @@
 #include <cmath>
 
 namespace mineral {
+	template<typename T>
+		T log(const T& v) {
+			return std::log10(v);
+		}
+
+	template<typename T>
+		T ln(const T& v) {
+			return std::log(v);
+		}
+	const double ln10 = ln(10);
+
 	template<typename T, int N>
 		struct X : std::array<T, N> {
 			typedef T value_type;

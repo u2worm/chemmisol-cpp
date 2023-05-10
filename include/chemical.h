@@ -15,19 +15,40 @@ namespace mineral {
 		double dP(const X& x);
 		double dC(const X& x);
 
-		class F {
-			double alpha;
-			const ChemicalSystem& system;
+		class rawPHSolver {
+			class F {
+				double alpha;
+				const ChemicalSystem& system;
+
+				public:
+				F(double alpha, const ChemicalSystem& system)
+					: alpha(alpha), system(system) {
+					}
+				X f(const X& x);
+				M df(const X& x);
+			};
 
 			public:
-			F(double alpha, const ChemicalSystem& system)
-				: alpha(alpha), system(system) {
-				}
-			X f(const X& x);
-			M df(const X& x);
+			static X solve(const ChemicalSystem& system, double pH);
+
 		};
 
-		X solve(const ChemicalSystem& system, double pH);
+		class logPHSolver {
+			class F {
+				double pH;
+				const ChemicalSystem& system;
+
+				public:
+				F(double pH, const ChemicalSystem& system)
+					: pH(pH), system(system) {
+					}
+				X f(const X& x);
+				M df(const X& x);
+			};
+
+			public:
+			static X solve(const ChemicalSystem& system, double pH);
+		};
 	}
 
 	static const double m = 1;

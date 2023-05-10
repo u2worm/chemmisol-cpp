@@ -15,7 +15,6 @@ namespace mineral { namespace gauss {
 			std::cout << "[GAUSS START]" << std::endl;
 			A _m = m;
 			std::size_t n = _m.size();
-			std::cout << "n=" << n << std::endl;
 			std::cout << "Step 0:" << std::endl;
 			for(std::size_t i = 0; i < n; i++) {
 				for(std::size_t j = 0; j < _m[i].size(); j++) {

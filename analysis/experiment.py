@@ -25,12 +25,14 @@ def plot_output(csv_file):
     j = 0;
     for s in ["H", "P", "C"]:
         axs[i][j].plot(data["T"], data[s], label=s + " (mol/l)")
+        axs[i][j].set_yscale("log");
         axs[i][j].legend()
         j = j+1
     i = 1
     j = 0
     for s in ["S", "SH", "SP", "SC"]:
         axs[i][j].plot(data["T"], data[s], label=s + "/N")
+        axs[i][j].set_yscale("log");
         axs[i][j].legend()
         j = j+1
     plt.show()
