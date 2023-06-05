@@ -18,6 +18,7 @@ namespace mineral {
 		public:
 		Experiment(
 				std::string output_file,
+				const ChemicalSystem& system,
 				const std::function<double(unsigned long)>& pH,
 				const std::function<double(unsigned long, double)>& dP
 				);

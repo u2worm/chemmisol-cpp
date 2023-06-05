@@ -2,11 +2,12 @@
 #include <cmath>
 #include <iostream>
 #include "linear.h"
+#include "units.h"
 
 namespace mineral {
 	class ChemicalSystem;
 
-	namespace pHSolver {
+	namespace ph_solver {
 		typedef mineral::X<double, 4> X;
 		typedef mineral::M<double, 4> M;
 
@@ -15,7 +16,7 @@ namespace mineral {
 		double dP(const X& x);
 		double dC(const X& x);
 
-		class rawPHSolver {
+		class RawPHSolver {
 			class F {
 				double alpha;
 				const ChemicalSystem& system;
@@ -33,7 +34,7 @@ namespace mineral {
 
 		};
 
-		class logPHSolver {
+		class LogPHSolver {
 			class F {
 				double pH;
 				const ChemicalSystem& system;
@@ -51,21 +52,29 @@ namespace mineral {
 		};
 	}
 
-	static const double m = 1;
-	static const double cm = 1e-2 * m;
-	static const double m3 = m*m*m;
-	static const double cm3 = cm*cm*cm;
-	static const double l = 1e-3 * m3;
+	namespace equilibrium_solver {
+		typedef mineral::X<double, 3> X;
+		typedef mineral::M<double, 3> M;
 
-	static const double gram = 1;
-	static const double kg = 1e3 * gram;
-	static const double mg = 1e-3 * gram;
+		double dH(const X& x);
+		double dP(const X& x);
+		double dC(const X& x);
 
-	static const double NA = 6.02214076e23;
-	static const double mol = 1;
-	static const double entities = 1/NA;
+		class Solver {
+			class F {
+				const ChemicalSystem& system;
 
-	static const double u = 1.66053906660e-27*kg;
+				public:
+				F(const ChemicalSystem& system) : system(system) {
+					}
+				X f(const X& x);
+				M df(const X& x);
+			};
+
+			public:
+			static X solve(const ChemicalSystem& system);
+		};
+	}
 
 	class ChemicalSystem {
 		public:
@@ -77,6 +86,7 @@ namespace mineral {
 		double _K1;
 		double _K2;
 		double _K3;
+		double _initPH;
 
 		double H;
 		double P;
@@ -92,19 +102,20 @@ namespace mineral {
 
 		private:
 		ChemicalSystem(
-				double K1, double K2, double K3,
+				double K1, double K2, double K3, double initPH,
 				double H, double P, double C,
 				double N,
 				double S, double SH, double SP, double SC
 				);
+
 		public:
-		
 		static ChemicalSystem equilibrium(
 				double K1, double K2, double K3,
 				double pH, double solution_P, double solution_C,
 				double mineral_N
 				);
 		static ChemicalSystem defaultEquilibrium();
+		static ChemicalSystem Devau2011Control();
 
 		//static ChemicalSystem soilParameters(
 		//double K1, double K2, double K3,
@@ -116,6 +127,8 @@ namespace mineral {
 
 		void incrementP(double P);
 		void setPH(double pH);
+
+		void solveEquilibrium();
 
 		//X reactionQuotient() const;
 		void distanceToEquilibrium() const;
@@ -139,5 +152,8 @@ namespace mineral {
 		double K1() const;
 		double K2() const;
 		double K3() const;
+		double initPH() const;
+
+		double pH() const;
 	};
 }
