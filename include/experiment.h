@@ -6,7 +6,7 @@ namespace mineral {
 	class Experiment {
 		// TODO: experiment parameters
 
-		ChemicalSystem system;
+		const ChemicalSystem& system;
 		std::ofstream csv_file;
 		std::function<double(unsigned long)> pH;
 		std::function<double(unsigned long, double)> dP;

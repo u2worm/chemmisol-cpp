@@ -21,28 +21,32 @@ namespace mineral {
 			//<< system.cSP() << ","
 			//<< system.cSC() << std::endl;
 
-		csv_file << t << ","
-		<< system.nH() << ","
-		<< system.nP() << ","
-		<< system.nC() << ","
-		<< system.nS() << ","
-		<< system.nSH() << ","
-		<< system.nSP() << ","
-		<< system.nSC() << ","
-		<< system.pH() << std::endl;
+		/*
+		 *csv_file << t << ","
+		 *<< system.nH() << ","
+		 *<< system.nP() << ","
+		 *<< system.nC() << ","
+		 *<< system.nS() << ","
+		 *<< system.nSH() << ","
+		 *<< system.nSP() << ","
+		 *<< system.nSC() << ","
+		 *<< system.pH() << std::endl;
+		 */
 	}
 
-	void Experiment::run(unsigned long time) {
-		t = 0;
-		while(t < time) {
-			std::cout << "Exp pH: " << pH(t) << std::endl;
-			writeToCsv();
-			system.incrementP(dP(time, system.nP()));
-			//writeToCsv();
-			//++t;
-			system.solveEquilibrium();
-			//system.setPH(pH(t));
-			++t;
-		}
+	void Experiment::run(unsigned long /*time*/) {
+		/*
+		 *t = 0;
+		 *while(t < time) {
+		 *    std::cout << "Exp pH: " << pH(t) << std::endl;
+		 *    writeToCsv();
+		 *    system.incrementP(dP(time, system.nP()));
+		 *    //writeToCsv();
+		 *    //++t;
+		 *    system.solveEquilibrium();
+		 *    //system.setPH(pH(t));
+		 *    ++t;
+		 *}
+		 */
 	}
 }

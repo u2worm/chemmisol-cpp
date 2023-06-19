@@ -8,7 +8,8 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS_DEBUG "\
 ${CMAKE_CXX_FLAGS_DEBUG} -std=c++14 \
 -Wall -Wextra -Wpedantic -Werror -Wno-error=pedantic \
--Woverloaded-virtual -Wnon-virtual-dtor\
+-Woverloaded-virtual -Wnon-virtual-dtor \
+-fsanitize=address \
 ")
 
 include(FetchContent)

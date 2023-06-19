@@ -7,13 +7,8 @@ namespace mineral { namespace gauss {
 
 	template<typename M, typename X>
 		X solve(const M& m, const X& x) {
-			return solve<X>(augment(m, x));
-		}
-
-	template<typename X, typename A>
-		X solve(const A& m) {
 			std::cout << "[GAUSS START]" << std::endl;
-			A _m = m;
+			auto _m = augment(m, x);
 			std::size_t n = _m.size();
 			std::cout << "Step 0:" << std::endl;
 			for(std::size_t i = 0; i < n; i++) {
@@ -39,21 +34,21 @@ namespace mineral { namespace gauss {
 				}
 				std::cout << std::endl;
 			}
-			X x;
-			x[n-1] = _m[n-1][n]/_m[n-1][n-1];
+			X _x = x;
+			_x[n-1] = _m[n-1][n]/_m[n-1][n-1];
 
 			for(int i = n-2; i>=0; i--) {
-				x[i] = _m[i][n];
+				_x[i] = _m[i][n];
 				for(std::size_t j = i+1; j < n; j++) {
-					x[i] = x[i] - _m[i][j]*x[j];
+					_x[i] = _x[i] - _m[i][j]*_x[j];
 				}
-				x[i] = x[i]/_m[i][i];
+				_x[i] = _x[i]/_m[i][i];
 			}
 			std::cout << "Step 2:" << std::endl;
-			for(std::size_t i = 0; i < X::n; i++)
-				std::cout << "x[" << i << "]=" << x[i] << std::endl;
+			for(std::size_t i = 0; i < _x.size(); i++)
+				std::cout << "x[" << i << "]=" << _x[i] << std::endl;
 			std::cout << "[GAUSS END]" << std::endl << std::endl;
-			return x;
+			return _x;
 		}
 
 	template<>

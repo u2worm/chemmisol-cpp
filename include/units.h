@@ -7,9 +7,9 @@
 	F(nm, 1e-9*m, LENGTH)\
 	F(nm2, nm*nm, SURFACE)\
 	F(m2, m*m, SURFACE)\
-	F(m3, m*m*m, VOLUME)\
-	F(cm3, cm*cm*cm, VOLUME)\
-	F(l, 1e-3*m3, VOLUME)\
+	F(l, 1, VOLUME)\
+	F(m3, 1000*l, VOLUME)\
+	F(cm3, 10e-3*l, VOLUME)\
 	F(gram, 1, MASS)\
 	F(kg, 1e3*gram, MASS)\
 	F(mg, 1e-3*gram, MASS)\

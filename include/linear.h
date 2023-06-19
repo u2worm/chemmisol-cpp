@@ -1,4 +1,5 @@
 #include <array>
+#include <vector>
 #include <initializer_list>
 #include <iostream>
 #include <cmath>
@@ -15,6 +16,10 @@ namespace mineral {
 		}
 	const double ln10 = ln(10);
 
+	/*
+	 * Fixed size array linear algebra
+	 */
+
 	template<typename T, int N>
 		struct X : std::array<T, N> {
 			typedef T value_type;
@@ -30,7 +35,7 @@ namespace mineral {
 
 	template<typename T, int N, int P = N>
 		struct M : std::array<std::array<T, P>, N> {
-			typedef T value_type;
+			typedef T coef_type;
 			static constexpr int n = N;
 			static constexpr int p = P;
 
@@ -46,6 +51,11 @@ namespace mineral {
 				}
 			}
 		};
+
+	template<typename T>
+		using VecX = std::vector<T>;
+	template<typename T>
+		using VecM = std::vector<std::vector<T>>;
 
 	template<typename T, int N, int P>
 		X<T, N> operator*(const M<T, N, P>& m, const X<T, P>& x) {
@@ -66,6 +76,7 @@ namespace mineral {
 				x1[i] = -x[i];
 			return x1;
 		}
+
 	template<typename T, int N>
 		X<T, N> operator+(const X<T, N>& x1, const X<T, N>& x2) {
 			X<T, N> x3;
@@ -92,9 +103,9 @@ namespace mineral {
 		}
 
 	template<typename _M>
-		M<typename _M::value_type, _M::n, _M::p+1>
-		augment(const _M& m, const X<typename _M::value_type, _M::n>& x) {
-			M<typename _M::value_type, _M::n, _M::p+1> a;
+		M<typename _M::coef_type, _M::n, _M::p+1>
+		augment(const _M& m, const X<typename _M::coef_type, _M::n>& x) {
+			M<typename _M::coef_type, _M::n, _M::p+1> a;
 				for(std::size_t i = 0; i < _M::n; i++) {
 					for(std::size_t j = 0; j < _M::n; j++) {
 						a[i][j] = m[i][j];
@@ -103,4 +114,69 @@ namespace mineral {
 				}
 				return a;
 		};
+
+	/*
+	 * Vector linear algebra
+	 */
+
+
+	template<typename T>
+		std::ostream& operator<<(std::ostream& o, const VecX<T>& x) {
+			for(std::size_t i = 0; i < x.size()-1; i++)
+				o << x[i] << ", ";
+			o << x[x.size()-1];
+			return o;
+		}
+
+	template<typename T>
+		VecX<T> operator-(const VecX<T>& x) {
+			VecX<T> x1(x.size());
+			for(std::size_t i = 0; i < x.size(); i++)
+				x1[i] = -x[i];
+			return x1;
+		}
+
+	template<typename T>
+		VecX<T> operator+(const VecX<T>& x1, const VecX<T>& x2) {
+			VecX<T> x3(x1.size());
+			for(std::size_t i = 0; i < x1.size(); i++)
+				x3[i] = x1[i]+x2[i];
+			return x3;
+		}
+
+	template<typename T>
+		VecX<T> operator*(const VecM<T>& m, const VecX<T>& x) {
+			VecX<T> x1(x.size());
+			for(std::size_t i = 0; i < x.size(); i++) {
+				x1[i] = 0;
+				for(std::size_t j = 0; j < m[i].size(); j++) {
+					x1[i] += m[i][j] * x[j];
+				}
+			}
+			return x1;
+		}
+
+	template<typename T>
+		double norm(const VecX<T>& x) {
+			double a = 0;
+			for(auto& v : x) {
+				a+=std::pow(v, 2);
+			}
+			return std::sqrt(a);
+		}
+
+	template<typename T>
+		VecM<T>
+		augment(const VecM<T>& m, const VecX<T>& x) {
+			VecM<T> a(m.size());
+			for(std::size_t i = 0; i < m.size(); i++) {
+				a[i].resize(m[i].size()+1);
+				for(std::size_t j = 0; j < m[i].size(); j++) {
+					a[i][j] = m[i][j];
+				}
+				a[i][m[i].size()] = x[i];
+			}
+			return a;
+		};
+
 }
