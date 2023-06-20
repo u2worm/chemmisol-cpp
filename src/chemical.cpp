@@ -47,7 +47,7 @@ namespace mineral {
 		initPH(pH);
 		// A fake reaction that produces (or consumes) as much H+ as needed to
 		// fix the pH to the provided value
-		addReaction("pH", pH, {{"H+", -1}});
+		addReaction("pH", -pH, {{"H+", -1}});
 	}
 
 	const Reaction& ChemicalSystem::getReaction(const std::string& name) const {
@@ -64,7 +64,7 @@ namespace mineral {
 
 	void ChemicalSystem::initReactionMatrix() {
 		for(auto& reaction : reactions) {
-			for(auto& component : reaction->getReactives()) {
+			for(auto& component : reaction->getReagents()) {
 				if(components_by_name.find(component.first) == components_by_name.end()) {
 					if(component.first == "H2O") {
 						addComponent(new Solvent("H2O", component_index++));
@@ -77,9 +77,9 @@ namespace mineral {
 
 		reaction_matrix.resize(reactions.size());
 		for(const auto& reaction : reactions) {
-			reaction_matrix[reaction->getId()].resize(components.size());
-			for(const auto& reactive : reaction->getReactives()) {
-				reaction_matrix[reaction->getId()][getComponent(reactive.first).getId()]
+			reaction_matrix[reaction->getIndex()].resize(components.size());
+			for(const auto& reactive : reaction->getReagents()) {
+				reaction_matrix[reaction->getIndex()][getComponent(reactive.first).getIndex()]
 					= reactive.second;
 			}
 		}
@@ -88,29 +88,42 @@ namespace mineral {
 	void ChemicalSystem::solveEquilibrium() {
 		initReactionMatrix();
 		using namespace solver;
-		solver::X dx = Solver::solve(*this);
+		solver::X dx = solve(*this);
 		for(auto& reaction : reactions) {
-			for(auto& component : reaction->getReactives()) {
-				components[getComponent(component.first).getId()]->incrementConcentration(
-						component.second * dx[reaction->getId()]
+			for(auto& component : reaction->getReagents()) {
+				components[getComponent(component.first).getIndex()]->incrementConcentration(
+						component.second * dx[reaction->getIndex()]
 						);
 			}
 		}
 	}
+
+	double ChemicalSystem::reactionQuotient(const std::string& name) const {
+		double quotient = 1;
+		auto& reaction = getReaction(name);
+		for(auto& reactive : reaction.getReagents()) {
+			quotient *= std::pow(getComponent(reactive.first).activity(), reactive.second);
+		}
+		// 1/quotient due to the following conventions:
+		// - products are given with **negative** stoichiometric coefficients
+		// - products from the numerous of the reaction quotient
+		return 1/quotient;
+	}
+
 	namespace solver {
-		Solver::F::F(const ChemicalSystem& system)
+		F::F(const ChemicalSystem& system)
 			: system(system), init_concentrations(system.getComponents().size()) {
 				for(auto& component : system.getComponents()) {
-					init_concentrations[component->getId()] = component->concentration();
+					init_concentrations[component->getIndex()] = component->concentration();
 				}
 			}
 
-		X Solver::F::concentrations(const X& extent) const {
+		X F::concentrations(const X& extent) const {
 			// Init concentrations of all components
 			std::vector<double> concentrations = init_concentrations;
 			for(auto& reaction : system.getReactions()) {
 				const std::vector<double>& coefficients
-					= system.getReactionMatrix()[reaction->getId()];
+					= system.getReactionMatrix()[reaction->getIndex()];
 				for(
 						std::size_t component_index = 0;
 						component_index < coefficients.size();
@@ -120,7 +133,7 @@ namespace mineral {
 						system.getComponent(component_index)
 								.concentration(
 									concentrations[component_index],
-									coefficients[component_index]*extent[reaction->getId()]
+									coefficients[component_index]*extent[reaction->getIndex()]
 									);
 				}
 			}
@@ -128,19 +141,19 @@ namespace mineral {
 			// reactions
 			return concentrations;
 		}
-		X Solver::F::f(const X& extent) const {
+		X F::f(const X& extent) const {
 			X concentrations = this->concentrations(extent);
 
 			X f(extent.size());
 			for(auto& reaction : system.getReactions()) {
 				const std::vector<double>& coefficients
-					= system.getReactionMatrix()[reaction->getId()];
+					= system.getReactionMatrix()[reaction->getIndex()];
 				for(
 						std::size_t component_index = 0;
 						component_index < coefficients.size();
 						component_index++) {
 					auto& component = system.getComponent(component_index);
-					f[reaction->getId()] +=
+					f[reaction->getIndex()] +=
 						// Stoichiometric coefficient
 						coefficients[component_index] * log(
 								// Current activity of the component according
@@ -149,39 +162,39 @@ namespace mineral {
 								);
 				}
 				// The previous sum should be equal to log(K)
-				f[reaction->getId()] -= reaction->getLogK();
+				f[reaction->getIndex()] += reaction->getLogK();
 			}
 			return f;
 		}
-		M Solver::F::df(const X& extent) const {
+		M F::df(const X& extent) const {
 			X current_concentrations = this->concentrations(extent);
 			M jacobian(extent.size()); // reactions count
 
 			for(auto& reaction : system.getReactions()) {
-				jacobian[reaction->getId()].resize(extent.size());
+				jacobian[reaction->getIndex()].resize(extent.size());
 				const std::vector<double>& coefficients_i
-					= system.getReactionMatrix()[reaction->getId()];
+					= system.getReactionMatrix()[reaction->getIndex()];
 				for(auto& dreaction : system.getReactions()) {
 					const std::vector<double>& coefficients_j
-						= system.getReactionMatrix()[dreaction->getId()];
+						= system.getReactionMatrix()[dreaction->getIndex()];
 					double dfi_dxj = 0;
 					for(const auto& component : system.getComponents()) {
-						dfi_dxj += coefficients_i[component->getId()] *
+						dfi_dxj += coefficients_i[component->getIndex()] *
 							component->Dactivity(
 									current_concentrations,
-									coefficients_j[component->getId()]) /
+									coefficients_j[component->getIndex()]) /
 							component->activity(
-									current_concentrations[component->getId()]
+									current_concentrations[component->getIndex()]
 									) / ln10;
 					}
-					jacobian[reaction->getId()][dreaction->getId()] = dfi_dxj;
+					jacobian[reaction->getIndex()][dreaction->getIndex()] = dfi_dxj;
 				}
 			}
 
 			return jacobian;
 		}
 
-		X Solver::solve(const ChemicalSystem& system) {
+		X solve(const ChemicalSystem& system) {
 			F f(system);
 			// Initially all to 0
 			X init_extent(system.getReactions().size());
@@ -189,7 +202,7 @@ namespace mineral {
 				double reactives_activity = 1.0;
 				double products_activity = 1.0;
 				std::cout << "Reaction " << reaction->getName() << std::endl;
-				for(const auto& reactive : reaction->getReactives()) {
+				for(const auto& reactive : reaction->getReagents()) {
 					std::cout << "  " << reactive.first << "(" << reactive.second << "): " << 
 							system.getComponent(reactive.first).activity() << std::endl;
 					if(reactive.second < 0.0)
@@ -203,11 +216,11 @@ namespace mineral {
 					throw std::logic_error("Invalid reaction with missing reactives and products");
 				} else {
 					if(reactives_activity == 0.0) {
-						init_extent[reaction->getId()] = 1e-16;
+						init_extent[reaction->getIndex()] = 1e-16;
 					} else if (products_activity == 0.0) {
-						init_extent[reaction->getId()] = -1e-16;
+						init_extent[reaction->getIndex()] = -1e-16;
 					} else {
-						init_extent[reaction->getId()] = 0.0;
+						init_extent[reaction->getIndex()] = 0.0;
 					}
 				}
 			}

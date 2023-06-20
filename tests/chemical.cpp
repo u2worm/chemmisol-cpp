@@ -11,17 +11,17 @@ class ChemicalSystemTest : public Test {
 	ChemicalSystem chemical_system;
 
 	void SetUp() override {
-		chemical_system.addReaction("OH-", 13.997, {
+		chemical_system.addReaction("OH-", -13.997, {
 				{"OH-", -1},
 				{"H+", -1},
 				{"H2O", 1}
 				});
-		chemical_system.addReaction("NaCl", 0.3, {
+		chemical_system.addReaction("NaCl", -0.3, {
 				{"NaCl", -1},
 				{"Na+", 1},
 				{"Cl-", 1}
 				});
-		chemical_system.addReaction("NaOH", 13.897, {
+		chemical_system.addReaction("NaOH", -13.897, {
 				{"NaOH", -1},
 				{"H+", -1},
 				{"Na+", 1},
@@ -36,10 +36,10 @@ class ChemicalSystemTest : public Test {
 	}
 
 	std::array<double, 7> analytical_concentrations(const std::array<double, 4>& x) const {
-		const double x_0 = x[chemical_system.getReaction("OH-").getId()];
-		const double x_1 = x[chemical_system.getReaction("NaCl").getId()];
-		const double x_2 = x[chemical_system.getReaction("NaOH").getId()];
-		const double x_3 = x[chemical_system.getReaction("pH").getId()];
+		const double x_0 = x[chemical_system.getReaction("OH-").getIndex()];
+		const double x_1 = x[chemical_system.getReaction("NaCl").getIndex()];
+		const double x_2 = x[chemical_system.getReaction("NaOH").getIndex()];
+		const double x_3 = x[chemical_system.getReaction("pH").getIndex()];
 
 		double h = chemical_system.getComponent("H+").concentration();
 		double ho = chemical_system.getComponent("OH-").concentration();
@@ -57,33 +57,33 @@ class ChemicalSystemTest : public Test {
 		naoh += -x_2/V;
 
 		std::array<double, 7> concentrations;
-		concentrations[chemical_system.getComponent("H+").getId()] = h;
-		concentrations[chemical_system.getComponent("OH-").getId()] = ho;
-		concentrations[chemical_system.getComponent("NaCl").getId()] = nacl;
-		concentrations[chemical_system.getComponent("Na+").getId()] = na;
-		concentrations[chemical_system.getComponent("Cl-").getId()] = cl;
-		concentrations[chemical_system.getComponent("NaOH").getId()] = naoh;
+		concentrations[chemical_system.getComponent("H+").getIndex()] = h;
+		concentrations[chemical_system.getComponent("OH-").getIndex()] = ho;
+		concentrations[chemical_system.getComponent("NaCl").getIndex()] = nacl;
+		concentrations[chemical_system.getComponent("Na+").getIndex()] = na;
+		concentrations[chemical_system.getComponent("Cl-").getIndex()] = cl;
+		concentrations[chemical_system.getComponent("NaOH").getIndex()] = naoh;
 
 		return concentrations;
 	}
 	std::array<double, 4> analytical_f(const std::array<double, 4>& x) const {
 		auto concentrations = analytical_concentrations(x);
 		
-		const double h = concentrations[chemical_system.getComponent("H+").getId()];
-		const double ho = concentrations[chemical_system.getComponent("OH-").getId()];
-		const double nacl = concentrations[chemical_system.getComponent("NaCl").getId()];
-		const double na = concentrations[chemical_system.getComponent("Na+").getId()];
-		const double cl = concentrations[chemical_system.getComponent("Cl-").getId()];
-		const double naoh = concentrations[chemical_system.getComponent("NaOH").getId()];
+		const double h = concentrations[chemical_system.getComponent("H+").getIndex()];
+		const double ho = concentrations[chemical_system.getComponent("OH-").getIndex()];
+		const double nacl = concentrations[chemical_system.getComponent("NaCl").getIndex()];
+		const double na = concentrations[chemical_system.getComponent("Na+").getIndex()];
+		const double cl = concentrations[chemical_system.getComponent("Cl-").getIndex()];
+		const double naoh = concentrations[chemical_system.getComponent("NaOH").getIndex()];
 
 		std::array<double, 4> f_x;
-		f_x[chemical_system.getReaction("OH-").getId()]
+		f_x[chemical_system.getReaction("OH-").getIndex()]
 			= -std::log10(h/(1*mol/l)) - std::log10(ho/(1*mol/l)) - 13.997;
-		f_x[chemical_system.getReaction("NaCl").getId()]
+		f_x[chemical_system.getReaction("NaCl").getIndex()]
 			= - std::log10(nacl) + std::log10(na) + std::log10(cl) - 0.3;
-		f_x[chemical_system.getReaction("NaOH").getId()]
+		f_x[chemical_system.getReaction("NaOH").getIndex()]
 			= - std::log10(naoh) - std::log10(h) + std::log10(na) - 13.897;
-		f_x[chemical_system.getReaction("pH").getId()]
+		f_x[chemical_system.getReaction("pH").getIndex()]
 			= -std::log10(h) - 7;
 		return f_x;
 	}
@@ -92,47 +92,47 @@ class ChemicalSystemTest : public Test {
 		std::array<std::array<double, 4>, 4> df_x;
 		auto concentrations = analytical_concentrations(x);
 		
-		const double h = concentrations[chemical_system.getComponent("H+").getId()];
-		const double ho = concentrations[chemical_system.getComponent("OH-").getId()];
-		const double nacl = concentrations[chemical_system.getComponent("NaCl").getId()];
-		const double na = concentrations[chemical_system.getComponent("Na+").getId()];
-		const double cl = concentrations[chemical_system.getComponent("Cl-").getId()];
-		const double naoh = concentrations[chemical_system.getComponent("NaOH").getId()];
+		const double h = concentrations[chemical_system.getComponent("H+").getIndex()];
+		const double ho = concentrations[chemical_system.getComponent("OH-").getIndex()];
+		const double nacl = concentrations[chemical_system.getComponent("NaCl").getIndex()];
+		const double na = concentrations[chemical_system.getComponent("Na+").getIndex()];
+		const double cl = concentrations[chemical_system.getComponent("Cl-").getIndex()];
+		const double naoh = concentrations[chemical_system.getComponent("NaOH").getIndex()];
 
 		// df HO-
 		{
-			auto& df_h = df_x[chemical_system.getReaction("OH-").getId()];
-			df_h[chemical_system.getReaction("OH-").getId()] = (1/h + 1/ho)*1/ln10;
-			df_h[chemical_system.getReaction("NaCl").getId()] = 0;
-			df_h[chemical_system.getReaction("NaOH").getId()] = 1/h * 1/ln10;
-			df_h[chemical_system.getReaction("pH").getId()] = 1/h * 1/ln10;
+			auto& df_h = df_x[chemical_system.getReaction("OH-").getIndex()];
+			df_h[chemical_system.getReaction("OH-").getIndex()] = (1/h + 1/ho)*1/ln10;
+			df_h[chemical_system.getReaction("NaCl").getIndex()] = 0;
+			df_h[chemical_system.getReaction("NaOH").getIndex()] = 1/h * 1/ln10;
+			df_h[chemical_system.getReaction("pH").getIndex()] = 1/h * 1/ln10;
 		}
 
 		// df NaCl
 		{
-			auto& df_nacl = df_x[chemical_system.getReaction("NaCl").getId()];
-			df_nacl[chemical_system.getReaction("OH-").getId()] = 0;
-			df_nacl[chemical_system.getReaction("NaCl").getId()] = (1/nacl + 1/na + 1/cl) * 1/ln10;
-			df_nacl[chemical_system.getReaction("NaOH").getId()] = 1/na * 1/ln10;
-			df_nacl[chemical_system.getReaction("pH").getId()] = 0;
+			auto& df_nacl = df_x[chemical_system.getReaction("NaCl").getIndex()];
+			df_nacl[chemical_system.getReaction("OH-").getIndex()] = 0;
+			df_nacl[chemical_system.getReaction("NaCl").getIndex()] = (1/nacl + 1/na + 1/cl) * 1/ln10;
+			df_nacl[chemical_system.getReaction("NaOH").getIndex()] = 1/na * 1/ln10;
+			df_nacl[chemical_system.getReaction("pH").getIndex()] = 0;
 		}
 
 		// df NaOH
 		{
-			auto& df_naoh = df_x[chemical_system.getReaction("NaOH").getId()];
-			df_naoh[chemical_system.getReaction("OH-").getId()] = 1/h * 1/ln10;
-			df_naoh[chemical_system.getReaction("NaCl").getId()] = 1/na * 1/ln10;
-			df_naoh[chemical_system.getReaction("NaOH").getId()] = (1/naoh + 1/na + 1/h) * 1/ln10;
-			df_naoh[chemical_system.getReaction("pH").getId()] = 1/h * 1/ln10;
+			auto& df_naoh = df_x[chemical_system.getReaction("NaOH").getIndex()];
+			df_naoh[chemical_system.getReaction("OH-").getIndex()] = 1/h * 1/ln10;
+			df_naoh[chemical_system.getReaction("NaCl").getIndex()] = 1/na * 1/ln10;
+			df_naoh[chemical_system.getReaction("NaOH").getIndex()] = (1/naoh + 1/na + 1/h) * 1/ln10;
+			df_naoh[chemical_system.getReaction("pH").getIndex()] = 1/h * 1/ln10;
 		}
 
 		// df pH
 		{
-			auto& df_naoh = df_x[chemical_system.getReaction("pH").getId()];
-			df_naoh[chemical_system.getReaction("OH-").getId()] = 1/h * 1/ln10;
-			df_naoh[chemical_system.getReaction("NaCl").getId()] = 0;
-			df_naoh[chemical_system.getReaction("NaOH").getId()] = 1/h * 1/ln10;
-			df_naoh[chemical_system.getReaction("pH").getId()] = 1/h * 1/ln10;
+			auto& df_naoh = df_x[chemical_system.getReaction("pH").getIndex()];
+			df_naoh[chemical_system.getReaction("OH-").getIndex()] = 1/h * 1/ln10;
+			df_naoh[chemical_system.getReaction("NaCl").getIndex()] = 0;
+			df_naoh[chemical_system.getReaction("NaOH").getIndex()] = 1/h * 1/ln10;
+			df_naoh[chemical_system.getReaction("pH").getIndex()] = 1/h * 1/ln10;
 		}
 		return df_x;
 	}
@@ -155,78 +155,78 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction_matrix) {
 	{
 		// Check OH-
 		const std::vector<double>& reaction
-			= reaction_matrix[chemical_system.getReaction("OH-").getId()];
-		ASSERT_THAT(reaction[chemical_system.getComponent("OH-").getId()], Eq(-1));
-		ASSERT_THAT(reaction[chemical_system.getComponent("H+").getId()], Eq(-1));
-		ASSERT_THAT(reaction[chemical_system.getComponent("H2O").getId()], Eq(1));
+			= reaction_matrix[chemical_system.getReaction("OH-").getIndex()];
+		ASSERT_THAT(reaction[chemical_system.getComponent("OH-").getIndex()], Eq(-1));
+		ASSERT_THAT(reaction[chemical_system.getComponent("H+").getIndex()], Eq(-1));
+		ASSERT_THAT(reaction[chemical_system.getComponent("H2O").getIndex()], Eq(1));
 	}
 	{
 		// Check NaCl
 		const std::vector<double>& reaction
-			= reaction_matrix[chemical_system.getReaction("NaCl").getId()];
-		ASSERT_THAT(reaction[chemical_system.getComponent("NaCl").getId()], Eq(-1));
-		ASSERT_THAT(reaction[chemical_system.getComponent("Na+").getId()], Eq(1));
-		ASSERT_THAT(reaction[chemical_system.getComponent("Cl-").getId()], Eq(1));
+			= reaction_matrix[chemical_system.getReaction("NaCl").getIndex()];
+		ASSERT_THAT(reaction[chemical_system.getComponent("NaCl").getIndex()], Eq(-1));
+		ASSERT_THAT(reaction[chemical_system.getComponent("Na+").getIndex()], Eq(1));
+		ASSERT_THAT(reaction[chemical_system.getComponent("Cl-").getIndex()], Eq(1));
 	}
 	{
 		// Check NaOH
 		const std::vector<double>& reaction
-			= reaction_matrix[chemical_system.getReaction("NaOH").getId()];
-		ASSERT_THAT(reaction[chemical_system.getComponent("NaOH").getId()], Eq(-1));
-		ASSERT_THAT(reaction[chemical_system.getComponent("H+").getId()], Eq(-1));
-		ASSERT_THAT(reaction[chemical_system.getComponent("Na+").getId()], Eq(1));
-		ASSERT_THAT(reaction[chemical_system.getComponent("H2O").getId()], Eq(1));
+			= reaction_matrix[chemical_system.getReaction("NaOH").getIndex()];
+		ASSERT_THAT(reaction[chemical_system.getComponent("NaOH").getIndex()], Eq(-1));
+		ASSERT_THAT(reaction[chemical_system.getComponent("H+").getIndex()], Eq(-1));
+		ASSERT_THAT(reaction[chemical_system.getComponent("Na+").getIndex()], Eq(1));
+		ASSERT_THAT(reaction[chemical_system.getComponent("H2O").getIndex()], Eq(1));
 	}
 }
 
 TEST_F(ChemicalSystemTest, basic_NaCl_reaction_concentrations) {
 	using namespace solver;
-	Solver::F f(chemical_system);
+	F f(chemical_system);
 
 	std::array<double, 4> x;
-	x[chemical_system.getReaction("OH-").getId()] = 0;
-	x[chemical_system.getReaction("NaCl").getId()] = -1e-16;
-	x[chemical_system.getReaction("NaOH").getId()] = -1e-16;
-	x[chemical_system.getReaction("pH").getId()] = 0;
+	x[chemical_system.getReaction("OH-").getIndex()] = 0;
+	x[chemical_system.getReaction("NaCl").getIndex()] = -1e-16;
+	x[chemical_system.getReaction("NaOH").getIndex()] = -1e-16;
+	x[chemical_system.getReaction("pH").getIndex()] = 0;
 	auto C = f.concentrations({x.begin(), x.end()});
 	auto analytical_C = analytical_concentrations(x);
 	for (auto& reaction : chemical_system.getReactions()) {
-		ASSERT_FLOAT_EQ(C[reaction->getId()], analytical_C[reaction->getId()]);
+		ASSERT_FLOAT_EQ(C[reaction->getIndex()], analytical_C[reaction->getIndex()]);
 	}
 }
 
 TEST_F(ChemicalSystemTest, basic_NaCl_reaction_f) {
 	using namespace solver;
-	Solver::F f(chemical_system);
+	F f(chemical_system);
 
 	std::array<double, 4> x;
-	x[chemical_system.getReaction("OH-").getId()] = 0;
-	x[chemical_system.getReaction("NaCl").getId()] = -1e-16;
-	x[chemical_system.getReaction("NaOH").getId()] = -1e-16;
-	x[chemical_system.getReaction("pH").getId()] = 0;
+	x[chemical_system.getReaction("OH-").getIndex()] = 0;
+	x[chemical_system.getReaction("NaCl").getIndex()] = -1e-16;
+	x[chemical_system.getReaction("NaOH").getIndex()] = -1e-16;
+	x[chemical_system.getReaction("pH").getIndex()] = 0;
 	auto F = f.f({x.begin(), x.end()});
 	auto analytical_F = analytical_f(x);
 	for (auto& reaction : chemical_system.getReactions()) {
-		ASSERT_FLOAT_EQ(F[reaction->getId()], analytical_F[reaction->getId()]);
+		ASSERT_FLOAT_EQ(F[reaction->getIndex()], analytical_F[reaction->getIndex()]);
 	}
 }
 
 TEST_F(ChemicalSystemTest, basic_NaCl_reaction_df) {
 	using namespace solver;
-	Solver::F f(chemical_system);
+	F f(chemical_system);
 
 	std::array<double, 4> x;
-	x[chemical_system.getReaction("OH-").getId()] = 0;
-	x[chemical_system.getReaction("NaCl").getId()] = -1e-16;
-	x[chemical_system.getReaction("NaOH").getId()] = -1e-16;
-	x[chemical_system.getReaction("pH").getId()] = 0;
+	x[chemical_system.getReaction("OH-").getIndex()] = 0;
+	x[chemical_system.getReaction("NaCl").getIndex()] = -1e-16;
+	x[chemical_system.getReaction("NaOH").getIndex()] = -1e-16;
+	x[chemical_system.getReaction("pH").getIndex()] = 0;
 	auto dF = f.df({x.begin(), x.end()});
 	auto analytical_dF = analytical_df(x);
 	for (auto& reaction : chemical_system.getReactions()) {
 		for (auto& extent : chemical_system.getReactions()) {
 			ASSERT_FLOAT_EQ(
-					dF[reaction->getId()][extent->getId()],
-					analytical_dF[reaction->getId()][extent->getId()]);
+					dF[reaction->getIndex()][extent->getIndex()],
+					analytical_dF[reaction->getIndex()][extent->getIndex()]);
 		}
 	}
 }
@@ -242,7 +242,7 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction) {
 		double H = chemical_system.getComponent("H+").activity();
 		double OH = chemical_system.getComponent("OH-").activity();
 		ASSERT_FLOAT_EQ(
-				std::log10(H2O/(H*OH)),
+				std::log10((H*OH)/H2O),
 				chemical_system.getReaction("OH-").getLogK()
 				);
 	}
@@ -252,7 +252,7 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction) {
 		double Na = chemical_system.getComponent("Na+").activity();
 		double Cl = chemical_system.getComponent("Cl-").activity();
 		ASSERT_FLOAT_EQ(
-				std::log10((Na*Cl)/NaCl),
+				std::log10(NaCl/(Na*Cl)),
 				chemical_system.getReaction("NaCl").getLogK()
 				);
 	}
@@ -262,7 +262,7 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction) {
 		double Na = chemical_system.getComponent("Na+").activity();
 		double H = chemical_system.getComponent("H+").activity();
 		ASSERT_FLOAT_EQ(
-				std::log10(Na/(NaOH*H)),
+				std::log10((NaOH*H)/Na),
 				chemical_system.getReaction("NaOH").getLogK()
 				);
 	}
@@ -275,53 +275,45 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction) {
 		std::cout << component->getName() << ": " << component->concentration()/(1*mol/l) << " mol/l" << std::endl;
 }
 
-/*
- *TEST(ChemicalSystem, defaultSoil) {
- *    ChemicalSystem::defaultSoil();
- *}
- */
+TEST_F(ChemicalSystemTest, basic_NaCl_reaction_quotient) {
+	auto reaction_matrix = chemical_system.getReactionMatrix();
+	chemical_system.setMaxIteration(200);
+	chemical_system.solveEquilibrium();
 
-/*
- *class DerivativeTest : public testing::TestWithParam<int> {
- *};
- *
- *TEST_P(DerivativeTest, dx) {
- *    ChemicalSystem problem = ChemicalSystem::defaultEquilibrium();
- *    pHSolver::logPHSolver::F f(0, problem);
- *
- *    int dxn = GetParam();
- *    double delta = std::numeric_limits<double>::epsilon();
- *    for(int n = 0; n < 10; n++) {
- *        pHSolver::X x0 {{0, 0, 0, 0}};
- *        x0[dxn] = n*delta;
- *        pHSolver::X dx {{0, 0, 0, 0}};
- *        dx[dxn] = delta;
- *        auto x1 = x0 + dx;
- *        auto f_x0 = f.f(x0);
- *        auto f_x1 = f.f(x1);
- *
- *        auto df = f.df(x0);
- *        std::cout << "dx" << dxn+1 << std::endl;
- *        std::cout << "delta: " << delta << ", x0: " << x0[dxn] << ", x1:" << x1[dxn] << std::endl;
- *        for(std::size_t i = 0; i < 4; i++) {
- *            std::cout << "f" << i+1 << "(x1): " << f_x1[i] << ", f" << i+1 << "(x0): " << f_x0[i] << std::endl;
- *            std::cout << "f" << i+1 << ": " << (f_x1[i]-f_x0[i])/delta << " / "
- *                << df[i][dxn] << std::endl;
- *            if(df[i][dxn] != 0)
- *                ASSERT_NEAR((f_x1[i]-f_x0[i])/delta / df[i][dxn], 1, 1e-2);
- *            else
- *                ASSERT_NEAR((f_x1[i]-f_x0[i])/delta, 0, 1e-2);
- *
- *        }
- *        //ASSERT_NEAR((f_x1[0]-f_x0[0])/deltaX1 / f.df(x0)[0][0], 1, 1e-2);
- *        //ASSERT_NEAR((f_x1[1]-f_x0[1])/deltaX1 / f.df(x0)[1][0], 1, 1e-2);
- *        //ASSERT_NEAR((f_x1[2]-f_x0[2])/deltaX1 / f.df(x0)[2][0], 1, 1e-2);
- *        //ASSERT_NEAR((f_x1[3]-f_x0[3])/deltaX1 / f.df(x0)[3][0], 1, 1e-2);
- *    }
- *}
- *
- *INSTANTIATE_TEST_SUITE_P(Derivative,
- *                         DerivativeTest,
- *                         testing::Values(0, 1, 2, 3));
- */
+	{
+		// Check OH-
+		double H2O = chemical_system.getComponent("H2O").activity();
+		double H = chemical_system.getComponent("H+").activity();
+		double OH = chemical_system.getComponent("OH-").activity();
+		ASSERT_FLOAT_EQ(
+				chemical_system.reactionQuotient("OH-"),
+				(H*OH)/H2O
+				);
+	}
+	{
+		// Check NaCl
+		double NaCl = chemical_system.getComponent("NaCl").activity();
+		double Na = chemical_system.getComponent("Na+").activity();
+		double Cl = chemical_system.getComponent("Cl-").activity();
+		ASSERT_FLOAT_EQ(
+				chemical_system.reactionQuotient("NaCl"),
+				NaCl/(Na*Cl)
+				);
+	}
+	{
+		// Check NaOH
+		double NaOH = chemical_system.getComponent("NaOH").activity();
+		double Na = chemical_system.getComponent("Na+").activity();
+		double H = chemical_system.getComponent("H+").activity();
+		ASSERT_FLOAT_EQ(
+				chemical_system.reactionQuotient("NaOH"),
+				(NaOH*H)/Na
+				);
+	}
+	{
+		// Check pH
+		double H = chemical_system.getComponent("H+").activity();
+		ASSERT_FLOAT_EQ(H, chemical_system.reactionQuotient("pH"));
+	}
+}
 

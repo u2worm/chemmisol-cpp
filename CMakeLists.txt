@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(chemical-newton)
+project(chemmisol VERSION 0.1)
 
 # GoogleTest requires at least C++14
 set(CMAKE_CXX_STANDARD 14)
@@ -20,30 +20,30 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(argparse)
 
-add_library(chemical-units-lib
+add_library(chemmisol-units-lib
 	src/units.cpp
 	)
-target_include_directories(chemical-units-lib PUBLIC include)
+target_include_directories(chemmisol-units-lib PUBLIC include)
 add_executable(convert
 	src/convert.cpp
 	)
 target_link_libraries(convert
-	chemical-units-lib
+	chemmisol-units-lib
 	argparse::argparse
 	)
 
-add_library(chemical-newton-lib
+add_library(chemmisol-lib
 	src/chemical.cpp
 	src/gauss.cpp
 	src/experiment.cpp
 	)
-target_link_libraries(chemical-newton-lib
-	PUBLIC chemical-units-lib)
-target_include_directories(chemical-newton-lib PUBLIC include)
+target_link_libraries(chemmisol-lib
+	PUBLIC chemmisol-units-lib)
+target_include_directories(chemmisol-lib PUBLIC include)
 
-add_executable(chemical-newton
+add_executable(chemmisol
 	src/main.cpp)
-target_link_libraries(chemical-newton chemical-newton-lib)
+target_link_libraries(chemmisol chemmisol-lib)
 
 FetchContent_Declare(
   googletest
@@ -63,26 +63,40 @@ add_executable(
 	)
 target_link_libraries(
   convert_test
-  chemical-units-lib
+  chemmisol-units-lib
   GTest::gtest_main
   GTest::gmock_main
 )
 
 add_executable(
-  newton_test
+  chemmisol-tests
   tests/linear.cpp
   tests/newton.cpp
   tests/chemical.cpp
   tests/gauss.cpp
 )
 target_link_libraries(
-  newton_test
-  chemical-newton-lib
+  chemmisol-tests
+  chemmisol-lib
   GTest::gtest_main
   GTest::gmock_main
 )
 
 include(GoogleTest)
 gtest_discover_tests(convert_test)
-gtest_discover_tests(newton_test)
+gtest_discover_tests(chemmisol-tests)
 
+# Doxygen
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+	file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs)
+	set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs)
+	#set(DOXYGEN_MACRO_EXPANSION "YES")
+	set(DOXYGEN_HTML_OUTPUT ".")
+	set(DOXYGEN_SORT_MEMBER_DOCS "NO")
+	set(DOXYGEN_HAVE_DOT "YES")
+	#set(DOXYGEN_TEMPLATE_RELATIONS "YES")
+	doxygen_add_docs(doc
+		${CMAKE_CURRENT_SOURCE_DIR}/include
+		)
+endif()

@@ -1,0 +1,9 @@
+<map id="mineral::Component" name="mineral::Component">
+<area shape="rect" id="Node000001" title=" " alt="" coords="240,5,379,32"/>
+<area shape="rect" id="Node000002" href="$classmineral_1_1AqueousComponent.html" title=" " alt="" coords="5,80,195,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="260,40,138,82,136,77,258,35"/>
+<area shape="rect" id="Node000003" href="$classmineral_1_1MineralComponent.html" title=" " alt="" coords="219,80,400,107"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="312,47,312,80,307,80,307,47"/>
+<area shape="rect" id="Node000004" href="$classmineral_1_1Solvent.html" title=" " alt="" coords="424,80,539,107"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="354,36,452,77,450,82,352,41"/>
+</map>
