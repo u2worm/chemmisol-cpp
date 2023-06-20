@@ -9,5 +9,5 @@ var searchData=
   ['getreaction_6',['getReaction',['../classmineral_1_1ChemicalSystem.html#a8393e1e514eeb0ce95da288ccd7d5c62',1,'mineral::ChemicalSystem']]],
   ['getreactionmatrix_7',['getReactionMatrix',['../classmineral_1_1ChemicalSystem.html#ae84d36edbdf4e38a53905e01ab7b05a9',1,'mineral::ChemicalSystem']]],
   ['getreactions_8',['getReactions',['../classmineral_1_1ChemicalSystem.html#a2e87f30e91b08446b185bc1bb57aa122',1,'mineral::ChemicalSystem']]],
-  ['getreagents_9',['getReagents',['../classmineral_1_1Reaction.html#a4e773245d61f6f4335d8c66c7a8c963e',1,'mineral::Reaction']]]
+  ['getreagents_9',['getReagents',['../classmineral_1_1Reaction.html#a33eb52bac4c0ae1f6cc1023007c33125',1,'mineral::Reaction']]]
 ];

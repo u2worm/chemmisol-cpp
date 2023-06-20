@@ -14,6 +14,18 @@ namespace mineral {
 
 	const double Component::V = 1*l;
 
+	ChemicalSystem::ChemicalSystem(
+					double solid_concentration,
+					double specific_surface_area,
+					double site_concentration,
+					const std::string& surface_component
+					) :
+		solid_concentration(solid_concentration),
+		specific_surface_area(specific_surface_area),
+		site_concentration(site_concentration) {
+			addComponent(surface_component, MINERAL, 1);
+		}
+
 	void ChemicalSystem::addReaction(Reaction* reaction) {
 		reactions.emplace_back(reaction);
 		reactions_by_name.emplace(reaction->getName(), reaction);
@@ -22,7 +34,7 @@ namespace mineral {
 	void ChemicalSystem::addReaction(
 			std::string name,
 			double K,
-			std::unordered_map<std::string, double> reactives
+			std::vector<ReactionComponent> reactives
 			) {
 		addReaction(new Reaction(
 				name, reaction_index++, K, reactives
@@ -33,10 +45,27 @@ namespace mineral {
 		components.emplace_back(component);
 		components_by_name.emplace(component->getName(), component);
 	}
-	void ChemicalSystem::addComponent(std::string name, double concentration) {
+	void ChemicalSystem::addComponent(const std::string& name, double concentration) {
 		addComponent(
 				new AqueousComponent(name, component_index++, concentration)
 				);
+	}
+	void ChemicalSystem::addComponent(
+			const std::string& name, Phase phase, double concentration) {
+		switch(phase) {
+			case AQUEOUS:
+				addComponent(
+						new AqueousComponent(name, component_index++, concentration)
+						);
+				break;
+			case MINERAL:
+				addComponent(
+						new MineralComponent(
+							name, component_index++,
+							solid_concentration, specific_surface_area, site_concentration,
+							concentration)
+						);
+		}
 	}
 
 	void ChemicalSystem::initPH(double pH) {
@@ -65,11 +94,11 @@ namespace mineral {
 	void ChemicalSystem::initReactionMatrix() {
 		for(auto& reaction : reactions) {
 			for(auto& component : reaction->getReagents()) {
-				if(components_by_name.find(component.first) == components_by_name.end()) {
-					if(component.first == "H2O") {
+				if(components_by_name.find(component.name) == components_by_name.end()) {
+					if(component.name == "H2O") {
 						addComponent(new Solvent("H2O", component_index++));
 					} else {
-						addComponent(component.first, 0);
+						addComponent(component.name, component.phase, 0);
 					}
 				}
 			}
@@ -79,8 +108,8 @@ namespace mineral {
 		for(const auto& reaction : reactions) {
 			reaction_matrix[reaction->getIndex()].resize(components.size());
 			for(const auto& reactive : reaction->getReagents()) {
-				reaction_matrix[reaction->getIndex()][getComponent(reactive.first).getIndex()]
-					= reactive.second;
+				reaction_matrix[reaction->getIndex()][getComponent(reactive.name).getIndex()]
+					= reactive.coefficient;
 			}
 		}
 	}
@@ -91,8 +120,8 @@ namespace mineral {
 		solver::X dx = solve(*this);
 		for(auto& reaction : reactions) {
 			for(auto& component : reaction->getReagents()) {
-				components[getComponent(component.first).getIndex()]->incrementConcentration(
-						component.second * dx[reaction->getIndex()]
+				components[getComponent(component.name).getIndex()]->incrementConcentration(
+						component.coefficient * dx[reaction->getIndex()]
 						);
 			}
 		}
@@ -102,7 +131,7 @@ namespace mineral {
 		double quotient = 1;
 		auto& reaction = getReaction(name);
 		for(auto& reactive : reaction.getReagents()) {
-			quotient *= std::pow(getComponent(reactive.first).activity(), reactive.second);
+			quotient *= std::pow(getComponent(reactive.name).activity(), reactive.coefficient);
 		}
 		// 1/quotient due to the following conventions:
 		// - products are given with **negative** stoichiometric coefficients
@@ -203,14 +232,14 @@ namespace mineral {
 				double products_activity = 1.0;
 				std::cout << "Reaction " << reaction->getName() << std::endl;
 				for(const auto& reactive : reaction->getReagents()) {
-					std::cout << "  " << reactive.first << "(" << reactive.second << "): " << 
-							system.getComponent(reactive.first).activity() << std::endl;
-					if(reactive.second < 0.0)
+					std::cout << "  " << reactive.name << "(" << reactive.coefficient << "): " << 
+							system.getComponent(reactive.name).activity() << std::endl;
+					if(reactive.coefficient < 0.0)
 						products_activity *=
-							system.getComponent(reactive.first).activity();
-					else if(reactive.second > 0.0)
+							system.getComponent(reactive.name).activity();
+					else if(reactive.coefficient > 0.0)
 						reactives_activity *=
-							system.getComponent(reactive.first).activity();
+							system.getComponent(reactive.name).activity();
 				}
 				if(reactives_activity == 0.0 && products_activity == 0.0) {
 					throw std::logic_error("Invalid reaction with missing reactives and products");

@@ -1,7 +1,6 @@
 #include "gmock/gmock.h"
-#include <gtest/gtest.h>
-#include <limits>
 #include "chemical.h"
+#include <regex>
 
 using namespace testing;
 using namespace mineral;
@@ -18,8 +17,10 @@ class ChemicalSystemTest : public Test {
 				});
 		chemical_system.addReaction("NaCl", -0.3, {
 				{"NaCl", -1},
-				{"Na+", 1},
-				{"Cl-", 1}
+				{"Na+", AQUEOUS, 1}, // AQUEOUS specified here only for test
+									 // purpose, since it should be the default
+									 // phase
+				{"Cl-", AQUEOUS, 1}
 				});
 		chemical_system.addReaction("NaOH", -13.897, {
 				{"NaOH", -1},
@@ -137,6 +138,26 @@ class ChemicalSystemTest : public Test {
 		return df_x;
 	}
 };
+
+TEST_F(ChemicalSystemTest, aqueous_species) {
+	for(auto& component : chemical_system.getComponents()) {
+		if(component->getName() == "H2O") {
+			ASSERT_THAT(component.get(), WhenDynamicCastTo<Solvent*>(Not(IsNull())));
+		} else {
+			ASSERT_THAT(component.get(), WhenDynamicCastTo<AqueousComponent*>(Not(IsNull())));
+		}
+	}
+}
+
+TEST_F(ChemicalSystemTest, initial_aqueous_concentrations) {
+	// Manually specified components
+	ASSERT_FLOAT_EQ(chemical_system.getComponent("Na+").concentration(), 0.1*mol/l);
+	ASSERT_FLOAT_EQ(chemical_system.getComponent("Cl-").concentration(), 0.1*mol/l);
+	
+	// Automatically added components
+	ASSERT_FLOAT_EQ(chemical_system.getComponent("NaCl").concentration(), 0);
+	ASSERT_FLOAT_EQ(chemical_system.getComponent("NaOH").concentration(), 0);
+}
 
 TEST_F(ChemicalSystemTest, activity) {
 	ASSERT_FLOAT_EQ(chemical_system.getComponent("Na+").activity(), 0.1);
@@ -315,5 +336,53 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction_quotient) {
 		double H = chemical_system.getComponent("H+").activity();
 		ASSERT_FLOAT_EQ(H, chemical_system.reactionQuotient("pH"));
 	}
+}
+
+class AdsorptionTest : public Test {
+	protected:
+	ChemicalSystem chemical_system {
+			2.5 * g/l,
+			24.2 * m2/g,
+			0.8 * entities/nm2,
+			"=SOH"
+			};
+
+	void SetUp() override {
+		chemical_system.addReaction("OH-", -13.997, {
+				{"OH-", -1},
+				{"H+", -1},
+				{"H2O", 1}
+				});
+		chemical_system.addReaction("=SOH2", 3.46, {
+				{"=SOH2", MINERAL, -1},
+				{"=SOH", MINERAL, 1}, // AQUEOUS specified here only for test
+									 // purpose, since it should be the default
+									 // phase
+				{"H+", AQUEOUS, 1}
+				});
+		
+		chemical_system.fixPH(7);
+
+		chemical_system.initReactionMatrix();
+	}
+};
+
+TEST_F(AdsorptionTest, aqueous_and_mineral_species) {
+	std::regex surface_complex_regex("=S.*");
+	for(auto& component : chemical_system.getComponents()) {
+		if(component->getName() == "H2O") {
+			ASSERT_THAT(component.get(), WhenDynamicCastTo<Solvent*>(Not(IsNull())));
+		} else if (std::regex_match(component->getName(), surface_complex_regex)) {
+			ASSERT_THAT(component.get(), WhenDynamicCastTo<MineralComponent*>(Not(IsNull())));
+		} else {
+			ASSERT_THAT(component.get(), WhenDynamicCastTo<AqueousComponent*>(Not(IsNull())));
+		}
+	}
+}
+
+TEST_F(AdsorptionTest, initial_mineral_concentrations) {
+	// Automatically added components
+	ASSERT_FLOAT_EQ(chemical_system.getComponent("=SOH").concentration(), 1.0);
+	ASSERT_FLOAT_EQ(chemical_system.getComponent("=SOH2").concentration(), 0);
 }
 

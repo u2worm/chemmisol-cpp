@@ -10,6 +10,10 @@
 namespace mineral {
 	class ChemicalSystem;
 
+	enum Phase {
+		AQUEOUS, MINERAL
+	};
+
 	/**
 	 * Namespace containing solver features.
 	 */
@@ -542,6 +546,25 @@ namespace mineral {
 
 	};
 
+	struct ReactionComponent {
+		std::string name;
+		Phase phase;
+		double coefficient;
+
+		ReactionComponent() = default;
+		ReactionComponent(
+				const std::string& name,
+				Phase phase,
+				double coefficient)
+			: name(name), phase(phase), coefficient(coefficient) {
+			}
+		ReactionComponent(
+				const std::string& name,
+				double coefficient)
+			: name(name), phase(AQUEOUS), coefficient(coefficient) {
+			}
+	};
+
 	/**
 	 * A chemical reaction is a process that transform _reactants_ into
 	 * _products_.
@@ -619,7 +642,7 @@ namespace mineral {
 			std::string name;
 			std::size_t index;
 			double log_K;
-			std::unordered_map<std::string, double> reagents;
+			std::vector<ReactionComponent> reagents;
 
 		public:
 			/**
@@ -647,7 +670,7 @@ namespace mineral {
 			 */
 			Reaction(
 					const std::string& name, std::size_t index, double log_K,
-					const std::unordered_map<std::string, double>& reagents
+					const std::vector<ReactionComponent>& reagents
 					)
 				: name(name), index(index), log_K(log_K), reagents(reagents) {
 				}
@@ -679,11 +702,19 @@ namespace mineral {
 			/**
 			 * Reagents of the reaction.
 			 */
-			const std::unordered_map<std::string, double> getReagents() const {
+			const std::vector<ReactionComponent> getReagents() const {
 				return reagents;
 			}
 	};
 
+	/**
+	 * A ChemicalSystem is defined by a set of Components that interact
+	 * according to defined Reactions.
+	 *
+	 * A ChemicalSystem can be used to define both a pure solution system (where
+	 * all species are aqueous) as well as a mineral adsorption model. See
+	 * constructors for more information.
+	 */
 	class ChemicalSystem {
 		private:
 			std::size_t component_index = 0;
@@ -699,7 +730,52 @@ namespace mineral {
 			void addReaction(Reaction* reaction);
 
 			std::size_t max_iteration = 200;
+
+			// Adsorption model parameters
+			double solid_concentration;
+			double specific_surface_area;
+			double site_concentration;
+
 		public:
+
+			/**
+			 * Defines a pure solution model, with only AQUEOUS components.
+			 *
+			 * Trying to force an addComponent() call with MINERAL phase will
+			 * yield undefined behaviors.
+			 */
+			ChemicalSystem() = default;
+
+			/**
+			 * Defines an adsorption model that can handle both AQUEOUS and
+			 * MINERAL species. See MineralComponent for more detailed
+			 * information about how mineral parameters are defined and used.
+			 *
+			 * The surface component corresponds to the "free sites" species. It
+			 * is automatically added as MineralComponent with a molar fraction
+			 * of 1, so that all sites are free at the initial state.
+			 *
+			 * Chemmisol currently does not support the initialization of
+			 * surface components with a non null initial molar fraction.
+			 *
+			 * @param solid_concentration Quantity of mineral in suspension in
+			 * the solution, usually expressed in g/l.
+			 * @param specific_surface_area Surface of the solid in contact with
+			 * the solution per unit of mass, usually expressed in m2/g.
+			 * @param site_concentration Quantity of sites per unit of surface
+			 * in contact with the solution, usually expressed as sites/nm2.
+			 * @param surface_component Name of the free site surface component
+			 * (usually =SOH).
+			 */
+			// TODO: possibility to initialize surface components with a non
+			// null initial molar fraction.
+			ChemicalSystem(
+					double solid_concentration,
+					double specific_surface_area,
+					double site_concentration,
+					const std::string& surface_component
+					);
+
 			/**
 			 * Adds a new Reaction to the system.
 			 *
@@ -718,17 +794,34 @@ namespace mineral {
 			void addReaction(
 					std::string name,
 					double log_K,
-					std::unordered_map<std::string, double> reagents
+					std::vector<ReactionComponent> reagents
 					);
 
 			/**
-			 * Adds a new AqueousComponent to the chemical system.
+			 * Adds a new AqueousComponent to the chemical system, assuming that
+			 * the Component is AQUEOUS by default.
 			 *
 			 * @param name Name of the component
 			 * @param concentration Initial concentration
 			 */
 			void addComponent(
-					std::string name,
+					const std::string& name,
+					double concentration
+					);
+
+			/**
+			 * Adds a new Component to the chemical system, depending on the
+			 * provided phase, the following Component is instantiated:
+			 * - AQUEOUS: AqueousComponent
+			 * - MINERAL: MineralComponent
+			 *
+			 * @param name Name of the component
+			 * @param concentration Initial concentration for AQUEOUS species,
+			 * initial molar fraction for MINERAL species
+			 */
+			void addComponent(
+					const std::string& name,
+					Phase phase,
 					double concentration
 					);
 

@@ -10,6 +10,7 @@
 	F(l, 1, VOLUME)\
 	F(m3, 1000*l, VOLUME)\
 	F(cm3, 10e-3*l, VOLUME)\
+	F(g, 1, MASS)\
 	F(gram, 1, MASS)\
 	F(kg, 1e3*gram, MASS)\
 	F(mg, 1e-3*gram, MASS)\
