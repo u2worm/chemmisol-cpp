@@ -1,9 +1,15 @@
 <map id="mineral::Component" name="mineral::Component">
-<area shape="rect" id="Node000001" title=" " alt="" coords="240,5,379,32"/>
-<area shape="rect" id="Node000002" href="$classmineral_1_1AqueousComponent.html" title=" " alt="" coords="5,80,195,107"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="260,40,138,82,136,77,258,35"/>
-<area shape="rect" id="Node000003" href="$classmineral_1_1MineralComponent.html" title=" " alt="" coords="219,80,400,107"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="312,47,312,80,307,80,307,47"/>
-<area shape="rect" id="Node000004" href="$classmineral_1_1Solvent.html" title=" " alt="" coords="424,80,539,107"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="354,36,452,77,450,82,352,41"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="288,5,427,32"/>
+<area shape="rect" id="Node000002" href="$classmineral_1_1AqueousComponent.html" title=" " alt="" coords="59,80,248,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="309,40,190,82,188,77,308,35"/>
+<area shape="rect" id="Node000003" href="$classmineral_1_1FixedComponent.html" title=" " alt="" coords="272,80,443,107"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="360,47,360,80,355,80,355,47"/>
+<area shape="rect" id="Node000007" href="$classmineral_1_1MineralComponent.html" title=" " alt="" coords="467,80,648,107"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="407,35,523,77,521,82,405,40"/>
+<area shape="rect" id="Node000004" href="$classmineral_1_1FixedAqueousComponent.html" title=" " alt="" coords="5,155,227,181"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="302,114,159,157,158,151,301,109"/>
+<area shape="rect" id="Node000005" href="$classmineral_1_1FixedMineralComponent.html" title=" " alt="" coords="251,155,464,181"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="360,122,360,154,355,154,355,122"/>
+<area shape="rect" id="Node000006" href="$classmineral_1_1Solvent.html" title=" " alt="" coords="488,155,603,181"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="405,110,513,152,511,157,403,115"/>
 </map>

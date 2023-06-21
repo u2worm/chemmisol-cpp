@@ -106,6 +106,8 @@ Collaboration diagram for mineral::AqueousComponent:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a173fcef269566e98b3a33f5fb7ce5ba6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmineral_1_1AqueousComponent.html#a173fcef269566e98b3a33f5fb7ce5ba6">AqueousComponent</a> (const std::string &amp;name, std::size_t id, double C)</td></tr>
 <tr class="separator:a173fcef269566e98b3a33f5fb7ce5ba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adeefb6179703f1ff8eafb0d87dc93ff8"><td class="memItemLeft" align="right" valign="top">Phase&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmineral_1_1AqueousComponent.html#adeefb6179703f1ff8eafb0d87dc93ff8">getPhase</a> () const override</td></tr>
+<tr class="separator:adeefb6179703f1ff8eafb0d87dc93ff8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc3ad29b4e8e1ade9ec3e06d54bc8d33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmineral_1_1AqueousComponent.html#acc3ad29b4e8e1ade9ec3e06d54bc8d33">incrementConcentration</a> (double extent) override</td></tr>
 <tr class="separator:acc3ad29b4e8e1ade9ec3e06d54bc8d33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56146f44fb7822a21922ea389fa97abd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmineral_1_1AqueousComponent.html#a56146f44fb7822a21922ea389fa97abd">concentration</a> (double current_concentration, double extent) const override</td></tr>
@@ -123,6 +125,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a06f1ad272b94827134dc40747fc07fe0 inherit pub_methods_classmineral_1_1Component"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a9fdcf214b151c95b835c4d7c1f58ae inherit pub_methods_classmineral_1_1Component"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmineral_1_1Component.html#a7a9fdcf214b151c95b835c4d7c1f58ae">getIndex</a> () const</td></tr>
 <tr class="separator:a7a9fdcf214b151c95b835c4d7c1f58ae inherit pub_methods_classmineral_1_1Component"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bbb44e30ab3273969c95ef828d1f34d inherit pub_methods_classmineral_1_1Component"><td class="memItemLeft" align="right" valign="top">
+virtual Phase&#160;</td><td class="memItemRight" valign="bottom"><b>getPhase</b> () const =0</td></tr>
+<tr class="separator:a7bbb44e30ab3273969c95ef828d1f34d inherit pub_methods_classmineral_1_1Component"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24c8b8e29f5fd87825a8383c99aed522 inherit pub_methods_classmineral_1_1Component"><td class="memItemLeft" align="right" valign="top">
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isFixed</b> () const</td></tr>
+<tr class="separator:a24c8b8e29f5fd87825a8383c99aed522 inherit pub_methods_classmineral_1_1Component"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24982a6ec3f9e1b6bb04b6f3e07df8bc inherit pub_methods_classmineral_1_1Component"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmineral_1_1Component.html#a24982a6ec3f9e1b6bb04b6f3e07df8bc">incrementConcentration</a> (double extent)=0</td></tr>
 <tr class="separator:a24982a6ec3f9e1b6bb04b6f3e07df8bc inherit pub_methods_classmineral_1_1Component"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4120952886d32a24f658581764d6e588 inherit pub_methods_classmineral_1_1Component"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmineral_1_1Component.html#a4120952886d32a24f658581764d6e588">concentration</a> (double current_concentration, double extent) const =0</td></tr>
@@ -197,6 +205,33 @@ AqueousComponent component("Na+", i, 0.1*mol/l);
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="adeefb6179703f1ff8eafb0d87dc93ff8" name="adeefb6179703f1ff8eafb0d87dc93ff8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adeefb6179703f1ff8eafb0d87dc93ff8">&#9670;&#160;</a></span>getPhase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Phase mineral::AqueousComponent::getPhase </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classmineral_1_1Component.html">mineral::Component</a>.</p>
+
+</div>
+</div>
 <a id="acc3ad29b4e8e1ade9ec3e06d54bc8d33" name="acc3ad29b4e8e1ade9ec3e06d54bc8d33"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acc3ad29b4e8e1ade9ec3e06d54bc8d33">&#9670;&#160;</a></span>incrementConcentration()</h2>
 

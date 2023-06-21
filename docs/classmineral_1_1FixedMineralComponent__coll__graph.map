@@ -1,0 +1,7 @@
+<map id="mineral::FixedMineralComponent" name="mineral::FixedMineralComponent">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,155,218,181"/>
+<area shape="rect" id="Node000002" href="$classmineral_1_1FixedComponent.html" title=" " alt="" coords="26,80,197,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="114,122,114,154,109,154,109,122"/>
+<area shape="rect" id="Node000003" href="$classmineral_1_1Component.html" title=" " alt="" coords="42,5,181,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="114,47,114,80,109,80,109,47"/>
+</map>

@@ -11,7 +11,7 @@ namespace mineral {
 	class ChemicalSystem;
 
 	enum Phase {
-		AQUEOUS, MINERAL
+		SOLVENT, AQUEOUS, MINERAL
 	};
 
 	/**
@@ -204,6 +204,12 @@ namespace mineral {
 				return index;
 			}
 
+			virtual Phase getPhase() const = 0;
+
+			virtual bool isFixed() const {
+				return false;
+			}
+
 			/**
 			 * Increments the concentration of the current component,
 			 * considering that its absolute quantity is incremented by
@@ -310,6 +316,52 @@ namespace mineral {
 			}
 	};
 
+	class FixedComponent : public Component {
+		private:
+			double C;
+			double A;
+		protected:
+			FixedComponent(
+					const std::string& name, std::size_t index,
+					double C, double A
+					)
+				: Component(name, index), C(C), A(A) {
+				}
+
+		public:
+			bool isFixed() const override {
+				return true;
+			}
+
+			void incrementConcentration(double) override {
+			}
+
+			double concentration(double, double) const override{
+				return C;
+			}
+
+			double concentration() const override {
+				return C;
+			}
+
+			double activity(double) const override {
+				return A;
+			}
+
+			double activity(
+					const std::vector<double>&,
+					double) const override {
+				return A;
+			}
+
+			double Dactivity(
+					const std::vector<double>&,
+					double
+					) const override {
+				return 0;
+			}
+	};
+
 	/**
 	 * Solvent component.
 	 *
@@ -317,39 +369,17 @@ namespace mineral {
 	 * 1.0 and its concentration does not matter. This is typically the case for
 	 * water (H2O component).
 	 */
-	class Solvent : public Component {
+	class Solvent : public FixedComponent {
 		public:
 			/**
 			 * Defines a solvent.
 			 */
 			Solvent(const std::string& name, std::size_t id)
-				: Component(name, id) {
+				: FixedComponent(name, id, 0.0, 1.0) {
 				}
 
-			void incrementConcentration(double) override {
-			}
-
-			double concentration(double, double) const override {
-				return 0.0;
-			}
-
-			double concentration() const override {
-				return 1.0;
-			}
-
-			double activity(double) const override {
-				return 1.0;
-			}
-
-			double activity(const std::vector<double>&,  double) const override {
-				return 1.0;
-			}
-
-			double Dactivity(
-					const std::vector<double>&,
-					double
-					) const override {
-				return 0.0;
+			Phase getPhase() const override {
+				return SOLVENT;
 			}
 	};
 
@@ -383,6 +413,10 @@ namespace mineral {
 				: Component(name, id), C(C) {
 				}
 
+			Phase getPhase() const override {
+				return AQUEOUS;
+			}
+
 			void incrementConcentration(double extent) override {
 				C+=extent/V;
 			}
@@ -412,6 +446,19 @@ namespace mineral {
 				// Note: this is 0 if d_coef=0, i.e. if the reaction k does not
 				// use this component.
 				return (d_coef/V)/(1*mol/l);
+			}
+	};
+
+	class FixedAqueousComponent : public FixedComponent {
+		public:
+			FixedAqueousComponent(
+					const std::string& name, std::size_t id,
+					double C)
+				: FixedComponent(name, id, C, C/(1*mol/l)) {
+				}
+
+			Phase getPhase() const override {
+				return AQUEOUS;
 			}
 	};
 
@@ -514,6 +561,10 @@ namespace mineral {
 				N(V*solid_concentration*specific_surface_area*site_concentration) {
 				}
 			
+			Phase getPhase() const override {
+				return MINERAL;
+			}
+
 			void incrementConcentration(double extent) override {
 				fraction+=extent/N;
 			}
@@ -546,6 +597,19 @@ namespace mineral {
 
 	};
 
+	class FixedMineralComponent : public FixedComponent {
+		public:
+			FixedMineralComponent(
+					const std::string& name, std::size_t id,
+					double F)
+				: FixedComponent(name, id, F, F) {
+				}
+
+			Phase getPhase() const override {
+				return MINERAL;
+			}
+	};
+
 	struct ReactionComponent {
 		std::string name;
 		Phase phase;
@@ -561,9 +625,11 @@ namespace mineral {
 		ReactionComponent(
 				const std::string& name,
 				double coefficient)
-			: name(name), phase(AQUEOUS), coefficient(coefficient) {
+			: name(name), phase(name == "H2O" ? SOLVENT : AQUEOUS), coefficient(coefficient) {
 			}
 	};
+
+	bool operator==(const ReactionComponent& c1, const ReactionComponent& c2);
 
 	/**
 	 * A chemical reaction is a process that transform _reactants_ into
@@ -727,6 +793,7 @@ namespace mineral {
 			std::vector<std::vector<double>> reaction_matrix;
 
 			void addComponent(Component* component);
+			void fixComponent(FixedComponent* component);
 			void addReaction(Reaction* reaction);
 
 			std::size_t max_iteration = 200;
@@ -737,6 +804,7 @@ namespace mineral {
 			double site_concentration;
 
 		public:
+			ChemicalSystem(const ChemicalSystem& other);
 
 			/**
 			 * Defines a pure solution model, with only AQUEOUS components.
@@ -825,6 +893,17 @@ namespace mineral {
 					double concentration
 					);
 
+			void fixComponent(
+					const std::string& name,
+					double concentration
+					);
+
+			void fixComponent(
+					const std::string& name,
+					Phase phase,
+					double concentration
+					);
+
 			/**
 			 * Initializes the pH of the chemical system, setting a
 			 * concentration of 10^-pH for HO- and H+ species.
@@ -844,6 +923,8 @@ namespace mineral {
 			 * @param pH Fixed pH
 			 */
 			void fixPH(double pH);
+
+			double getPH() const;
 
 			/**
 			 * Gets the reaction named `name`.

@@ -74,6 +74,7 @@ add_executable(
   tests/newton.cpp
   tests/chemical.cpp
   tests/gauss.cpp
+  tests/experiment.cpp
 )
 target_link_libraries(
   chemmisol-tests

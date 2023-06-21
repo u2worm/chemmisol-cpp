@@ -14,6 +14,12 @@ namespace mineral {
 
 	const double Component::V = 1*l;
 
+	bool operator==(const ReactionComponent& c1, const ReactionComponent& c2) {
+		return c1.name == c2.name
+			&& c1.phase == c2.phase
+			&& c1.coefficient == c2.coefficient;
+	}
+
 	ChemicalSystem::ChemicalSystem(
 					double solid_concentration,
 					double specific_surface_area,
@@ -25,6 +31,40 @@ namespace mineral {
 		site_concentration(site_concentration) {
 			addComponent(surface_component, MINERAL, 1);
 		}
+
+	ChemicalSystem::ChemicalSystem(const ChemicalSystem& other) :
+				// Indexes initialized to 0 since components and reactions are
+				// copied using addComponent() and addReaction()
+				component_index(0),
+				reaction_index(0),
+				max_iteration(other.max_iteration),
+				solid_concentration(other.solid_concentration),
+				specific_surface_area(other.specific_surface_area),
+				site_concentration(other.site_concentration) {
+					for(auto& component : other.getComponents()) {
+						if(component->isFixed()) {
+							this->fixComponent(
+									component->getName(),
+									component->getPhase(),
+									component->concentration()
+									);
+						} else {
+							this->addComponent(
+									component->getName(),
+									component->getPhase(),
+									component->concentration()
+									);
+						}
+					}
+					for(auto& reaction : other.getReactions()) {
+						this->addReaction(
+								reaction->getName(),
+								reaction->getLogK(),
+								reaction->getReagents()
+								);
+					}
+					this->reaction_matrix = other.reaction_matrix;
+			}
 
 	void ChemicalSystem::addReaction(Reaction* reaction) {
 		reactions.emplace_back(reaction);
@@ -45,11 +85,66 @@ namespace mineral {
 		components.emplace_back(component);
 		components_by_name.emplace(component->getName(), component);
 	}
-	void ChemicalSystem::addComponent(const std::string& name, double concentration) {
-		addComponent(
-				new AqueousComponent(name, component_index++, concentration)
-				);
+
+	void ChemicalSystem::fixComponent(
+			const std::string& name,
+			double concentration
+			) {
+		fixComponent(name, AQUEOUS, concentration);
 	}
+
+	void ChemicalSystem::fixComponent(
+			const std::string& name,
+			Phase phase,
+			double concentration
+			) {
+
+		auto existing_component = components_by_name.find(name);
+		if (existing_component != components_by_name.end()) {
+			std::size_t index = existing_component->second->getIndex();
+			FixedComponent* fixed_component;
+			switch(phase) {
+				case AQUEOUS:
+					fixed_component = new FixedAqueousComponent(
+							name, index,
+							concentration
+							);
+					break;
+				case MINERAL:
+					fixed_component = new FixedMineralComponent(
+							name, index,
+							concentration
+							);
+					break;
+				case SOLVENT:
+					fixed_component = new Solvent(name, index);
+			}
+			components[index].reset(fixed_component);
+			existing_component->second = fixed_component;
+		} else {
+			switch(phase) {
+				case AQUEOUS:
+					addComponent(new FixedAqueousComponent(
+							name, component_index++,
+							concentration
+							));
+					break;
+				case MINERAL:
+					addComponent(new FixedMineralComponent(
+							name, component_index++,
+							concentration
+							));
+					break;
+				case SOLVENT:
+					addComponent(new Solvent(name, component_index++));
+			}
+		}
+	}
+
+	void ChemicalSystem::addComponent(const std::string& name, double concentration) {
+		addComponent(name, AQUEOUS, concentration);
+	}
+
 	void ChemicalSystem::addComponent(
 			const std::string& name, Phase phase, double concentration) {
 		switch(phase) {
@@ -65,6 +160,9 @@ namespace mineral {
 							solid_concentration, specific_surface_area, site_concentration,
 							concentration)
 						);
+				break;
+			case SOLVENT:
+				addComponent(new Solvent(name, component_index++));
 		}
 	}
 
@@ -73,10 +171,23 @@ namespace mineral {
 		addComponent("OH-", std::pow(10, -pH)*mol/l);
 	}
 	void ChemicalSystem::fixPH(double pH) {
-		initPH(pH);
+		fixComponent(
+					"H+", AQUEOUS,
+					std::pow(10, -pH)*mol/l
+				);
+		addComponent(
+					"OH-", AQUEOUS,
+					std::pow(10, getReaction("OH-").getLogK())
+						/ std::pow(10, -pH)*mol/l
+				);
+		//initPH(pH);
 		// A fake reaction that produces (or consumes) as much H+ as needed to
 		// fix the pH to the provided value
-		addReaction("pH", -pH, {{"H+", -1}});
+		//addReaction("pH", -pH, {{"H+", -1}});
+	}
+
+	double ChemicalSystem::getPH() const {
+		return -log(getComponent("H+").concentration());
 	}
 
 	const Reaction& ChemicalSystem::getReaction(const std::string& name) const {
@@ -95,11 +206,7 @@ namespace mineral {
 		for(auto& reaction : reactions) {
 			for(auto& component : reaction->getReagents()) {
 				if(components_by_name.find(component.name) == components_by_name.end()) {
-					if(component.name == "H2O") {
-						addComponent(new Solvent("H2O", component_index++));
-					} else {
-						addComponent(component.name, component.phase, 0);
-					}
+					addComponent(component.name, component.phase, 0);
 				}
 			}
 		}
