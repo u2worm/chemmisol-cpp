@@ -1,4 +1,4 @@
-#include "experiment.h"
+#include "chemmisol/experiment.h"
 #include <unordered_map>
 
 namespace mineral {

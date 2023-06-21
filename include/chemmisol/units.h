@@ -25,10 +25,6 @@
 namespace mineral {
 	static const double NA = 6.02214076e23;
 
-	enum Operator {
-		DIV, TIMES
-	};
-
 	enum Category {
 		MASS, LENGTH, VOLUME, SURFACE, QUANTITY
 	};
@@ -40,20 +36,4 @@ namespace mineral {
 	static const std::unordered_map<std::string, double> units_name_to_val {
 		UNITS(UNIT_NAME_TO_VAL)
 	};
-
-	struct UnitToken {
-		bool compound;
-		double unit1;
-		Category unit1_cat;
-		double unit2;
-		Category unit2_cat;
-		Operator op;
-
-		UnitToken(const std::string& unit1);
-		UnitToken(const std::string& unit1, const std::string& unit2, Operator op);
-	};
-
-	UnitToken parse(const std::string& unit);
-	double convert(double value, const std::string& from, const std::string& to);
-	double convert(const UnitToken& from, const UnitToken& to);
 }

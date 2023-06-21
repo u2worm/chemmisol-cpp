@@ -1,5 +1,5 @@
 #include "gmock/gmock.h"
-#include "chemical.h"
+#include "chemmisol/chemical.h"
 #include <cstddef>
 #include <regex>
 

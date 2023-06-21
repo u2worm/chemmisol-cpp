@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['v_0',['V',['../classmineral_1_1Component.html#a69d3c7b5657e5a4184884b246212a7ee',1,'mineral::Component']]]
+  ['x_0',['X',['../structmineral_1_1X.html',1,'mineral::X&lt; T, N &gt;'],['../namespacemineral_1_1solver.html#a059039ee8a8a133d568ae67e9e994828',1,'mineral::solver::X']]]
 ];

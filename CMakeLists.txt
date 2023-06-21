@@ -12,80 +12,62 @@ ${CMAKE_CXX_FLAGS_DEBUG} -std=c++14 \
 -fsanitize=address \
 ")
 
-include(FetchContent)
-FetchContent_Declare(
-  argparse
-  GIT_REPOSITORY https://github.com/p-ranav/argparse.git
-  GIT_TAG        557948f1236db9e27089959de837cc23de6c6bbd
-)
-FetchContent_MakeAvailable(argparse)
-
-add_library(chemmisol-units-lib
-	src/units.cpp
-	)
-target_include_directories(chemmisol-units-lib PUBLIC include)
-add_executable(convert
-	src/convert.cpp
-	)
-target_link_libraries(convert
-	chemmisol-units-lib
-	argparse::argparse
+add_library(chemmisol
+	src/chemmisol/units.cpp
+	src/chemmisol/chemical.cpp
+	src/chemmisol/gauss.cpp
+	src/chemmisol/experiment.cpp
 	)
 
-add_library(chemmisol-lib
-	src/chemical.cpp
-	src/gauss.cpp
-	src/experiment.cpp
+#target_include_directories(chemmisol PUBLIC include)
+target_include_directories(chemmisol PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+install(TARGETS chemmisol EXPORT ChemmisolTargets
+	LIBRARY DESTINATION lib
+	INCLUDES DESTINATION include
 	)
-target_link_libraries(chemmisol-lib
-	PUBLIC chemmisol-units-lib)
-target_include_directories(chemmisol-lib PUBLIC include)
 
-add_executable(chemmisol
-	src/main.cpp)
-target_link_libraries(chemmisol chemmisol-lib)
-
-FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG        a3580180d16923d6d5f488e20b3814608a892f17
+install(
+	DIRECTORY include
+	DESTINATION .
 )
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
 
-
-enable_testing()
-
-add_executable(
-	convert_test
-	tests/units.cpp
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+	"${CMAKE_CURRENT_BINARY_DIR}/ChemmisolConfigVersion.cmake"
+	COMPATIBILITY SameMajorVersion
 	)
-target_link_libraries(
-  convert_test
-  chemmisol-units-lib
-  GTest::gtest_main
-  GTest::gmock_main
-)
 
-add_executable(
-  chemmisol-tests
-  tests/linear.cpp
-  tests/newton.cpp
-  tests/chemical.cpp
-  tests/gauss.cpp
-  tests/experiment.cpp
-)
-target_link_libraries(
-  chemmisol-tests
-  chemmisol-lib
-  GTest::gtest_main
-  GTest::gmock_main
-)
+export(EXPORT ChemmisolTargets
+	FILE "${CMAKE_CURRENT_BINARY_DIR}/ChemmisolTargets.cmake"
+	NAMESPACE chemmisol::
+	)
+configure_file(cmake/ChemmisolConfig.cmake
+	"${CMAKE_CURRENT_BINARY_DIR}/ChemmisolConfig.cmake"
+	COPYONLY
+	)
 
-include(GoogleTest)
-gtest_discover_tests(convert_test)
-gtest_discover_tests(chemmisol-tests)
+set(ConfigPackageLocation lib/cmake/Chemmisol)
+install(EXPORT ChemmisolTargets
+	FILE
+	ChemmisolTargets.cmake
+	NAMESPACE
+	chemmisol::
+	DESTINATION
+	${ConfigPackageLocation}
+	)
+install(
+	FILES
+	cmake/ChemmisolConfig.cmake
+	"${CMAKE_CURRENT_BINARY_DIR}/ChemmisolConfigVersion.cmake"
+	DESTINATION
+	${ConfigPackageLocation}
+	)
+
+add_subdirectory(tests)
 
 # Doxygen
 find_package(Doxygen)

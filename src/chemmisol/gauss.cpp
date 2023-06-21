@@ -1,4 +1,4 @@
-#include "gauss.h"
+#include "chemmisol/gauss.h"
 
 namespace mineral { namespace gauss {
 	template<>

@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "newton.h"
+#include "chemmisol/newton.h"
 
 TEST(NewtonTest, square_3) {
 	double x = mineral::Newton<double, double>(

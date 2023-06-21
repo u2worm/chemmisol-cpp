@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
-#include "linear.h"
-#include "gauss.h"
+#include "chemmisol/linear.h"
+#include "chemmisol/gauss.h"
 #include <array>
 
 using namespace testing;

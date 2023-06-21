@@ -1,5 +1,5 @@
 #include "gmock/gmock.h"
-#include "linear.h"
+#include "chemmisol/linear.h"
 
 using namespace mineral;
 using namespace testing;

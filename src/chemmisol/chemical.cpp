@@ -1,5 +1,5 @@
-#include "chemical.h"
-#include "newton.h"
+#include "chemmisol/chemical.h"
+#include "chemmisol/newton.h"
 
 #include <iostream>
 #include <limits>
