@@ -4,6 +4,7 @@
 #include <iostream>
 #include <limits>
 #include <stdexcept>
+#include <algorithm>
 
 namespace mineral {
 	/*
@@ -221,8 +222,145 @@ namespace mineral {
 		}
 	}
 
+	/*
+	 *void ChemicalSystem::guessInitialExtents() {
+	 *    for(const auto& reaction : getReactions()) {
+	 *            double reactives_activity = 1.0;
+	 *            double products_activity = 1.0;
+	 *            std::cout << "Reaction " << reaction->getName() << std::endl;
+	 *            for(const auto& reactive : reaction->getReagents()) {
+	 *                std::cout << "  " << reactive.name << "(" << reactive.coefficient << "): " << 
+	 *                        getComponent(reactive.name).activity() << std::endl;
+	 *                if(reactive.coefficient < 0.0)
+	 *                    products_activity *=
+	 *                        getComponent(reactive.name).activity();
+	 *                else if(reactive.coefficient > 0.0)
+	 *                    reactives_activity *=
+	 *                        getComponent(reactive.name).activity();
+	 *            }
+	 *            if(reactives_activity == 0.0 && products_activity == 0.0) {
+	 *                throw std::logic_error("Invalid reaction with missing reactives and products");
+	 *            } else {
+	 *                if(reactives_activity == 0.0) {
+	 *                    initial_guess_extents[reaction->getName()] = 1e-8;
+	 *                } else if (products_activity == 0.0) {
+	 *                    initial_guess_extents[reaction->getName()] = -1e-8;
+	 *                } else {
+	 *                    initial_guess_extents[reaction->getName()] = 0.0;
+	 *                }
+	 *            }
+	 *    }
+	 *}
+	 */
+
+	void ChemicalSystem::guessInitialExtents() {
+		for(const auto& reaction : getReactions()) {
+			if(initial_guess_extents.find(reaction->getName())
+					== initial_guess_extents.end()) {
+				// No manually specified guess extent: automatically compute one
+
+				double guess = 1.0;
+				std::cout << "Reaction " << reaction->getName()
+					<< " (" << reaction->getLogK() << ")" << std::endl;
+				for(const auto& reagent : reaction->getReagents()) {
+					std::cout << "  " << reagent.name << "(" << reagent.coefficient << "): " << 
+						getComponent(reagent.name).activity() << std::endl;
+					if(reagent.coefficient > 0.0) {
+						std::cout << "* " <<
+							std::pow(getComponent(reagent.name).activity(), reagent.coefficient) << std::endl;
+
+						guess *=
+							std::pow(getComponent(reagent.name).activity(), reagent.coefficient);
+					}
+				}
+				if(guess == 0.0) {
+					throw std::logic_error(
+							"Some reactives are missing: the problem is ill formed."
+							);
+				} else {
+					std::vector<const Reaction*> sorted_reactions;
+					for(auto& reaction : getReactions())
+						sorted_reactions.push_back(reaction.get());
+
+					std::sort(sorted_reactions.begin(), sorted_reactions.end(),
+							[] (const Reaction*& r1, const Reaction*& r2) {
+								return r1->getLogK() > r2->getLogK();
+							});
+					std::vector<double> estimated_activities(getComponents().size());
+					for(auto& component : getComponents())
+						estimated_activities[component->getIndex()]
+							= component->activity();
+
+					for(auto& reaction : sorted_reactions) {
+						double estimated_activity = std::pow(10, reaction->getLogK());
+
+						// Reactions sorted by log K values
+						const Component* limiting_reactive;
+						double limiting_reactive_coefficient = 0;
+						double smallest_activity = std::numeric_limits<double>::infinity();
+						for(auto& reagent : reaction->getReagents()) {
+							if(reagent.coefficient > 0.0) {
+								const Component& component = getComponent(reagent.name);
+								if(!component.isFixed()) {
+									if(estimated_activities[component.getIndex()]
+											< smallest_activity) {
+										limiting_reactive = &component;
+										limiting_reactive_coefficient = reagent.coefficient;
+									}
+								}
+							} 
+						}
+						std::vector<const Component*> variable_products;
+						double variable_products_coefficient_sum = 0.0;
+						for(auto& reagent : reaction->getReagents()) {
+								const Component& component = getComponent(reagent.name);
+							if(reagent.coefficient > 0.0) {
+								if(&component != limiting_reactive) {
+									// Non limiting reactives assumed fixed +
+									// already fixed reagents
+									estimated_activity *= std::pow(
+											estimated_activities[component.getIndex()],
+											reagent.coefficient
+											);
+								}
+							} else {
+								if(component.isFixed()) {
+									// Fixed product
+									estimated_activity *= std::pow(
+											estimated_activities[component.getIndex()],
+											reagent.coefficient
+											);
+								} else {
+									variable_products.push_back(&component);
+									variable_products_coefficient_sum+=reagent.coefficient;
+								}
+							}
+						}
+						double guess =
+							-estimated_activity * std::pow(
+									estimated_activities[limiting_reactive->getIndex()],
+									limiting_reactive_coefficient
+									) / (estimated_activity + 1);
+
+						initial_guess_extents[reaction->getName()] = guess;
+						for(auto& product : variable_products) {
+							estimated_activities[product->getIndex()]
+								+= std::pow(-guess, variable_products_coefficient_sum);
+						}
+						estimated_activities[limiting_reactive->getIndex()] += guess;
+
+						std::cout << "Extent guess for " << reaction->getName()
+							<< ": " << initial_guess_extents[reaction->getName()] << std::endl;
+					}
+				}
+			}
+		}
+	}
+
 	void ChemicalSystem::solveEquilibrium() {
 		initReactionMatrix();
+		guessInitialExtents();
+
 		using namespace solver;
 		solver::X dx = solve(*this);
 		for(auto& reaction : reactions) {
@@ -260,11 +398,22 @@ namespace mineral {
 			for(auto& reaction : system.getReactions()) {
 				const std::vector<double>& coefficients
 					= system.getReactionMatrix()[reaction->getIndex()];
+				std::cout << "Calc C from reaction " << reaction->getName() << std::endl;
 				for(
 						std::size_t component_index = 0;
 						component_index < coefficients.size();
 						component_index++) {
 
+					std::cout << "  " <<
+						system.getComponent(component_index).getName() << ": " <<
+						concentrations[component_index] << " + " <<
+						coefficients[component_index]*extent[reaction->getIndex()] << " = " <<
+						system.getComponent(component_index)
+								.concentration(
+									concentrations[component_index],
+									coefficients[component_index]*extent[reaction->getIndex()]
+									)
+						<< std::endl;
 					concentrations[component_index] =
 						system.getComponent(component_index)
 								.concentration(
@@ -279,6 +428,10 @@ namespace mineral {
 		}
 		X F::f(const X& extent) const {
 			X concentrations = this->concentrations(extent);
+			std::cout << "F concentrations: " << std::endl;
+			for(auto& component : system.getComponents())
+				std::cout << "  " << component->getName() << " " << concentrations[component->getIndex()] << std::endl;
+			std::cout << std::endl;
 
 			X f(extent.size());
 			for(auto& reaction : system.getReactions()) {
@@ -335,30 +488,34 @@ namespace mineral {
 			// Initially all to 0
 			X init_extent(system.getReactions().size());
 			for(const auto& reaction : system.getReactions()) {
-				double reactives_activity = 1.0;
-				double products_activity = 1.0;
-				std::cout << "Reaction " << reaction->getName() << std::endl;
-				for(const auto& reactive : reaction->getReagents()) {
-					std::cout << "  " << reactive.name << "(" << reactive.coefficient << "): " << 
-							system.getComponent(reactive.name).activity() << std::endl;
-					if(reactive.coefficient < 0.0)
-						products_activity *=
-							system.getComponent(reactive.name).activity();
-					else if(reactive.coefficient > 0.0)
-						reactives_activity *=
-							system.getComponent(reactive.name).activity();
-				}
-				if(reactives_activity == 0.0 && products_activity == 0.0) {
-					throw std::logic_error("Invalid reaction with missing reactives and products");
-				} else {
-					if(reactives_activity == 0.0) {
-						init_extent[reaction->getIndex()] = 1e-16;
-					} else if (products_activity == 0.0) {
-						init_extent[reaction->getIndex()] = -1e-16;
-					} else {
-						init_extent[reaction->getIndex()] = 0.0;
-					}
-				}
+				/*
+				 *double reactives_activity = 1.0;
+				 *double products_activity = 1.0;
+				 *std::cout << "Reaction " << reaction->getName() << std::endl;
+				 *for(const auto& reactive : reaction->getReagents()) {
+				 *    std::cout << "  " << reactive.name << "(" << reactive.coefficient << "): " << 
+				 *            system.getComponent(reactive.name).activity() << std::endl;
+				 *    if(reactive.coefficient < 0.0)
+				 *        products_activity *=
+				 *            system.getComponent(reactive.name).activity();
+				 *    else if(reactive.coefficient > 0.0)
+				 *        reactives_activity *=
+				 *            system.getComponent(reactive.name).activity();
+				 *}
+				 *if(reactives_activity == 0.0 && products_activity == 0.0) {
+				 *    throw std::logic_error("Invalid reaction with missing reactives and products");
+				 *} else {
+				 *    if(reactives_activity == 0.0) {
+				 *        init_extent[reaction->getIndex()] = 1e-8;
+				 *    } else if (products_activity == 0.0) {
+				 *        init_extent[reaction->getIndex()] = -1e-8;
+				 *    } else {
+				 *        init_extent[reaction->getIndex()] = 0.0;
+				 *    }
+				 *}
+				 */
+				init_extent[reaction->getIndex()]
+					= system.getInitialGuessExtent(reaction->getName());
 			}
 			return Newton<X, M>(
 					init_extent,

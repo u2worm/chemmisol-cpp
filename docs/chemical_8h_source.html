@@ -425,169 +425,186 @@ $(function() {
 <div class="line"><a id="l00803" name="l00803"></a><span class="lineno">  803</span>            <span class="keywordtype">double</span> specific_surface_area;</div>
 <div class="line"><a id="l00804" name="l00804"></a><span class="lineno">  804</span>            <span class="keywordtype">double</span> site_concentration;</div>
 <div class="line"><a id="l00805" name="l00805"></a><span class="lineno">  805</span> </div>
-<div class="line"><a id="l00806" name="l00806"></a><span class="lineno">  806</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00807" name="l00807"></a><span class="lineno">  807</span>            <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#ad27511a803b8e36699bb8af2e248f0cf">ChemicalSystem</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmineral_1_1ChemicalSystem.html">ChemicalSystem</a>&amp; other);</div>
-<div class="line"><a id="l00808" name="l00808"></a><span class="lineno">  808</span> </div>
-<div class="line"><a id="l00815" name="l00815"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#ad27511a803b8e36699bb8af2e248f0cf">  815</a></span>            <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#ad27511a803b8e36699bb8af2e248f0cf">ChemicalSystem</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00816" name="l00816"></a><span class="lineno">  816</span> </div>
-<div class="line"><a id="l00838" name="l00838"></a><span class="lineno">  838</span>            <span class="comment">// TODO: possibility to initialize surface components with a non</span></div>
-<div class="line"><a id="l00839" name="l00839"></a><span class="lineno">  839</span>            <span class="comment">// null initial molar fraction.</span></div>
-<div class="line"><a id="l00840" name="l00840"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a457b67d09a0cf8a8395d32a27ae2bab6">  840</a></span>            <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a457b67d09a0cf8a8395d32a27ae2bab6">ChemicalSystem</a>(</div>
-<div class="line"><a id="l00841" name="l00841"></a><span class="lineno">  841</span>                    <span class="keywordtype">double</span> solid_concentration,</div>
-<div class="line"><a id="l00842" name="l00842"></a><span class="lineno">  842</span>                    <span class="keywordtype">double</span> specific_surface_area,</div>
-<div class="line"><a id="l00843" name="l00843"></a><span class="lineno">  843</span>                    <span class="keywordtype">double</span> site_concentration,</div>
-<div class="line"><a id="l00844" name="l00844"></a><span class="lineno">  844</span>                    <span class="keyword">const</span> std::string&amp; surface_component</div>
-<div class="line"><a id="l00845" name="l00845"></a><span class="lineno">  845</span>                    );</div>
-<div class="line"><a id="l00846" name="l00846"></a><span class="lineno">  846</span> </div>
-<div class="line"><a id="l00862" name="l00862"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a16a06eed01fd412789cda14ac4e8f07d">  862</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a16a06eed01fd412789cda14ac4e8f07d">addReaction</a>(</div>
-<div class="line"><a id="l00863" name="l00863"></a><span class="lineno">  863</span>                    std::string name,</div>
-<div class="line"><a id="l00864" name="l00864"></a><span class="lineno">  864</span>                    <span class="keywordtype">double</span> log_K,</div>
-<div class="line"><a id="l00865" name="l00865"></a><span class="lineno">  865</span>                    std::vector&lt;ReactionComponent&gt; reagents</div>
-<div class="line"><a id="l00866" name="l00866"></a><span class="lineno">  866</span>                    );</div>
-<div class="line"><a id="l00867" name="l00867"></a><span class="lineno">  867</span> </div>
-<div class="line"><a id="l00875" name="l00875"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#ad36c76e120f4cb8cf406cab9e5bc415c">  875</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#ad36c76e120f4cb8cf406cab9e5bc415c">addComponent</a>(</div>
-<div class="line"><a id="l00876" name="l00876"></a><span class="lineno">  876</span>                    <span class="keyword">const</span> std::string&amp; name,</div>
-<div class="line"><a id="l00877" name="l00877"></a><span class="lineno">  877</span>                    <span class="keywordtype">double</span> concentration</div>
-<div class="line"><a id="l00878" name="l00878"></a><span class="lineno">  878</span>                    );</div>
-<div class="line"><a id="l00879" name="l00879"></a><span class="lineno">  879</span> </div>
-<div class="line"><a id="l00890" name="l00890"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#aba7e26a6e7de3acf6f370f6184ab2870">  890</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#aba7e26a6e7de3acf6f370f6184ab2870">addComponent</a>(</div>
-<div class="line"><a id="l00891" name="l00891"></a><span class="lineno">  891</span>                    <span class="keyword">const</span> std::string&amp; name,</div>
-<div class="line"><a id="l00892" name="l00892"></a><span class="lineno">  892</span>                    Phase phase,</div>
-<div class="line"><a id="l00893" name="l00893"></a><span class="lineno">  893</span>                    <span class="keywordtype">double</span> concentration</div>
-<div class="line"><a id="l00894" name="l00894"></a><span class="lineno">  894</span>                    );</div>
-<div class="line"><a id="l00895" name="l00895"></a><span class="lineno">  895</span> </div>
-<div class="line"><a id="l00896" name="l00896"></a><span class="lineno">  896</span>            <span class="keywordtype">void</span> fixComponent(</div>
-<div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span>                    <span class="keyword">const</span> std::string&amp; name,</div>
-<div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span>                    <span class="keywordtype">double</span> concentration</div>
-<div class="line"><a id="l00899" name="l00899"></a><span class="lineno">  899</span>                    );</div>
-<div class="line"><a id="l00900" name="l00900"></a><span class="lineno">  900</span> </div>
-<div class="line"><a id="l00901" name="l00901"></a><span class="lineno">  901</span>            <span class="keywordtype">void</span> fixComponent(</div>
-<div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span>                    <span class="keyword">const</span> std::string&amp; name,</div>
-<div class="line"><a id="l00903" name="l00903"></a><span class="lineno">  903</span>                    Phase phase,</div>
-<div class="line"><a id="l00904" name="l00904"></a><span class="lineno">  904</span>                    <span class="keywordtype">double</span> concentration</div>
-<div class="line"><a id="l00905" name="l00905"></a><span class="lineno">  905</span>                    );</div>
-<div class="line"><a id="l00906" name="l00906"></a><span class="lineno">  906</span> </div>
-<div class="line"><a id="l00917" name="l00917"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a373e932bd0e95e6ccda7e95c0b2e16b5">  917</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a373e932bd0e95e6ccda7e95c0b2e16b5">initPH</a>(<span class="keywordtype">double</span> pH);</div>
-<div class="line"><a id="l00918" name="l00918"></a><span class="lineno">  918</span> </div>
-<div class="line"><a id="l00925" name="l00925"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a7f545b85b2555e2a415302f81378faf0">  925</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a7f545b85b2555e2a415302f81378faf0">fixPH</a>(<span class="keywordtype">double</span> pH);</div>
-<div class="line"><a id="l00926" name="l00926"></a><span class="lineno">  926</span> </div>
-<div class="line"><a id="l00927" name="l00927"></a><span class="lineno">  927</span>            <span class="keywordtype">double</span> getPH() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00928" name="l00928"></a><span class="lineno">  928</span> </div>
-<div class="line"><a id="l00937" name="l00937"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a8393e1e514eeb0ce95da288ccd7d5c62">  937</a></span>            <span class="keyword">const</span> <a class="code hl_class" href="classmineral_1_1Reaction.html">Reaction</a>&amp; <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a8393e1e514eeb0ce95da288ccd7d5c62">getReaction</a>(<span class="keyword">const</span> std::string&amp; name) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00938" name="l00938"></a><span class="lineno">  938</span> </div>
-<div class="line"><a id="l00948" name="l00948"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a7487c1262f83f36992314d68d22be688">  948</a></span>            <span class="keyword">const</span> <a class="code hl_class" href="classmineral_1_1Component.html">Component</a>&amp; <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a7487c1262f83f36992314d68d22be688">getComponent</a>(<span class="keyword">const</span> std::string&amp; name) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00949" name="l00949"></a><span class="lineno">  949</span> </div>
-<div class="line"><a id="l00960" name="l00960"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a6ff352e0063d3b9778ceb17dae3bbbdd">  960</a></span>            <span class="keyword">const</span> <a class="code hl_class" href="classmineral_1_1Component.html">Component</a>&amp; <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a6ff352e0063d3b9778ceb17dae3bbbdd">getComponent</a>(<span class="keyword">const</span> std::size_t&amp; <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00961" name="l00961"></a><span class="lineno">  961</span> </div>
-<div class="line"><a id="l00965" name="l00965"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#ad2a71d222b6f40e68f860419e1167ba5">  965</a></span>            <span class="keyword">const</span> std::vector&lt;std::unique_ptr&lt;Component&gt;&gt;&amp; <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#ad2a71d222b6f40e68f860419e1167ba5">getComponents</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00966" name="l00966"></a><span class="lineno">  966</span>                <span class="keywordflow">return</span> components;</div>
-<div class="line"><a id="l00967" name="l00967"></a><span class="lineno">  967</span>            }</div>
-<div class="line"><a id="l00968" name="l00968"></a><span class="lineno">  968</span> </div>
-<div class="line"><a id="l00972" name="l00972"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a2e87f30e91b08446b185bc1bb57aa122">  972</a></span>            <span class="keyword">const</span> std::vector&lt;std::unique_ptr&lt;Reaction&gt;&gt;&amp; <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a2e87f30e91b08446b185bc1bb57aa122">getReactions</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00973" name="l00973"></a><span class="lineno">  973</span>                <span class="keywordflow">return</span> reactions;</div>
-<div class="line"><a id="l00974" name="l00974"></a><span class="lineno">  974</span>            }</div>
-<div class="line"><a id="l00975" name="l00975"></a><span class="lineno">  975</span> </div>
-<div class="line"><a id="l01004" name="l01004"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#ae84d36edbdf4e38a53905e01ab7b05a9"> 1004</a></span>            <span class="keyword">const</span> std::vector&lt;std::vector&lt;double&gt;&gt;&amp; <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#ae84d36edbdf4e38a53905e01ab7b05a9">getReactionMatrix</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l01005" name="l01005"></a><span class="lineno"> 1005</span>                <span class="keywordflow">return</span> reaction_matrix;</div>
-<div class="line"><a id="l01006" name="l01006"></a><span class="lineno"> 1006</span>            }</div>
-<div class="line"><a id="l01007" name="l01007"></a><span class="lineno"> 1007</span> </div>
-<div class="line"><a id="l01015" name="l01015"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a0a52f6e9471643e5a48840b9c053e9fe"> 1015</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a0a52f6e9471643e5a48840b9c053e9fe">initReactionMatrix</a>();</div>
-<div class="line"><a id="l01016" name="l01016"></a><span class="lineno"> 1016</span> </div>
-<div class="line"><a id="l01024" name="l01024"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#ab715b79dc0c8536793157b15f145beb9"> 1024</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#ab715b79dc0c8536793157b15f145beb9">solveEquilibrium</a>();</div>
-<div class="line"><a id="l01025" name="l01025"></a><span class="lineno"> 1025</span> </div>
-<div class="line"><a id="l01039" name="l01039"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a1264148581e1ad071e20fe44d0e036e9"> 1039</a></span>            <span class="keywordtype">double</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a1264148581e1ad071e20fe44d0e036e9">reactionQuotient</a>(<span class="keyword">const</span> std::string&amp; name) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l01040" name="l01040"></a><span class="lineno"> 1040</span> </div>
-<div class="line"><a id="l01045" name="l01045"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#ac0fa2d1c66e4b796ad316291970e228d"> 1045</a></span>            std::size_t <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#ac0fa2d1c66e4b796ad316291970e228d">getMaxIteration</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l01046" name="l01046"></a><span class="lineno"> 1046</span>                <span class="keywordflow">return</span> max_iteration;</div>
-<div class="line"><a id="l01047" name="l01047"></a><span class="lineno"> 1047</span>            }</div>
-<div class="line"><a id="l01048" name="l01048"></a><span class="lineno"> 1048</span> </div>
-<div class="line"><a id="l01053" name="l01053"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#adff7d880adef5734ccafc8b29fea69a6"> 1053</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#adff7d880adef5734ccafc8b29fea69a6">setMaxIteration</a>(<span class="keyword">const</span> std::size_t&amp; max_iteration) {</div>
-<div class="line"><a id="l01054" name="l01054"></a><span class="lineno"> 1054</span>                this-&gt;max_iteration = max_iteration;</div>
-<div class="line"><a id="l01055" name="l01055"></a><span class="lineno"> 1055</span>            }</div>
-<div class="line"><a id="l01056" name="l01056"></a><span class="lineno"> 1056</span>    };</div>
+<div class="line"><a id="l00806" name="l00806"></a><span class="lineno">  806</span>            std::unordered_map&lt;std::string, double&gt; initial_guess_extents;</div>
+<div class="line"><a id="l00807" name="l00807"></a><span class="lineno">  807</span> </div>
+<div class="line"><a id="l00808" name="l00808"></a><span class="lineno">  808</span>            <span class="keywordtype">void</span> guessInitialExtents();</div>
+<div class="line"><a id="l00809" name="l00809"></a><span class="lineno">  809</span> </div>
+<div class="line"><a id="l00810" name="l00810"></a><span class="lineno">  810</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00811" name="l00811"></a><span class="lineno">  811</span>            <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#ad27511a803b8e36699bb8af2e248f0cf">ChemicalSystem</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmineral_1_1ChemicalSystem.html">ChemicalSystem</a>&amp; other);</div>
+<div class="line"><a id="l00812" name="l00812"></a><span class="lineno">  812</span> </div>
+<div class="line"><a id="l00819" name="l00819"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#ad27511a803b8e36699bb8af2e248f0cf">  819</a></span>            <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#ad27511a803b8e36699bb8af2e248f0cf">ChemicalSystem</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00820" name="l00820"></a><span class="lineno">  820</span> </div>
+<div class="line"><a id="l00842" name="l00842"></a><span class="lineno">  842</span>            <span class="comment">// TODO: possibility to initialize surface components with a non</span></div>
+<div class="line"><a id="l00843" name="l00843"></a><span class="lineno">  843</span>            <span class="comment">// null initial molar fraction.</span></div>
+<div class="line"><a id="l00844" name="l00844"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a457b67d09a0cf8a8395d32a27ae2bab6">  844</a></span>            <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a457b67d09a0cf8a8395d32a27ae2bab6">ChemicalSystem</a>(</div>
+<div class="line"><a id="l00845" name="l00845"></a><span class="lineno">  845</span>                    <span class="keywordtype">double</span> solid_concentration,</div>
+<div class="line"><a id="l00846" name="l00846"></a><span class="lineno">  846</span>                    <span class="keywordtype">double</span> specific_surface_area,</div>
+<div class="line"><a id="l00847" name="l00847"></a><span class="lineno">  847</span>                    <span class="keywordtype">double</span> site_concentration,</div>
+<div class="line"><a id="l00848" name="l00848"></a><span class="lineno">  848</span>                    <span class="keyword">const</span> std::string&amp; surface_component</div>
+<div class="line"><a id="l00849" name="l00849"></a><span class="lineno">  849</span>                    );</div>
+<div class="line"><a id="l00850" name="l00850"></a><span class="lineno">  850</span> </div>
+<div class="line"><a id="l00866" name="l00866"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a16a06eed01fd412789cda14ac4e8f07d">  866</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a16a06eed01fd412789cda14ac4e8f07d">addReaction</a>(</div>
+<div class="line"><a id="l00867" name="l00867"></a><span class="lineno">  867</span>                    std::string name,</div>
+<div class="line"><a id="l00868" name="l00868"></a><span class="lineno">  868</span>                    <span class="keywordtype">double</span> log_K,</div>
+<div class="line"><a id="l00869" name="l00869"></a><span class="lineno">  869</span>                    std::vector&lt;ReactionComponent&gt; reagents</div>
+<div class="line"><a id="l00870" name="l00870"></a><span class="lineno">  870</span>                    );</div>
+<div class="line"><a id="l00871" name="l00871"></a><span class="lineno">  871</span> </div>
+<div class="line"><a id="l00879" name="l00879"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#ad36c76e120f4cb8cf406cab9e5bc415c">  879</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#ad36c76e120f4cb8cf406cab9e5bc415c">addComponent</a>(</div>
+<div class="line"><a id="l00880" name="l00880"></a><span class="lineno">  880</span>                    <span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a id="l00881" name="l00881"></a><span class="lineno">  881</span>                    <span class="keywordtype">double</span> concentration</div>
+<div class="line"><a id="l00882" name="l00882"></a><span class="lineno">  882</span>                    );</div>
+<div class="line"><a id="l00883" name="l00883"></a><span class="lineno">  883</span> </div>
+<div class="line"><a id="l00894" name="l00894"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#aba7e26a6e7de3acf6f370f6184ab2870">  894</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#aba7e26a6e7de3acf6f370f6184ab2870">addComponent</a>(</div>
+<div class="line"><a id="l00895" name="l00895"></a><span class="lineno">  895</span>                    <span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a id="l00896" name="l00896"></a><span class="lineno">  896</span>                    Phase phase,</div>
+<div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span>                    <span class="keywordtype">double</span> concentration</div>
+<div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span>                    );</div>
+<div class="line"><a id="l00899" name="l00899"></a><span class="lineno">  899</span> </div>
+<div class="line"><a id="l00900" name="l00900"></a><span class="lineno">  900</span>            <span class="keywordtype">void</span> fixComponent(</div>
+<div class="line"><a id="l00901" name="l00901"></a><span class="lineno">  901</span>                    <span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span>                    <span class="keywordtype">double</span> concentration</div>
+<div class="line"><a id="l00903" name="l00903"></a><span class="lineno">  903</span>                    );</div>
+<div class="line"><a id="l00904" name="l00904"></a><span class="lineno">  904</span> </div>
+<div class="line"><a id="l00905" name="l00905"></a><span class="lineno">  905</span>            <span class="keywordtype">void</span> fixComponent(</div>
+<div class="line"><a id="l00906" name="l00906"></a><span class="lineno">  906</span>                    <span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a id="l00907" name="l00907"></a><span class="lineno">  907</span>                    Phase phase,</div>
+<div class="line"><a id="l00908" name="l00908"></a><span class="lineno">  908</span>                    <span class="keywordtype">double</span> concentration</div>
+<div class="line"><a id="l00909" name="l00909"></a><span class="lineno">  909</span>                    );</div>
+<div class="line"><a id="l00910" name="l00910"></a><span class="lineno">  910</span> </div>
+<div class="line"><a id="l00921" name="l00921"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a373e932bd0e95e6ccda7e95c0b2e16b5">  921</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a373e932bd0e95e6ccda7e95c0b2e16b5">initPH</a>(<span class="keywordtype">double</span> pH);</div>
+<div class="line"><a id="l00922" name="l00922"></a><span class="lineno">  922</span> </div>
+<div class="line"><a id="l00929" name="l00929"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a7f545b85b2555e2a415302f81378faf0">  929</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a7f545b85b2555e2a415302f81378faf0">fixPH</a>(<span class="keywordtype">double</span> pH);</div>
+<div class="line"><a id="l00930" name="l00930"></a><span class="lineno">  930</span> </div>
+<div class="line"><a id="l00931" name="l00931"></a><span class="lineno">  931</span>            <span class="keywordtype">double</span> getPH() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00932" name="l00932"></a><span class="lineno">  932</span> </div>
+<div class="line"><a id="l00941" name="l00941"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a8393e1e514eeb0ce95da288ccd7d5c62">  941</a></span>            <span class="keyword">const</span> <a class="code hl_class" href="classmineral_1_1Reaction.html">Reaction</a>&amp; <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a8393e1e514eeb0ce95da288ccd7d5c62">getReaction</a>(<span class="keyword">const</span> std::string&amp; name) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00942" name="l00942"></a><span class="lineno">  942</span> </div>
+<div class="line"><a id="l00952" name="l00952"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a7487c1262f83f36992314d68d22be688">  952</a></span>            <span class="keyword">const</span> <a class="code hl_class" href="classmineral_1_1Component.html">Component</a>&amp; <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a7487c1262f83f36992314d68d22be688">getComponent</a>(<span class="keyword">const</span> std::string&amp; name) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00953" name="l00953"></a><span class="lineno">  953</span> </div>
+<div class="line"><a id="l00964" name="l00964"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a6ff352e0063d3b9778ceb17dae3bbbdd">  964</a></span>            <span class="keyword">const</span> <a class="code hl_class" href="classmineral_1_1Component.html">Component</a>&amp; <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a6ff352e0063d3b9778ceb17dae3bbbdd">getComponent</a>(<span class="keyword">const</span> std::size_t&amp; <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00965" name="l00965"></a><span class="lineno">  965</span> </div>
+<div class="line"><a id="l00969" name="l00969"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#ad2a71d222b6f40e68f860419e1167ba5">  969</a></span>            <span class="keyword">const</span> std::vector&lt;std::unique_ptr&lt;Component&gt;&gt;&amp; <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#ad2a71d222b6f40e68f860419e1167ba5">getComponents</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00970" name="l00970"></a><span class="lineno">  970</span>                <span class="keywordflow">return</span> components;</div>
+<div class="line"><a id="l00971" name="l00971"></a><span class="lineno">  971</span>            }</div>
+<div class="line"><a id="l00972" name="l00972"></a><span class="lineno">  972</span> </div>
+<div class="line"><a id="l00976" name="l00976"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a2e87f30e91b08446b185bc1bb57aa122">  976</a></span>            <span class="keyword">const</span> std::vector&lt;std::unique_ptr&lt;Reaction&gt;&gt;&amp; <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a2e87f30e91b08446b185bc1bb57aa122">getReactions</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00977" name="l00977"></a><span class="lineno">  977</span>                <span class="keywordflow">return</span> reactions;</div>
+<div class="line"><a id="l00978" name="l00978"></a><span class="lineno">  978</span>            }</div>
+<div class="line"><a id="l00979" name="l00979"></a><span class="lineno">  979</span> </div>
+<div class="line"><a id="l00980" name="l00980"></a><span class="lineno">  980</span>            <span class="keywordtype">void</span> setInitialGuessExtent(<span class="keyword">const</span> std::string&amp; reaction, <span class="keywordtype">double</span> guess) {</div>
+<div class="line"><a id="l00981" name="l00981"></a><span class="lineno">  981</span>                initial_guess_extents[reaction] = guess;</div>
+<div class="line"><a id="l00982" name="l00982"></a><span class="lineno">  982</span>                std::cout &lt;&lt; <span class="stringliteral">&quot;User specified extent guess for &quot;</span> &lt;&lt; reaction</div>
+<div class="line"><a id="l00983" name="l00983"></a><span class="lineno">  983</span>                    &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; guess &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00984" name="l00984"></a><span class="lineno">  984</span>            }</div>
+<div class="line"><a id="l00985" name="l00985"></a><span class="lineno">  985</span> </div>
+<div class="line"><a id="l00986" name="l00986"></a><span class="lineno">  986</span>            <span class="keywordtype">double</span> getInitialGuessExtent(<span class="keyword">const</span> std::string&amp; reaction)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00987" name="l00987"></a><span class="lineno">  987</span>                <span class="keyword">auto</span> guess = initial_guess_extents.find(reaction);</div>
+<div class="line"><a id="l00988" name="l00988"></a><span class="lineno">  988</span>                <span class="keywordflow">if</span>(guess != initial_guess_extents.end())</div>
+<div class="line"><a id="l00989" name="l00989"></a><span class="lineno">  989</span>                    <span class="keywordflow">return</span> guess-&gt;second;</div>
+<div class="line"><a id="l00990" name="l00990"></a><span class="lineno">  990</span>                <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00991" name="l00991"></a><span class="lineno">  991</span>            }</div>
+<div class="line"><a id="l00992" name="l00992"></a><span class="lineno">  992</span> </div>
+<div class="line"><a id="l01021" name="l01021"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#ae84d36edbdf4e38a53905e01ab7b05a9"> 1021</a></span>            <span class="keyword">const</span> std::vector&lt;std::vector&lt;double&gt;&gt;&amp; <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#ae84d36edbdf4e38a53905e01ab7b05a9">getReactionMatrix</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l01022" name="l01022"></a><span class="lineno"> 1022</span>                <span class="keywordflow">return</span> reaction_matrix;</div>
+<div class="line"><a id="l01023" name="l01023"></a><span class="lineno"> 1023</span>            }</div>
+<div class="line"><a id="l01024" name="l01024"></a><span class="lineno"> 1024</span> </div>
+<div class="line"><a id="l01032" name="l01032"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a0a52f6e9471643e5a48840b9c053e9fe"> 1032</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a0a52f6e9471643e5a48840b9c053e9fe">initReactionMatrix</a>();</div>
+<div class="line"><a id="l01033" name="l01033"></a><span class="lineno"> 1033</span> </div>
+<div class="line"><a id="l01041" name="l01041"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#ab715b79dc0c8536793157b15f145beb9"> 1041</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#ab715b79dc0c8536793157b15f145beb9">solveEquilibrium</a>();</div>
+<div class="line"><a id="l01042" name="l01042"></a><span class="lineno"> 1042</span> </div>
+<div class="line"><a id="l01056" name="l01056"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#a1264148581e1ad071e20fe44d0e036e9"> 1056</a></span>            <span class="keywordtype">double</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#a1264148581e1ad071e20fe44d0e036e9">reactionQuotient</a>(<span class="keyword">const</span> std::string&amp; name) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l01057" name="l01057"></a><span class="lineno"> 1057</span> </div>
-<div class="line"><a id="l01058" name="l01058"></a><span class="lineno"> 1058</span><span class="comment">/*</span></div>
-<div class="line"><a id="l01059" name="l01059"></a><span class="lineno"> 1059</span><span class="comment"> *    class Soil {</span></div>
-<div class="line"><a id="l01060" name="l01060"></a><span class="lineno"> 1060</span><span class="comment"> *        public:</span></div>
-<div class="line"><a id="l01061" name="l01061"></a><span class="lineno"> 1061</span><span class="comment"> *        static const double bulk_density;</span></div>
-<div class="line"><a id="l01062" name="l01062"></a><span class="lineno"> 1062</span><span class="comment"> *        static const double V;</span></div>
-<div class="line"><a id="l01063" name="l01063"></a><span class="lineno"> 1063</span><span class="comment"> *        static const double mineral_weight;</span></div>
-<div class="line"><a id="l01064" name="l01064"></a><span class="lineno"> 1064</span><span class="comment"> *</span></div>
-<div class="line"><a id="l01065" name="l01065"></a><span class="lineno"> 1065</span><span class="comment"> *        private:</span></div>
-<div class="line"><a id="l01066" name="l01066"></a><span class="lineno"> 1066</span><span class="comment"> *</span></div>
-<div class="line"><a id="l01067" name="l01067"></a><span class="lineno"> 1067</span><span class="comment"> *        double _K1;</span></div>
-<div class="line"><a id="l01068" name="l01068"></a><span class="lineno"> 1068</span><span class="comment"> *        double _K2;</span></div>
-<div class="line"><a id="l01069" name="l01069"></a><span class="lineno"> 1069</span><span class="comment"> *        double _K3;</span></div>
-<div class="line"><a id="l01070" name="l01070"></a><span class="lineno"> 1070</span><span class="comment"> *        double _initPH;</span></div>
-<div class="line"><a id="l01071" name="l01071"></a><span class="lineno"> 1071</span><span class="comment"> *</span></div>
-<div class="line"><a id="l01072" name="l01072"></a><span class="lineno"> 1072</span><span class="comment"> *        double H;</span></div>
-<div class="line"><a id="l01073" name="l01073"></a><span class="lineno"> 1073</span><span class="comment"> *        double P;</span></div>
-<div class="line"><a id="l01074" name="l01074"></a><span class="lineno"> 1074</span><span class="comment"> *        double C;</span></div>
-<div class="line"><a id="l01075" name="l01075"></a><span class="lineno"> 1075</span><span class="comment"> *</span></div>
-<div class="line"><a id="l01076" name="l01076"></a><span class="lineno"> 1076</span><span class="comment"> *        double N;</span></div>
-<div class="line"><a id="l01077" name="l01077"></a><span class="lineno"> 1077</span><span class="comment"> *        double S;</span></div>
-<div class="line"><a id="l01078" name="l01078"></a><span class="lineno"> 1078</span><span class="comment"> *        double SH;</span></div>
-<div class="line"><a id="l01079" name="l01079"></a><span class="lineno"> 1079</span><span class="comment"> *        double SP;</span></div>
-<div class="line"><a id="l01080" name="l01080"></a><span class="lineno"> 1080</span><span class="comment"> *        double SC;</span></div>
+<div class="line"><a id="l01062" name="l01062"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#ac0fa2d1c66e4b796ad316291970e228d"> 1062</a></span>            std::size_t <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#ac0fa2d1c66e4b796ad316291970e228d">getMaxIteration</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l01063" name="l01063"></a><span class="lineno"> 1063</span>                <span class="keywordflow">return</span> max_iteration;</div>
+<div class="line"><a id="l01064" name="l01064"></a><span class="lineno"> 1064</span>            }</div>
+<div class="line"><a id="l01065" name="l01065"></a><span class="lineno"> 1065</span> </div>
+<div class="line"><a id="l01070" name="l01070"></a><span class="lineno"><a class="line" href="classmineral_1_1ChemicalSystem.html#adff7d880adef5734ccafc8b29fea69a6"> 1070</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classmineral_1_1ChemicalSystem.html#adff7d880adef5734ccafc8b29fea69a6">setMaxIteration</a>(<span class="keyword">const</span> std::size_t&amp; max_iteration) {</div>
+<div class="line"><a id="l01071" name="l01071"></a><span class="lineno"> 1071</span>                this-&gt;max_iteration = max_iteration;</div>
+<div class="line"><a id="l01072" name="l01072"></a><span class="lineno"> 1072</span>            }</div>
+<div class="line"><a id="l01073" name="l01073"></a><span class="lineno"> 1073</span>    };</div>
+<div class="line"><a id="l01074" name="l01074"></a><span class="lineno"> 1074</span> </div>
+<div class="line"><a id="l01075" name="l01075"></a><span class="lineno"> 1075</span><span class="comment">/*</span></div>
+<div class="line"><a id="l01076" name="l01076"></a><span class="lineno"> 1076</span><span class="comment"> *    class Soil {</span></div>
+<div class="line"><a id="l01077" name="l01077"></a><span class="lineno"> 1077</span><span class="comment"> *        public:</span></div>
+<div class="line"><a id="l01078" name="l01078"></a><span class="lineno"> 1078</span><span class="comment"> *        static const double bulk_density;</span></div>
+<div class="line"><a id="l01079" name="l01079"></a><span class="lineno"> 1079</span><span class="comment"> *        static const double V;</span></div>
+<div class="line"><a id="l01080" name="l01080"></a><span class="lineno"> 1080</span><span class="comment"> *        static const double mineral_weight;</span></div>
 <div class="line"><a id="l01081" name="l01081"></a><span class="lineno"> 1081</span><span class="comment"> *</span></div>
-<div class="line"><a id="l01082" name="l01082"></a><span class="lineno"> 1082</span><span class="comment"> *        double concentration(const double&amp; n) const;</span></div>
+<div class="line"><a id="l01082" name="l01082"></a><span class="lineno"> 1082</span><span class="comment"> *        private:</span></div>
 <div class="line"><a id="l01083" name="l01083"></a><span class="lineno"> 1083</span><span class="comment"> *</span></div>
-<div class="line"><a id="l01084" name="l01084"></a><span class="lineno"> 1084</span><span class="comment"> *        private:</span></div>
-<div class="line"><a id="l01085" name="l01085"></a><span class="lineno"> 1085</span><span class="comment"> *        ChemicalSystem(</span></div>
-<div class="line"><a id="l01086" name="l01086"></a><span class="lineno"> 1086</span><span class="comment"> *                double K1, double K2, double K3, double initPH,</span></div>
-<div class="line"><a id="l01087" name="l01087"></a><span class="lineno"> 1087</span><span class="comment"> *                double H, double P, double C,</span></div>
-<div class="line"><a id="l01088" name="l01088"></a><span class="lineno"> 1088</span><span class="comment"> *                double N,</span></div>
-<div class="line"><a id="l01089" name="l01089"></a><span class="lineno"> 1089</span><span class="comment"> *                double S, double SH, double SP, double SC</span></div>
-<div class="line"><a id="l01090" name="l01090"></a><span class="lineno"> 1090</span><span class="comment"> *                );</span></div>
-<div class="line"><a id="l01091" name="l01091"></a><span class="lineno"> 1091</span><span class="comment"> *</span></div>
-<div class="line"><a id="l01092" name="l01092"></a><span class="lineno"> 1092</span><span class="comment"> *        public:</span></div>
-<div class="line"><a id="l01093" name="l01093"></a><span class="lineno"> 1093</span><span class="comment"> *        static ChemicalSystem equilibrium(</span></div>
-<div class="line"><a id="l01094" name="l01094"></a><span class="lineno"> 1094</span><span class="comment"> *                double K1, double K2, double K3,</span></div>
-<div class="line"><a id="l01095" name="l01095"></a><span class="lineno"> 1095</span><span class="comment"> *                double pH, double solution_P, double solution_C,</span></div>
-<div class="line"><a id="l01096" name="l01096"></a><span class="lineno"> 1096</span><span class="comment"> *                double mineral_N</span></div>
-<div class="line"><a id="l01097" name="l01097"></a><span class="lineno"> 1097</span><span class="comment"> *                );</span></div>
-<div class="line"><a id="l01098" name="l01098"></a><span class="lineno"> 1098</span><span class="comment"> *        static ChemicalSystem defaultEquilibrium();</span></div>
-<div class="line"><a id="l01099" name="l01099"></a><span class="lineno"> 1099</span><span class="comment"> *        static ChemicalSystem Devau2011Control();</span></div>
+<div class="line"><a id="l01084" name="l01084"></a><span class="lineno"> 1084</span><span class="comment"> *        double _K1;</span></div>
+<div class="line"><a id="l01085" name="l01085"></a><span class="lineno"> 1085</span><span class="comment"> *        double _K2;</span></div>
+<div class="line"><a id="l01086" name="l01086"></a><span class="lineno"> 1086</span><span class="comment"> *        double _K3;</span></div>
+<div class="line"><a id="l01087" name="l01087"></a><span class="lineno"> 1087</span><span class="comment"> *        double _initPH;</span></div>
+<div class="line"><a id="l01088" name="l01088"></a><span class="lineno"> 1088</span><span class="comment"> *</span></div>
+<div class="line"><a id="l01089" name="l01089"></a><span class="lineno"> 1089</span><span class="comment"> *        double H;</span></div>
+<div class="line"><a id="l01090" name="l01090"></a><span class="lineno"> 1090</span><span class="comment"> *        double P;</span></div>
+<div class="line"><a id="l01091" name="l01091"></a><span class="lineno"> 1091</span><span class="comment"> *        double C;</span></div>
+<div class="line"><a id="l01092" name="l01092"></a><span class="lineno"> 1092</span><span class="comment"> *</span></div>
+<div class="line"><a id="l01093" name="l01093"></a><span class="lineno"> 1093</span><span class="comment"> *        double N;</span></div>
+<div class="line"><a id="l01094" name="l01094"></a><span class="lineno"> 1094</span><span class="comment"> *        double S;</span></div>
+<div class="line"><a id="l01095" name="l01095"></a><span class="lineno"> 1095</span><span class="comment"> *        double SH;</span></div>
+<div class="line"><a id="l01096" name="l01096"></a><span class="lineno"> 1096</span><span class="comment"> *        double SP;</span></div>
+<div class="line"><a id="l01097" name="l01097"></a><span class="lineno"> 1097</span><span class="comment"> *        double SC;</span></div>
+<div class="line"><a id="l01098" name="l01098"></a><span class="lineno"> 1098</span><span class="comment"> *</span></div>
+<div class="line"><a id="l01099" name="l01099"></a><span class="lineno"> 1099</span><span class="comment"> *        double concentration(const double&amp; n) const;</span></div>
 <div class="line"><a id="l01100" name="l01100"></a><span class="lineno"> 1100</span><span class="comment"> *</span></div>
-<div class="line"><a id="l01101" name="l01101"></a><span class="lineno"> 1101</span><span class="comment"> *        //static ChemicalSystem soilParameters(</span></div>
-<div class="line"><a id="l01102" name="l01102"></a><span class="lineno"> 1102</span><span class="comment"> *        //double K1, double K2, double K3,</span></div>
-<div class="line"><a id="l01103" name="l01103"></a><span class="lineno"> 1103</span><span class="comment"> *        //double pH, double soil_P, double soil_C,</span></div>
-<div class="line"><a id="l01104" name="l01104"></a><span class="lineno"> 1104</span><span class="comment"> *        //double mineral_N</span></div>
-<div class="line"><a id="l01105" name="l01105"></a><span class="lineno"> 1105</span><span class="comment"> *        //);</span></div>
-<div class="line"><a id="l01106" name="l01106"></a><span class="lineno"> 1106</span><span class="comment"> *        //static ChemicalSystem defaultSoil();</span></div>
-<div class="line"><a id="l01107" name="l01107"></a><span class="lineno"> 1107</span><span class="comment"> *</span></div>
+<div class="line"><a id="l01101" name="l01101"></a><span class="lineno"> 1101</span><span class="comment"> *        private:</span></div>
+<div class="line"><a id="l01102" name="l01102"></a><span class="lineno"> 1102</span><span class="comment"> *        ChemicalSystem(</span></div>
+<div class="line"><a id="l01103" name="l01103"></a><span class="lineno"> 1103</span><span class="comment"> *                double K1, double K2, double K3, double initPH,</span></div>
+<div class="line"><a id="l01104" name="l01104"></a><span class="lineno"> 1104</span><span class="comment"> *                double H, double P, double C,</span></div>
+<div class="line"><a id="l01105" name="l01105"></a><span class="lineno"> 1105</span><span class="comment"> *                double N,</span></div>
+<div class="line"><a id="l01106" name="l01106"></a><span class="lineno"> 1106</span><span class="comment"> *                double S, double SH, double SP, double SC</span></div>
+<div class="line"><a id="l01107" name="l01107"></a><span class="lineno"> 1107</span><span class="comment"> *                );</span></div>
 <div class="line"><a id="l01108" name="l01108"></a><span class="lineno"> 1108</span><span class="comment"> *</span></div>
-<div class="line"><a id="l01109" name="l01109"></a><span class="lineno"> 1109</span><span class="comment"> *        void incrementP(double P);</span></div>
-<div class="line"><a id="l01110" name="l01110"></a><span class="lineno"> 1110</span><span class="comment"> *        void setPH(double pH);</span></div>
-<div class="line"><a id="l01111" name="l01111"></a><span class="lineno"> 1111</span><span class="comment"> *</span></div>
-<div class="line"><a id="l01112" name="l01112"></a><span class="lineno"> 1112</span><span class="comment"> *        //X reactionQuotient() const;</span></div>
-<div class="line"><a id="l01113" name="l01113"></a><span class="lineno"> 1113</span><span class="comment"> *        void distanceToEquilibrium() const;</span></div>
-<div class="line"><a id="l01114" name="l01114"></a><span class="lineno"> 1114</span><span class="comment"> *</span></div>
-<div class="line"><a id="l01115" name="l01115"></a><span class="lineno"> 1115</span><span class="comment"> *        double cH() const;</span></div>
-<div class="line"><a id="l01116" name="l01116"></a><span class="lineno"> 1116</span><span class="comment"> *        double cP() const;</span></div>
-<div class="line"><a id="l01117" name="l01117"></a><span class="lineno"> 1117</span><span class="comment"> *        double cC() const;</span></div>
-<div class="line"><a id="l01118" name="l01118"></a><span class="lineno"> 1118</span><span class="comment"> *        double cS() const;</span></div>
-<div class="line"><a id="l01119" name="l01119"></a><span class="lineno"> 1119</span><span class="comment"> *        double cSH() const;</span></div>
-<div class="line"><a id="l01120" name="l01120"></a><span class="lineno"> 1120</span><span class="comment"> *        double cSP() const;</span></div>
-<div class="line"><a id="l01121" name="l01121"></a><span class="lineno"> 1121</span><span class="comment"> *        double cSC() const;</span></div>
-<div class="line"><a id="l01122" name="l01122"></a><span class="lineno"> 1122</span><span class="comment"> *</span></div>
-<div class="line"><a id="l01123" name="l01123"></a><span class="lineno"> 1123</span><span class="comment"> *        double nH() const;</span></div>
-<div class="line"><a id="l01124" name="l01124"></a><span class="lineno"> 1124</span><span class="comment"> *        double nP() const;</span></div>
-<div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span><span class="comment"> *        double nC() const;</span></div>
-<div class="line"><a id="l01126" name="l01126"></a><span class="lineno"> 1126</span><span class="comment"> *        double nS() const;</span></div>
-<div class="line"><a id="l01127" name="l01127"></a><span class="lineno"> 1127</span><span class="comment"> *        double nSH() const;</span></div>
-<div class="line"><a id="l01128" name="l01128"></a><span class="lineno"> 1128</span><span class="comment"> *        double nSP() const;</span></div>
-<div class="line"><a id="l01129" name="l01129"></a><span class="lineno"> 1129</span><span class="comment"> *        double nSC() const;</span></div>
-<div class="line"><a id="l01130" name="l01130"></a><span class="lineno"> 1130</span><span class="comment"> *</span></div>
-<div class="line"><a id="l01131" name="l01131"></a><span class="lineno"> 1131</span><span class="comment"> *        double K1() const;</span></div>
-<div class="line"><a id="l01132" name="l01132"></a><span class="lineno"> 1132</span><span class="comment"> *        double K2() const;</span></div>
-<div class="line"><a id="l01133" name="l01133"></a><span class="lineno"> 1133</span><span class="comment"> *        double K3() const;</span></div>
-<div class="line"><a id="l01134" name="l01134"></a><span class="lineno"> 1134</span><span class="comment"> *        double initPH() const;</span></div>
-<div class="line"><a id="l01135" name="l01135"></a><span class="lineno"> 1135</span><span class="comment"> *</span></div>
-<div class="line"><a id="l01136" name="l01136"></a><span class="lineno"> 1136</span><span class="comment"> *        double pH() const;</span></div>
-<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span><span class="comment"> *    };</span></div>
-<div class="line"><a id="l01138" name="l01138"></a><span class="lineno"> 1138</span><span class="comment"> */</span></div>
-<div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span>}</div>
+<div class="line"><a id="l01109" name="l01109"></a><span class="lineno"> 1109</span><span class="comment"> *        public:</span></div>
+<div class="line"><a id="l01110" name="l01110"></a><span class="lineno"> 1110</span><span class="comment"> *        static ChemicalSystem equilibrium(</span></div>
+<div class="line"><a id="l01111" name="l01111"></a><span class="lineno"> 1111</span><span class="comment"> *                double K1, double K2, double K3,</span></div>
+<div class="line"><a id="l01112" name="l01112"></a><span class="lineno"> 1112</span><span class="comment"> *                double pH, double solution_P, double solution_C,</span></div>
+<div class="line"><a id="l01113" name="l01113"></a><span class="lineno"> 1113</span><span class="comment"> *                double mineral_N</span></div>
+<div class="line"><a id="l01114" name="l01114"></a><span class="lineno"> 1114</span><span class="comment"> *                );</span></div>
+<div class="line"><a id="l01115" name="l01115"></a><span class="lineno"> 1115</span><span class="comment"> *        static ChemicalSystem defaultEquilibrium();</span></div>
+<div class="line"><a id="l01116" name="l01116"></a><span class="lineno"> 1116</span><span class="comment"> *        static ChemicalSystem Devau2011Control();</span></div>
+<div class="line"><a id="l01117" name="l01117"></a><span class="lineno"> 1117</span><span class="comment"> *</span></div>
+<div class="line"><a id="l01118" name="l01118"></a><span class="lineno"> 1118</span><span class="comment"> *        //static ChemicalSystem soilParameters(</span></div>
+<div class="line"><a id="l01119" name="l01119"></a><span class="lineno"> 1119</span><span class="comment"> *        //double K1, double K2, double K3,</span></div>
+<div class="line"><a id="l01120" name="l01120"></a><span class="lineno"> 1120</span><span class="comment"> *        //double pH, double soil_P, double soil_C,</span></div>
+<div class="line"><a id="l01121" name="l01121"></a><span class="lineno"> 1121</span><span class="comment"> *        //double mineral_N</span></div>
+<div class="line"><a id="l01122" name="l01122"></a><span class="lineno"> 1122</span><span class="comment"> *        //);</span></div>
+<div class="line"><a id="l01123" name="l01123"></a><span class="lineno"> 1123</span><span class="comment"> *        //static ChemicalSystem defaultSoil();</span></div>
+<div class="line"><a id="l01124" name="l01124"></a><span class="lineno"> 1124</span><span class="comment"> *</span></div>
+<div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span><span class="comment"> *</span></div>
+<div class="line"><a id="l01126" name="l01126"></a><span class="lineno"> 1126</span><span class="comment"> *        void incrementP(double P);</span></div>
+<div class="line"><a id="l01127" name="l01127"></a><span class="lineno"> 1127</span><span class="comment"> *        void setPH(double pH);</span></div>
+<div class="line"><a id="l01128" name="l01128"></a><span class="lineno"> 1128</span><span class="comment"> *</span></div>
+<div class="line"><a id="l01129" name="l01129"></a><span class="lineno"> 1129</span><span class="comment"> *        //X reactionQuotient() const;</span></div>
+<div class="line"><a id="l01130" name="l01130"></a><span class="lineno"> 1130</span><span class="comment"> *        void distanceToEquilibrium() const;</span></div>
+<div class="line"><a id="l01131" name="l01131"></a><span class="lineno"> 1131</span><span class="comment"> *</span></div>
+<div class="line"><a id="l01132" name="l01132"></a><span class="lineno"> 1132</span><span class="comment"> *        double cH() const;</span></div>
+<div class="line"><a id="l01133" name="l01133"></a><span class="lineno"> 1133</span><span class="comment"> *        double cP() const;</span></div>
+<div class="line"><a id="l01134" name="l01134"></a><span class="lineno"> 1134</span><span class="comment"> *        double cC() const;</span></div>
+<div class="line"><a id="l01135" name="l01135"></a><span class="lineno"> 1135</span><span class="comment"> *        double cS() const;</span></div>
+<div class="line"><a id="l01136" name="l01136"></a><span class="lineno"> 1136</span><span class="comment"> *        double cSH() const;</span></div>
+<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span><span class="comment"> *        double cSP() const;</span></div>
+<div class="line"><a id="l01138" name="l01138"></a><span class="lineno"> 1138</span><span class="comment"> *        double cSC() const;</span></div>
+<div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span><span class="comment"> *</span></div>
+<div class="line"><a id="l01140" name="l01140"></a><span class="lineno"> 1140</span><span class="comment"> *        double nH() const;</span></div>
+<div class="line"><a id="l01141" name="l01141"></a><span class="lineno"> 1141</span><span class="comment"> *        double nP() const;</span></div>
+<div class="line"><a id="l01142" name="l01142"></a><span class="lineno"> 1142</span><span class="comment"> *        double nC() const;</span></div>
+<div class="line"><a id="l01143" name="l01143"></a><span class="lineno"> 1143</span><span class="comment"> *        double nS() const;</span></div>
+<div class="line"><a id="l01144" name="l01144"></a><span class="lineno"> 1144</span><span class="comment"> *        double nSH() const;</span></div>
+<div class="line"><a id="l01145" name="l01145"></a><span class="lineno"> 1145</span><span class="comment"> *        double nSP() const;</span></div>
+<div class="line"><a id="l01146" name="l01146"></a><span class="lineno"> 1146</span><span class="comment"> *        double nSC() const;</span></div>
+<div class="line"><a id="l01147" name="l01147"></a><span class="lineno"> 1147</span><span class="comment"> *</span></div>
+<div class="line"><a id="l01148" name="l01148"></a><span class="lineno"> 1148</span><span class="comment"> *        double K1() const;</span></div>
+<div class="line"><a id="l01149" name="l01149"></a><span class="lineno"> 1149</span><span class="comment"> *        double K2() const;</span></div>
+<div class="line"><a id="l01150" name="l01150"></a><span class="lineno"> 1150</span><span class="comment"> *        double K3() const;</span></div>
+<div class="line"><a id="l01151" name="l01151"></a><span class="lineno"> 1151</span><span class="comment"> *        double initPH() const;</span></div>
+<div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span><span class="comment"> *</span></div>
+<div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span><span class="comment"> *        double pH() const;</span></div>
+<div class="line"><a id="l01154" name="l01154"></a><span class="lineno"> 1154</span><span class="comment"> *    };</span></div>
+<div class="line"><a id="l01155" name="l01155"></a><span class="lineno"> 1155</span><span class="comment"> */</span></div>
+<div class="line"><a id="l01156" name="l01156"></a><span class="lineno"> 1156</span>}</div>
 <div class="ttc" id="aclassmineral_1_1AqueousComponent_html"><div class="ttname"><a href="classmineral_1_1AqueousComponent.html">mineral::AqueousComponent</a></div><div class="ttdef"><b>Definition</b> chemical.h:396</div></div>
 <div class="ttc" id="aclassmineral_1_1AqueousComponent_html_a173fcef269566e98b3a33f5fb7ce5ba6"><div class="ttname"><a href="classmineral_1_1AqueousComponent.html#a173fcef269566e98b3a33f5fb7ce5ba6">mineral::AqueousComponent::AqueousComponent</a></div><div class="ttdeci">AqueousComponent(const std::string &amp;name, std::size_t id, double C)</div><div class="ttdef"><b>Definition</b> chemical.h:410</div></div>
 <div class="ttc" id="aclassmineral_1_1AqueousComponent_html_a3db445588f144a3062484ddbc9649b6a"><div class="ttname"><a href="classmineral_1_1AqueousComponent.html#a3db445588f144a3062484ddbc9649b6a">mineral::AqueousComponent::Dactivity</a></div><div class="ttdeci">double Dactivity(const std::vector&lt; double &gt; &amp;, double d_coef) const override</div><div class="ttdef"><b>Definition</b> chemical.h:442</div></div>
@@ -600,7 +617,7 @@ $(function() {
 <div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_a0a52f6e9471643e5a48840b9c053e9fe"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#a0a52f6e9471643e5a48840b9c053e9fe">mineral::ChemicalSystem::initReactionMatrix</a></div><div class="ttdeci">void initReactionMatrix()</div></div>
 <div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_a1264148581e1ad071e20fe44d0e036e9"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#a1264148581e1ad071e20fe44d0e036e9">mineral::ChemicalSystem::reactionQuotient</a></div><div class="ttdeci">double reactionQuotient(const std::string &amp;name) const</div></div>
 <div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_a16a06eed01fd412789cda14ac4e8f07d"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#a16a06eed01fd412789cda14ac4e8f07d">mineral::ChemicalSystem::addReaction</a></div><div class="ttdeci">void addReaction(std::string name, double log_K, std::vector&lt; ReactionComponent &gt; reagents)</div></div>
-<div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_a2e87f30e91b08446b185bc1bb57aa122"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#a2e87f30e91b08446b185bc1bb57aa122">mineral::ChemicalSystem::getReactions</a></div><div class="ttdeci">const std::vector&lt; std::unique_ptr&lt; Reaction &gt; &gt; &amp; getReactions() const</div><div class="ttdef"><b>Definition</b> chemical.h:972</div></div>
+<div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_a2e87f30e91b08446b185bc1bb57aa122"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#a2e87f30e91b08446b185bc1bb57aa122">mineral::ChemicalSystem::getReactions</a></div><div class="ttdeci">const std::vector&lt; std::unique_ptr&lt; Reaction &gt; &gt; &amp; getReactions() const</div><div class="ttdef"><b>Definition</b> chemical.h:976</div></div>
 <div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_a373e932bd0e95e6ccda7e95c0b2e16b5"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#a373e932bd0e95e6ccda7e95c0b2e16b5">mineral::ChemicalSystem::initPH</a></div><div class="ttdeci">void initPH(double pH)</div></div>
 <div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_a457b67d09a0cf8a8395d32a27ae2bab6"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#a457b67d09a0cf8a8395d32a27ae2bab6">mineral::ChemicalSystem::ChemicalSystem</a></div><div class="ttdeci">ChemicalSystem(double solid_concentration, double specific_surface_area, double site_concentration, const std::string &amp;surface_component)</div></div>
 <div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_a6ff352e0063d3b9778ceb17dae3bbbdd"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#a6ff352e0063d3b9778ceb17dae3bbbdd">mineral::ChemicalSystem::getComponent</a></div><div class="ttdeci">const Component &amp; getComponent(const std::size_t &amp;id) const</div></div>
@@ -609,12 +626,12 @@ $(function() {
 <div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_a8393e1e514eeb0ce95da288ccd7d5c62"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#a8393e1e514eeb0ce95da288ccd7d5c62">mineral::ChemicalSystem::getReaction</a></div><div class="ttdeci">const Reaction &amp; getReaction(const std::string &amp;name) const</div></div>
 <div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_ab715b79dc0c8536793157b15f145beb9"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#ab715b79dc0c8536793157b15f145beb9">mineral::ChemicalSystem::solveEquilibrium</a></div><div class="ttdeci">void solveEquilibrium()</div></div>
 <div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_aba7e26a6e7de3acf6f370f6184ab2870"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#aba7e26a6e7de3acf6f370f6184ab2870">mineral::ChemicalSystem::addComponent</a></div><div class="ttdeci">void addComponent(const std::string &amp;name, Phase phase, double concentration)</div></div>
-<div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_ac0fa2d1c66e4b796ad316291970e228d"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#ac0fa2d1c66e4b796ad316291970e228d">mineral::ChemicalSystem::getMaxIteration</a></div><div class="ttdeci">std::size_t getMaxIteration() const</div><div class="ttdef"><b>Definition</b> chemical.h:1045</div></div>
+<div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_ac0fa2d1c66e4b796ad316291970e228d"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#ac0fa2d1c66e4b796ad316291970e228d">mineral::ChemicalSystem::getMaxIteration</a></div><div class="ttdeci">std::size_t getMaxIteration() const</div><div class="ttdef"><b>Definition</b> chemical.h:1062</div></div>
 <div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_ad27511a803b8e36699bb8af2e248f0cf"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#ad27511a803b8e36699bb8af2e248f0cf">mineral::ChemicalSystem::ChemicalSystem</a></div><div class="ttdeci">ChemicalSystem()=default</div></div>
-<div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_ad2a71d222b6f40e68f860419e1167ba5"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#ad2a71d222b6f40e68f860419e1167ba5">mineral::ChemicalSystem::getComponents</a></div><div class="ttdeci">const std::vector&lt; std::unique_ptr&lt; Component &gt; &gt; &amp; getComponents() const</div><div class="ttdef"><b>Definition</b> chemical.h:965</div></div>
+<div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_ad2a71d222b6f40e68f860419e1167ba5"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#ad2a71d222b6f40e68f860419e1167ba5">mineral::ChemicalSystem::getComponents</a></div><div class="ttdeci">const std::vector&lt; std::unique_ptr&lt; Component &gt; &gt; &amp; getComponents() const</div><div class="ttdef"><b>Definition</b> chemical.h:969</div></div>
 <div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_ad36c76e120f4cb8cf406cab9e5bc415c"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#ad36c76e120f4cb8cf406cab9e5bc415c">mineral::ChemicalSystem::addComponent</a></div><div class="ttdeci">void addComponent(const std::string &amp;name, double concentration)</div></div>
-<div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_adff7d880adef5734ccafc8b29fea69a6"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#adff7d880adef5734ccafc8b29fea69a6">mineral::ChemicalSystem::setMaxIteration</a></div><div class="ttdeci">void setMaxIteration(const std::size_t &amp;max_iteration)</div><div class="ttdef"><b>Definition</b> chemical.h:1053</div></div>
-<div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_ae84d36edbdf4e38a53905e01ab7b05a9"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#ae84d36edbdf4e38a53905e01ab7b05a9">mineral::ChemicalSystem::getReactionMatrix</a></div><div class="ttdeci">const std::vector&lt; std::vector&lt; double &gt; &gt; &amp; getReactionMatrix() const</div><div class="ttdef"><b>Definition</b> chemical.h:1004</div></div>
+<div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_adff7d880adef5734ccafc8b29fea69a6"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#adff7d880adef5734ccafc8b29fea69a6">mineral::ChemicalSystem::setMaxIteration</a></div><div class="ttdeci">void setMaxIteration(const std::size_t &amp;max_iteration)</div><div class="ttdef"><b>Definition</b> chemical.h:1070</div></div>
+<div class="ttc" id="aclassmineral_1_1ChemicalSystem_html_ae84d36edbdf4e38a53905e01ab7b05a9"><div class="ttname"><a href="classmineral_1_1ChemicalSystem.html#ae84d36edbdf4e38a53905e01ab7b05a9">mineral::ChemicalSystem::getReactionMatrix</a></div><div class="ttdeci">const std::vector&lt; std::vector&lt; double &gt; &gt; &amp; getReactionMatrix() const</div><div class="ttdef"><b>Definition</b> chemical.h:1021</div></div>
 <div class="ttc" id="aclassmineral_1_1Component_html"><div class="ttname"><a href="classmineral_1_1Component.html">mineral::Component</a></div><div class="ttdef"><b>Definition</b> chemical.h:163</div></div>
 <div class="ttc" id="aclassmineral_1_1Component_html_a06f1ad272b94827134dc40747fc07fe0"><div class="ttname"><a href="classmineral_1_1Component.html#a06f1ad272b94827134dc40747fc07fe0">mineral::Component::getName</a></div><div class="ttdeci">const std::string &amp; getName() const</div><div class="ttdef"><b>Definition</b> chemical.h:194</div></div>
 <div class="ttc" id="aclassmineral_1_1Component_html_a0f4fc511e22b1cf5cb4bfaecd9246164"><div class="ttname"><a href="classmineral_1_1Component.html#a0f4fc511e22b1cf5cb4bfaecd9246164">mineral::Component::Component</a></div><div class="ttdeci">Component(const std::string &amp;name, std::size_t index)</div><div class="ttdef"><b>Definition</b> chemical.h:186</div></div>

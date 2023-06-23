@@ -252,7 +252,15 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction_df) {
 
 TEST_F(ChemicalSystemTest, basic_NaCl_reaction) {
 	auto reaction_matrix = chemical_system.getReactionMatrix();
-	chemical_system.setMaxIteration(200);
+
+	/*
+	 *chemical_system
+	 *    .setInitialGuessExtent("NaCl", -std::pow(10, -2.3));
+	 *chemical_system
+	 *    .setInitialGuessExtent("NaOH", -std::pow(10, -7.897));
+	 */
+
+	chemical_system.setMaxIteration(10);
 	chemical_system.solveEquilibrium();
 
 	{

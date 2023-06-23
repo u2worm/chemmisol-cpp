@@ -803,6 +803,10 @@ namespace mineral {
 			double specific_surface_area;
 			double site_concentration;
 
+			std::unordered_map<std::string, double> initial_guess_extents;
+
+			void guessInitialExtents();
+
 		public:
 			ChemicalSystem(const ChemicalSystem& other);
 
@@ -971,6 +975,19 @@ namespace mineral {
 			 */
 			const std::vector<std::unique_ptr<Reaction>>& getReactions() const {
 				return reactions;
+			}
+
+			void setInitialGuessExtent(const std::string& reaction, double guess) {
+				initial_guess_extents[reaction] = guess;
+				std::cout << "User specified extent guess for " << reaction
+					<< ": " << guess << std::endl;
+			}
+
+			double getInitialGuessExtent(const std::string& reaction) const {
+				auto guess = initial_guess_extents.find(reaction);
+				if(guess != initial_guess_extents.end())
+					return guess->second;
+				return 0;
 			}
 
 			/**
