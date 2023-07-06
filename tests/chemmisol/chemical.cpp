@@ -4,7 +4,7 @@
 #include <regex>
 
 using namespace testing;
-using namespace mineral;
+using namespace chemmisol;
 
 class ChemicalSystemTest : public Test {
 	protected:

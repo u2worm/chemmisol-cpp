@@ -1,8 +1,8 @@
 #include "gmock/gmock.h"
 #include "chemmisol/linear.h"
 
-using namespace mineral;
 using namespace testing;
+using namespace chemmisol;
 
 TEST(LinearTest, X_array) {
 	// Checks that the redefined constructor does the job

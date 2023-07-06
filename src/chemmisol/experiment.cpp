@@ -1,7 +1,7 @@
 #include "chemmisol/experiment.h"
 #include <unordered_map>
 
-namespace mineral {
+namespace chemmisol {
 	Experiment::Experiment(
 			std::string output_file,
 			const ChemicalSystem& chemical_system,

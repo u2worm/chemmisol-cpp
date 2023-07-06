@@ -4,7 +4,7 @@
 #include <array>
 
 using namespace testing;
-using namespace mineral;
+using namespace chemmisol;
 
 TEST(GaussTest, solve_array) {
 	M<float, 3> m({

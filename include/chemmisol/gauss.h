@@ -1,7 +1,7 @@
 #include <iostream>
 #include <array>
 
-namespace mineral { namespace gauss {
+namespace chemmisol { namespace gauss {
 	template<typename X, typename A>
 		X solve(const A& a);
 

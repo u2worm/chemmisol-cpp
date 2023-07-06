@@ -3,7 +3,7 @@
 #include <functional>
 #include <unordered_map>
 
-namespace mineral {
+namespace chemmisol {
 	class Experiment {
 		// TODO: experiment parameters
 

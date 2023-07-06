@@ -22,7 +22,7 @@
 #define UNIT_NAME_TO_CATEGORY(NAME, VALUE, CATEGORY) {#NAME, Category::CATEGORY},
 #define UNIT_NAME_TO_VAL(NAME, VALUE, CATEGORY) {#NAME, NAME},
 
-namespace mineral {
+namespace chemmisol {
 	static const double NA = 6.02214076e23;
 
 	enum Category {

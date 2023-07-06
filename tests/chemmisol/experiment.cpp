@@ -2,7 +2,7 @@
 #include "chemmisol/experiment.h"
 
 using namespace testing;
-using namespace mineral;
+using namespace chemmisol;
 
 class TestExperiment : public Test {
 	protected:

@@ -2,7 +2,7 @@
 #include <cmath>
 #include "gauss.h"
 
-namespace mineral {
+namespace chemmisol {
 	template<typename T>
 		double norm(const T& x) {
 			return std::abs(x);

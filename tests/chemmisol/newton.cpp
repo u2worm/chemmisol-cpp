@@ -2,7 +2,7 @@
 #include "chemmisol/newton.h"
 
 TEST(NewtonTest, square_3) {
-	double x = mineral::Newton<double, double>(
+	double x = chemmisol::Newton<double, double>(
 			12.7f,
 			[] (double x) -> double {return std::pow(x, 3) - 7;},
 			[] (double x) -> double {return 3*std::pow(x, 2);}

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cmath>
 
-namespace mineral {
+namespace chemmisol {
 	template<typename T>
 		T log(const T& v) {
 			return std::log10(v);

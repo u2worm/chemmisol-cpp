@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <algorithm>
 
-namespace mineral {
+namespace chemmisol {
 	/*
 	 *const double ChemicalSystem::bulk_density = 1.17*gram/cm3;
 	 *const double ChemicalSystem::V = std::pow(1*cm, 3);

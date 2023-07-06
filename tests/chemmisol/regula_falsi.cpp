@@ -2,7 +2,7 @@
 #include "chemmisol/regula_falsi.h"
 
 TEST(RegulaFalsi, solve_iter) {
-	double x = mineral::RegulaFalsi<double>(0, 10, [] (const double& x) {
+	double x = chemmisol::RegulaFalsi<double>(0, 10, [] (const double& x) {
 			return std::pow(x, 3.7) - 7;
 			}).solve_iter(10000);
 
@@ -10,7 +10,7 @@ TEST(RegulaFalsi, solve_iter) {
 }
 
 TEST(RegulaFalsi, solve_eps) {
-	double x = mineral::RegulaFalsi<double>(0, 10, [] (const double& x) {
+	double x = chemmisol::RegulaFalsi<double>(0, 10, [] (const double& x) {
 			return std::pow(x, 3.7) - 7;
 			}).solve_eps(1e-3);
 

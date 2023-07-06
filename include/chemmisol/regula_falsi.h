@@ -4,7 +4,7 @@
 #include <math.h>
 #include <string>
 
-namespace mineral {
+namespace chemmisol {
 
 	template<typename F>
 		class RegulaFalsi {

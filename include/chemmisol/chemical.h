@@ -8,7 +8,7 @@
 #include "linear.h"
 #include "units.h"
 
-namespace mineral {
+namespace chemmisol {
 	class ChemicalSystem;
 
 	enum Phase {
