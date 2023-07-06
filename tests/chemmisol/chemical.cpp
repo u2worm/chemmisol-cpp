@@ -30,6 +30,7 @@ class ChemicalSystemTest : public Test {
 				{"H2O", 1}
 				});
 
+
 		chemical_system.addComponent("Na+", 0.1*mol/l);
 		chemical_system.addComponent("Cl-", 0.1*mol/l);
 		chemical_system.fixPH(7);
@@ -123,6 +124,44 @@ class ChemicalSystemTest : public Test {
 		}
 		return df_x;
 	}
+
+	void checkEquilibrium() {
+		{
+			// Check OH-
+			double H2O = chemical_system.getComponent("H2O").activity();
+			double H = chemical_system.getComponent("H+").activity();
+			double OH = chemical_system.getComponent("OH-").activity();
+			ASSERT_FLOAT_EQ(
+					std::log10((H*OH)/H2O),
+					chemical_system.getReaction("OH-").getLogK()
+					);
+		}
+		{
+			// Check NaCl
+			double NaCl = chemical_system.getComponent("NaCl").activity();
+			double Na = chemical_system.getComponent("Na+").activity();
+			double Cl = chemical_system.getComponent("Cl-").activity();
+			ASSERT_FLOAT_EQ(
+					std::log10(NaCl/(Na*Cl)),
+					chemical_system.getReaction("NaCl").getLogK()
+					);
+		}
+		{
+			// Check NaOH
+			double NaOH = chemical_system.getComponent("NaOH").activity();
+			double Na = chemical_system.getComponent("Na+").activity();
+			double H = chemical_system.getComponent("H+").activity();
+			ASSERT_FLOAT_EQ(
+					std::log10((NaOH*H)/Na),
+					chemical_system.getReaction("NaOH").getLogK()
+					);
+		}
+		{
+			// Check pH
+			double H = chemical_system.getComponent("H+").activity();
+			ASSERT_FLOAT_EQ(-std::log10(H), 7);
+		}
+	}
 };
 
 TEST_F(ChemicalSystemTest, get_components) {
@@ -168,6 +207,32 @@ TEST_F(ChemicalSystemTest, activity) {
 
 TEST_F(ChemicalSystemTest, H2O_activity) {
 	ASSERT_FLOAT_EQ(chemical_system.getComponent("H2O").activity(), 1.0);
+}
+
+TEST_F(ChemicalSystemTest, guess_extent) {
+	auto guesses = chemical_system.guessInitialExtents();
+
+	// Checks that the initial guess allows to solve the equilibrium
+	chemical_system.solveEquilibrium();
+	checkEquilibrium();
+}
+
+TEST_F(ChemicalSystemTest, guess_extent_similar_logK) {
+	// Adding a fake reaction that consumes Na+ with a logK similar to the NaOH
+	// reaction
+	chemical_system.addReaction("NaOH2", -14, {
+			{"NaOH2", -1},
+			{"H+", -2},
+			{"Na+", 1},
+			{"H2O", 1}
+			});
+	chemical_system.initReactionMatrix();
+
+	auto guesses = chemical_system.guessInitialExtents();
+
+	// Checks that the initial guess allows to solve the equilibrium
+	chemical_system.solveEquilibrium();
+	checkEquilibrium();
 }
 
 TEST_F(ChemicalSystemTest, basic_NaCl_reaction_matrix) {
@@ -221,7 +286,7 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction_f) {
 	F f(chemical_system);
 
 	std::array<double, 3> x;
-	x[chemical_system.getReaction("OH-").getIndex()] = 0;
+	x[chemical_system.getReaction("OH-").getIndex()] = -1e-7;
 	x[chemical_system.getReaction("NaCl").getIndex()] = -1e-16;
 	x[chemical_system.getReaction("NaOH").getIndex()] = -1e-16;
 	auto F = f.f({x.begin(), x.end()});
@@ -236,7 +301,7 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction_df) {
 	F f(chemical_system);
 
 	std::array<double, 3> x;
-	x[chemical_system.getReaction("OH-").getIndex()] = 0;
+	x[chemical_system.getReaction("OH-").getIndex()] = -1e-7;
 	x[chemical_system.getReaction("NaCl").getIndex()] = -1e-16;
 	x[chemical_system.getReaction("NaOH").getIndex()] = -1e-16;
 	auto dF = f.df({x.begin(), x.end()});
@@ -263,41 +328,8 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction) {
 	chemical_system.setMaxIteration(10);
 	chemical_system.solveEquilibrium();
 
-	{
-		// Check OH-
-		double H2O = chemical_system.getComponent("H2O").activity();
-		double H = chemical_system.getComponent("H+").activity();
-		double OH = chemical_system.getComponent("OH-").activity();
-		ASSERT_FLOAT_EQ(
-				std::log10((H*OH)/H2O),
-				chemical_system.getReaction("OH-").getLogK()
-				);
-	}
-	{
-		// Check NaCl
-		double NaCl = chemical_system.getComponent("NaCl").activity();
-		double Na = chemical_system.getComponent("Na+").activity();
-		double Cl = chemical_system.getComponent("Cl-").activity();
-		ASSERT_FLOAT_EQ(
-				std::log10(NaCl/(Na*Cl)),
-				chemical_system.getReaction("NaCl").getLogK()
-				);
-	}
-	{
-		// Check NaOH
-		double NaOH = chemical_system.getComponent("NaOH").activity();
-		double Na = chemical_system.getComponent("Na+").activity();
-		double H = chemical_system.getComponent("H+").activity();
-		ASSERT_FLOAT_EQ(
-				std::log10((NaOH*H)/Na),
-				chemical_system.getReaction("NaOH").getLogK()
-				);
-	}
-	{
-		// Check pH
-		double H = chemical_system.getComponent("H+").activity();
-		ASSERT_FLOAT_EQ(-std::log10(H), 7);
-	}
+	checkEquilibrium();
+
 	for(auto& component : chemical_system.getComponents())
 		std::cout << component->getName() << ": " << component->concentration()/(1*mol/l) << " mol/l" << std::endl;
 }

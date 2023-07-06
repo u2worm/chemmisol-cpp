@@ -1,6 +1,7 @@
 #include <array>
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include <unordered_map>
 #include <vector>
 #include <memory>
@@ -262,16 +263,22 @@ namespace mineral {
 
 			/**
 			 * Computes the activity of the current component corresponding to
-			 * the `current_concentration`.
+			 * the specified `concentration`.
 			 *
-			 * Notice that `current_concentration` might be different from
+			 * Notice that `concentration` might be different from
 			 * concentration(), and that this call does **not** modify the
 			 * activity of the current component.
 			 *
-			 * @param current_concentration Concentration of the component
+			 * @param concentration Concentration of the component
 			 * @return Computed activity of the component
 			 */
-			virtual double activity(double current_concentration) const = 0;
+			virtual double activity(double concentration) const = 0;
+
+			double quantity() const {
+				return quantity(concentration());
+			}
+
+			virtual double quantity(double concentration) const = 0;
 
 			/**
 			 * Computes the activity that would result if a quantity of
@@ -320,12 +327,14 @@ namespace mineral {
 		private:
 			double C;
 			double A;
+			double Q;
+
 		protected:
 			FixedComponent(
 					const std::string& name, std::size_t index,
-					double C, double A
+					double C, double A, double Q
 					)
-				: Component(name, index), C(C), A(A) {
+				: Component(name, index), C(C), A(A), Q(Q) {
 				}
 
 		public:
@@ -342,6 +351,10 @@ namespace mineral {
 
 			double concentration() const override {
 				return C;
+			}
+
+			double quantity(double) const override {
+				return Q;
 			}
 
 			double activity(double) const override {
@@ -375,7 +388,7 @@ namespace mineral {
 			 * Defines a solvent.
 			 */
 			Solvent(const std::string& name, std::size_t id)
-				: FixedComponent(name, id, 0.0, 1.0) {
+				: FixedComponent(name, id, 1*mol/l, 1.0, 1*mol/l*V) {
 				}
 
 			Phase getPhase() const override {
@@ -429,6 +442,10 @@ namespace mineral {
 				return C;
 			}
 
+			double quantity(double concentration) const override {
+				return concentration*V;
+			}
+
 			double activity(double current_concentration) const override {
 				return current_concentration/(1*mol/l);
 			}
@@ -454,7 +471,7 @@ namespace mineral {
 			FixedAqueousComponent(
 					const std::string& name, std::size_t id,
 					double C)
-				: FixedComponent(name, id, C, C/(1*mol/l)) {
+				: FixedComponent(name, id, C, C/(1*mol/l), C*V) {
 				}
 
 			Phase getPhase() const override {
@@ -510,6 +527,10 @@ namespace mineral {
 			double N;
 
 		public:
+			static double sites_count(
+					double solid_concentration,
+					double specific_surface_area,
+					double site_concentration);
 			/**
 			 * Defines a MineralComponent.
 			 *
@@ -558,7 +579,7 @@ namespace mineral {
 					double site_concentration,
 					double fraction)
 				: Component(name, index), fraction(fraction),
-				N(V*solid_concentration*specific_surface_area*site_concentration) {
+				N(sites_count(solid_concentration, specific_surface_area, site_concentration)) {
 				}
 			
 			Phase getPhase() const override {
@@ -574,6 +595,10 @@ namespace mineral {
 			}
 			double concentration() const override {
 				return fraction;
+			}
+
+			double quantity(double fraction) const override {
+				return fraction * N;
 			}
 
 			double activity(double current_concentration) const override {
@@ -601,8 +626,16 @@ namespace mineral {
 		public:
 			FixedMineralComponent(
 					const std::string& name, std::size_t id,
-					double F)
-				: FixedComponent(name, id, F, F) {
+					double solid_concentration,
+					double specific_surface_area,
+					double site_concentration,
+					double F
+					)
+				: FixedComponent(name, id, F, F,
+						MineralComponent::sites_count(
+							solid_concentration, specific_surface_area,
+							site_concentration
+							)*F) {
 				}
 
 			Phase getPhase() const override {
@@ -773,6 +806,24 @@ namespace mineral {
 			}
 	};
 
+	class GuessF {
+		private:
+			const ChemicalSystem& system;
+			const Reaction& reaction;
+			const std::vector<double>& current_concentrations;
+
+		public:
+			GuessF(
+					const ChemicalSystem& system,
+					const Reaction& reaction,
+					const std::vector<double>& current_concentrations
+					) :
+				system(system), reaction(reaction),
+				current_concentrations(current_concentrations) {
+				}
+			double operator()(const double& extent) const;
+	};
+
 	/**
 	 * A ChemicalSystem is defined by a set of Components that interact
 	 * according to defined Reactions.
@@ -805,7 +856,6 @@ namespace mineral {
 
 			std::unordered_map<std::string, double> initial_guess_extents;
 
-			void guessInitialExtents();
 
 		public:
 			ChemicalSystem(const ChemicalSystem& other);
@@ -1030,6 +1080,8 @@ namespace mineral {
 			 * by the user.
 			 */
 			void initReactionMatrix();
+
+			const std::unordered_map<std::string, double>& guessInitialExtents();
 
 			/**
 			 * Solves the equilibrium of the system using the Newton method (see

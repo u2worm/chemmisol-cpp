@@ -1,5 +1,6 @@
 #include "chemmisol/chemical.h"
 #include "chemmisol/newton.h"
+#include "chemmisol/regula_falsi.h"
 
 #include <iostream>
 #include <limits>
@@ -14,6 +15,13 @@ namespace mineral {
 	 */
 
 	const double Component::V = 1*l;
+
+	double MineralComponent::sites_count(
+			double solid_concentration,
+			double specific_surface_area,
+			double site_concentration) {
+		return V*solid_concentration*specific_surface_area*site_concentration;
+	}
 
 	bool operator==(const ReactionComponent& c1, const ReactionComponent& c2) {
 		return c1.name == c2.name
@@ -114,6 +122,8 @@ namespace mineral {
 				case MINERAL:
 					fixed_component = new FixedMineralComponent(
 							name, index,
+							solid_concentration, specific_surface_area,
+							site_concentration,
 							concentration
 							);
 					break;
@@ -133,6 +143,8 @@ namespace mineral {
 				case MINERAL:
 					addComponent(new FixedMineralComponent(
 							name, component_index++,
+							solid_concentration, specific_surface_area,
+							site_concentration,
 							concentration
 							));
 					break;
@@ -176,11 +188,11 @@ namespace mineral {
 					"H+", AQUEOUS,
 					std::pow(10, -pH)*mol/l
 				);
-		addComponent(
-					"OH-", AQUEOUS,
-					std::pow(10, getReaction("OH-").getLogK())
-						/ std::pow(10, -pH)*mol/l
-				);
+		//addComponent(
+					//"OH-", AQUEOUS,
+					//std::pow(10, getReaction("OH-").getLogK())
+						/// std::pow(10, -pH)*mol/l
+				//);
 		//initPH(pH);
 		// A fake reaction that produces (or consumes) as much H+ as needed to
 		// fix the pH to the provided value
@@ -222,139 +234,184 @@ namespace mineral {
 		}
 	}
 
-	/*
-	 *void ChemicalSystem::guessInitialExtents() {
-	 *    for(const auto& reaction : getReactions()) {
-	 *            double reactives_activity = 1.0;
-	 *            double products_activity = 1.0;
-	 *            std::cout << "Reaction " << reaction->getName() << std::endl;
-	 *            for(const auto& reactive : reaction->getReagents()) {
-	 *                std::cout << "  " << reactive.name << "(" << reactive.coefficient << "): " << 
-	 *                        getComponent(reactive.name).activity() << std::endl;
-	 *                if(reactive.coefficient < 0.0)
-	 *                    products_activity *=
-	 *                        getComponent(reactive.name).activity();
-	 *                else if(reactive.coefficient > 0.0)
-	 *                    reactives_activity *=
-	 *                        getComponent(reactive.name).activity();
-	 *            }
-	 *            if(reactives_activity == 0.0 && products_activity == 0.0) {
-	 *                throw std::logic_error("Invalid reaction with missing reactives and products");
-	 *            } else {
-	 *                if(reactives_activity == 0.0) {
-	 *                    initial_guess_extents[reaction->getName()] = 1e-8;
-	 *                } else if (products_activity == 0.0) {
-	 *                    initial_guess_extents[reaction->getName()] = -1e-8;
-	 *                } else {
-	 *                    initial_guess_extents[reaction->getName()] = 0.0;
-	 *                }
-	 *            }
-	 *    }
-	 *}
-	 */
+	double GuessF::operator()(const double &extent) const {
+		double f = 0;
+		for(auto& reagent : reaction.getReagents()) {
+			//std::cout << "    " << reagent.name << " cc: " << current_concentrations[system.getComponent(reagent.name).getIndex()] << " + " << reagent.coefficient * extent
+				//<< " = " << system.getComponent(reagent.name).activity(
+					//current_concentrations,
+					//reagent.coefficient * extent
+					//)
+				//<< std::endl;
+			f += reagent.coefficient * log(system.getComponent(reagent.name).activity(
+					current_concentrations,
+					reagent.coefficient * extent
+					));
+		}
+		f += reaction.getLogK();
+		return f;
+	}
 
-	void ChemicalSystem::guessInitialExtents() {
+	const std::unordered_map<std::string, double>& ChemicalSystem::guessInitialExtents() {
 		for(const auto& reaction : getReactions()) {
 			if(initial_guess_extents.find(reaction->getName())
 					== initial_guess_extents.end()) {
 				// No manually specified guess extent: automatically compute one
 
-				double guess = 1.0;
-				std::cout << "Reaction " << reaction->getName()
-					<< " (" << reaction->getLogK() << ")" << std::endl;
+				double reactants_product = 1.0;
 				for(const auto& reagent : reaction->getReagents()) {
-					std::cout << "  " << reagent.name << "(" << reagent.coefficient << "): " << 
-						getComponent(reagent.name).activity() << std::endl;
 					if(reagent.coefficient > 0.0) {
-						std::cout << "* " <<
-							std::pow(getComponent(reagent.name).activity(), reagent.coefficient) << std::endl;
-
-						guess *=
+						reactants_product *=
 							std::pow(getComponent(reagent.name).activity(), reagent.coefficient);
 					}
 				}
-				if(guess == 0.0) {
+				if(reactants_product == 0.0) {
+					// TODO: support for this situation?
 					throw std::logic_error(
-							"Some reactives are missing: the problem is ill formed."
+							"Some reactants are missing: the problem is ill formed."
 							);
-				} else {
-					std::vector<const Reaction*> sorted_reactions;
-					for(auto& reaction : getReactions())
-						sorted_reactions.push_back(reaction.get());
-
-					std::sort(sorted_reactions.begin(), sorted_reactions.end(),
-							[] (const Reaction*& r1, const Reaction*& r2) {
-								return r1->getLogK() > r2->getLogK();
-							});
-					std::vector<double> estimated_activities(getComponents().size());
-					for(auto& component : getComponents())
-						estimated_activities[component->getIndex()]
-							= component->activity();
-
-					for(auto& reaction : sorted_reactions) {
-						double estimated_activity = std::pow(10, reaction->getLogK());
-
-						// Reactions sorted by log K values
-						const Component* limiting_reactive;
-						double limiting_reactive_coefficient = 0;
-						double smallest_activity = std::numeric_limits<double>::infinity();
-						for(auto& reagent : reaction->getReagents()) {
-							if(reagent.coefficient > 0.0) {
-								const Component& component = getComponent(reagent.name);
-								if(!component.isFixed()) {
-									if(estimated_activities[component.getIndex()]
-											< smallest_activity) {
-										limiting_reactive = &component;
-										limiting_reactive_coefficient = reagent.coefficient;
-									}
-								}
-							} 
-						}
-						std::vector<const Component*> variable_products;
-						double variable_products_coefficient_sum = 0.0;
-						for(auto& reagent : reaction->getReagents()) {
-								const Component& component = getComponent(reagent.name);
-							if(reagent.coefficient > 0.0) {
-								if(&component != limiting_reactive) {
-									// Non limiting reactives assumed fixed +
-									// already fixed reagents
-									estimated_activity *= std::pow(
-											estimated_activities[component.getIndex()],
-											reagent.coefficient
-											);
-								}
-							} else {
-								if(component.isFixed()) {
-									// Fixed product
-									estimated_activity *= std::pow(
-											estimated_activities[component.getIndex()],
-											reagent.coefficient
-											);
-								} else {
-									variable_products.push_back(&component);
-									variable_products_coefficient_sum+=reagent.coefficient;
-								}
-							}
-						}
-						double guess =
-							-estimated_activity * std::pow(
-									estimated_activities[limiting_reactive->getIndex()],
-									limiting_reactive_coefficient
-									) / (estimated_activity + 1);
-
-						initial_guess_extents[reaction->getName()] = guess;
-						for(auto& product : variable_products) {
-							estimated_activities[product->getIndex()]
-								+= std::pow(-guess, variable_products_coefficient_sum);
-						}
-						estimated_activities[limiting_reactive->getIndex()] += guess;
-
-						std::cout << "Extent guess for " << reaction->getName()
-							<< ": " << initial_guess_extents[reaction->getName()] << std::endl;
-					}
 				}
 			}
 		}
+		// Concentrations used in the incremental guess process
+		std::vector<double> guessed_concentrations(getComponents().size());
+		for(auto& component : getComponents())
+			guessed_concentrations[component->getIndex()]
+				= component->concentration();
+
+		// The overall idea of the guess process is that we have an initial
+		// quantity of reactives, specified by the user, and some null products.
+		// We need to:
+		// 1. initialize the products quantity to a non null value.
+		// 2. initialize it to a value as close as possible to the final
+		// equilibrium so the Newton method can converge.
+		//
+		// The logK() values are the first hint to find activities. Considering
+		// that all free products concentrations are null, reactions
+		// with a big positive logK() value will try to consume as much
+		// reactive as possible to maximise the products quantity and establish
+		// the equilibrium, while reactions with a big negative logK() value
+		// will only need to consumme a negligible quantity of reactives to
+		// establish the equilibrium.
+		//
+		// In order to estimate the final equilibrium, we start by ordering
+		// reactions by their logK() value, so that reactions that need a lot of
+		// reactives will be handled first. Then the algorithm consists in
+		// solving each reaction as if they where alone in the system. At each
+		// reaction, the estimated quantity of reactives consumed is updated in
+		// guessed_concentrations, so that the first reaction with big logK()
+		// value have a lot of reactives at the beginning, and the last one can
+		// still get close to the equilibrium from what's left.
+
+		std::vector<const Reaction*> sorted_reactions;
+		{
+			// Sort reactions by logK() values
+			for(auto& reaction : getReactions())
+				sorted_reactions.push_back(reaction.get());
+
+			std::sort(sorted_reactions.begin(), sorted_reactions.end(),
+					[] (const Reaction*& r1, const Reaction*& r2) {
+					// > instead of < so that the list is sorted in descending
+					// order
+					return r1->getLogK() > r2->getLogK();
+					});
+		}
+
+		for(auto& reaction : sorted_reactions) {
+			std::cout <<
+				"Try to guess extent for reaction " << reaction->getName() <<
+				" (log K = " << reaction->getLogK() << ")" << std::endl;
+
+			// Limiting reactive finding algorithm
+			//
+			// The limiting reactive is used to define the maximum possible
+			// extent of the reaction so that all reagent concentrations stay
+			// positive.
+			const Component* limiting_reactive;
+			double limiting_reactive_coefficient = 0;
+			double smallest_limiting_factor = std::numeric_limits<double>::infinity();
+
+			for(auto& reagent : reaction->getReagents()) {
+				if(reagent.coefficient > 0.0) {
+					// Consider only reactives
+					const Component& component = getComponent(reagent.name);
+					if(!component.isFixed()) {
+						// A fixed reactive cannot be limiting
+						double limiting_factor = component.quantity(
+								guessed_concentrations[component.getIndex()]
+								) / reagent.coefficient;
+						//std::cout << "  v " << reagent.coefficient << " c " << component.quantity(guessed_concentrations[component.getIndex()]) << " " << component.getName() << " ~ " << limiting_factor << std::endl;
+						if(limiting_factor < smallest_limiting_factor) {
+							limiting_reactive = &component;
+							limiting_reactive_coefficient = reagent.coefficient;
+							smallest_limiting_factor = limiting_factor;
+						}
+					}
+				} 
+			}
+
+			std::cout << "  Limiting reactive: " << limiting_reactive_coefficient
+				<< " " << limiting_reactive->getName() << " " << 
+				limiting_reactive_coefficient * smallest_limiting_factor << " mol/l"
+				<< std::endl;
+
+			// See the GuessF definition for more details.
+			// Return log(Q(x)) - logK where x is the extent of the reaction and
+			// Q is the reaction quotient with products at the numerator
+			GuessF f = GuessF(*this, *reaction, guessed_concentrations);
+
+			double max_N;
+			if(smallest_limiting_factor < std::numeric_limits<double>::infinity()) {
+				max_N = smallest_limiting_factor;
+			} else {
+				// In this case, there is no limiting factor. This for example
+				// the case for the reaction OH-: H2O <-> H+ + OH- where H2O is
+				// a solvent and H+ is fixed with the pH. Using a value of max_N
+				// = 1mol/l still allows to find the corresponding OH-
+				// concentration using the RegulaFalsi solver.
+				max_N = 1*mol/l;
+			}
+
+			//std::cout << 
+					//-(max_N) * (1 - std::numeric_limits<double>::epsilon())
+					//<< std::endl;
+
+			// Uses the RegulaFalsi method to find the root of f(x)=log(Q(x)) - logK
+			// Solutions are searched in ]-N, 0[ where N is the limiting factor.
+			// Due to the convention that products are specified with negative
+			// coefficients and that we find a solution that necessarily form
+			// products, extents considered are negative.
+			double guess_extent = RegulaFalsi<double>(
+					// Value just below 0
+					- std::numeric_limits<double>::min(),
+					// Value just above -N
+					//-(max_N) * (1 - std::numeric_limits<double>::epsilon()),
+					-(max_N) * (1 - std::numeric_limits<double>::epsilon()),
+					// Function to optimize
+					f
+					).solve_iter(10000);
+			// About std::numeric_limits<double>::epsilon():
+			// epsilon is the next float that can be represented after 1.0, so
+			// that it is the smallest quantity such that:
+			// 1.0 - epsilon < 1.0 < 1.0 + epsilon
+			// Multiplying this inequality by N gives the "just above -N" value.
+
+			std::cout << "  Guessed extent: " << guess_extent << std::endl;
+
+			// Set up the guessed value
+			initial_guess_extents[reaction->getName()] = guess_extent;
+			// Updates concentrations from the guessed extent, so that the
+			// system remains consistent for next reactions.
+			for(auto& reagent : reaction->getReagents()) {
+				auto& component = getComponent(reagent.name);
+				guessed_concentrations[component.getIndex()]
+					= component.concentration(
+							guessed_concentrations[component.getIndex()],
+							reagent.coefficient * guess_extent
+							);
+			}
+		}
+		return initial_guess_extents;
 	}
 
 	void ChemicalSystem::solveEquilibrium() {
