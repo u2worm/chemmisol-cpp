@@ -1,5 +1,6 @@
 #include "chemmisol/experiment.h"
 #include <unordered_map>
+#include "chemmisol/logging.h"
 
 namespace chemmisol {
 	Experiment::Experiment(
@@ -32,7 +33,7 @@ namespace chemmisol {
 		t = 0;
 		while(t < time) {
 			ChemicalSystem system_copy(base_system);
-			std::cout << "Exp pH: " << pH(t) << std::endl;
+			CHEM_LOG(INFO) << "Experiment pH: " << pH(t);
 			system_copy.fixPH(pH(t));
 
 			system_copy.solveEquilibrium();

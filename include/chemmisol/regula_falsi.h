@@ -42,18 +42,12 @@ namespace chemmisol {
 
 	template<typename F>
 		F RegulaFalsi<F>::solve_iter(F a, F b, F f_a, F f_b, std::size_t n) const {
-			//std::cout << "  a: " << a << std::endl;
-			//std::cout << "  b: " << b << std::endl;
-			//std::cout << "  fa: " << f_a << std::endl;
-			//std::cout << "  fb: " << f_b << std::endl;
 			if(f_a == f_b)
 				return a;
 			F c = (a * f_b - b * f_a) / (f_b - f_a);
 			if(n==0)
 				return c;
 			F f_c = f(c);
-			//std::cout << "  c: " << c << std::endl;
-			//std::cout << "  fc: " << f_c << std::endl;
 			if(f_c == 0.0)
 				return c;
 			if(f_c * f_a < 0)

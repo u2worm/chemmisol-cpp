@@ -7,6 +7,7 @@
 #include <memory>
 #include "linear.h"
 #include "units.h"
+#include "logging.h"
 
 namespace chemmisol {
 	class ChemicalSystem;
@@ -1031,8 +1032,8 @@ namespace chemmisol {
 
 			void setInitialGuessExtent(const std::string& reaction, double guess) {
 				initial_guess_extents[reaction] = guess;
-				std::cout << "User specified extent guess for " << reaction
-					<< ": " << guess << std::endl;
+				CHEM_LOG(INFO) << "User specified extent guess for " << reaction
+					<< ": " << guess;
 			}
 
 			double getInitialGuessExtent(const std::string& reaction) const {

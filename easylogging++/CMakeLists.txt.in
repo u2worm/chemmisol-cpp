@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.24)
+
+project(easylogging++-download)
+
+
+include(ExternalProject)
+ExternalProject_Add(
+	Easyloggingcpp
+	GIT_REPOSITORY https://github.com/abumq/easyloggingpp.git
+	GIT_TAG v9.97.0
+	SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/_deps/easyloggingcpp-src
+	BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/_deps/easyloggingcpp-build
+	BUILD_COMMAND "" # disabled
+	INSTALL_COMMAND "" # disabled
+	TEST_COMMAND "" # disabled
+	)
+

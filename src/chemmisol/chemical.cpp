@@ -251,12 +251,6 @@ namespace chemmisol {
 	double GuessF::operator()(const double &extent) const {
 		double f = 0;
 		for(auto& reagent : reaction.getReagents()) {
-			//std::cout << "    " << reagent.name << " cc: " << current_concentrations[system.getComponent(reagent.name).getIndex()] << " + " << reagent.coefficient * extent
-				//<< " = " << system.getComponent(reagent.name).activity(
-					//current_concentrations,
-					//reagent.coefficient * extent
-					//)
-				//<< std::endl;
 			f += reagent.coefficient * log(system.getComponent(reagent.name).activity(
 					current_concentrations,
 					reagent.coefficient * extent
@@ -344,9 +338,9 @@ namespace chemmisol {
 		}
 
 		for(auto& reaction : sorted_reactions) {
-			std::cout <<
+			CHEM_LOG(INFO) <<
 				"Try to guess extent for reaction " << reaction->getName() <<
-				" (log K = " << reaction->getLogK() << ")" << std::endl;
+				" (log K = " << reaction->getLogK() << ")";
 
 			// Limiting reactive finding algorithm
 			//
@@ -366,7 +360,6 @@ namespace chemmisol {
 						double limiting_factor = component.quantity(
 								guessed_concentrations[component.getIndex()]
 								) / reagent.coefficient;
-						//std::cout << "  v " << reagent.coefficient << " c " << component.quantity(guessed_concentrations[component.getIndex()]) << " " << component.getName() << " ~ " << limiting_factor << std::endl;
 						if(limiting_factor < smallest_limiting_factor) {
 							limiting_reactive = &component;
 							limiting_reactive_coefficient = reagent.coefficient;
@@ -383,10 +376,9 @@ namespace chemmisol {
 
 			double max_N;
 			if(smallest_limiting_factor < std::numeric_limits<double>::infinity()) {
-				std::cout << "  Limiting reactive: " << limiting_reactive_coefficient
+				CHEM_LOG(DEBUG) << "  Limiting reactive: " << limiting_reactive_coefficient
 					<< " " << limiting_reactive->getName() << " " << 
-					limiting_reactive_coefficient * smallest_limiting_factor << " mol/l"
-					<< std::endl;
+					limiting_reactive_coefficient * smallest_limiting_factor << " mol/l";
 
 				max_N = smallest_limiting_factor;
 			} else {
@@ -417,7 +409,7 @@ namespace chemmisol {
 			// 1.0 - epsilon < 1.0 < 1.0 + epsilon
 			// Multiplying this inequality by N gives the "just above -N" value.
 
-			std::cout << "  Guessed extent: " << guess_extent << std::endl;
+			CHEM_LOG(INFO) << "  Guessed extent: " << guess_extent;
 
 			// Set up the guessed value
 			initial_guess_extents[reaction->getName()] = guess_extent;
@@ -476,13 +468,13 @@ namespace chemmisol {
 			for(auto& reaction : system.getReactions()) {
 				const std::vector<double>& coefficients
 					= system.getReactionMatrix()[reaction->getIndex()];
-				std::cout << "Calc C from reaction " << reaction->getName() << std::endl;
+				CHEM_LOG(TRACE) << "Calc concentrations from reaction " << reaction->getName();
 				for(
 						std::size_t component_index = 0;
 						component_index < coefficients.size();
 						component_index++) {
 
-					std::cout << "  " <<
+					CHEM_LOG(TRACE) << "  " <<
 						system.getComponent(component_index).getName() << ": " <<
 						concentrations[component_index] << " + " <<
 						coefficients[component_index]*extent[reaction->getIndex()] << " = " <<
@@ -490,8 +482,7 @@ namespace chemmisol {
 								.concentration(
 									concentrations[component_index],
 									coefficients[component_index]*extent[reaction->getIndex()]
-									)
-						<< std::endl;
+									);
 					concentrations[component_index] =
 						system.getComponent(component_index)
 								.concentration(
@@ -506,10 +497,9 @@ namespace chemmisol {
 		}
 		X F::f(const X& extent) const {
 			X concentrations = this->concentrations(extent);
-			std::cout << "F concentrations: " << std::endl;
+			CHEM_LOG(TRACE) << "Init F concentrations: ";
 			for(auto& component : system.getComponents())
-				std::cout << "  " << component->getName() << " " << concentrations[component->getIndex()] << std::endl;
-			std::cout << std::endl;
+				CHEM_LOG(TRACE) << "  " << component->getName() << " " << concentrations[component->getIndex()];
 
 			X f(extent.size());
 			for(auto& reaction : system.getReactions()) {
@@ -566,32 +556,6 @@ namespace chemmisol {
 			// Initially all to 0
 			X init_extent(system.getReactions().size());
 			for(const auto& reaction : system.getReactions()) {
-				/*
-				 *double reactives_activity = 1.0;
-				 *double products_activity = 1.0;
-				 *std::cout << "Reaction " << reaction->getName() << std::endl;
-				 *for(const auto& reactive : reaction->getReagents()) {
-				 *    std::cout << "  " << reactive.name << "(" << reactive.coefficient << "): " << 
-				 *            system.getComponent(reactive.name).activity() << std::endl;
-				 *    if(reactive.coefficient < 0.0)
-				 *        products_activity *=
-				 *            system.getComponent(reactive.name).activity();
-				 *    else if(reactive.coefficient > 0.0)
-				 *        reactives_activity *=
-				 *            system.getComponent(reactive.name).activity();
-				 *}
-				 *if(reactives_activity == 0.0 && products_activity == 0.0) {
-				 *    throw std::logic_error("Invalid reaction with missing reactives and products");
-				 *} else {
-				 *    if(reactives_activity == 0.0) {
-				 *        init_extent[reaction->getIndex()] = 1e-8;
-				 *    } else if (products_activity == 0.0) {
-				 *        init_extent[reaction->getIndex()] = -1e-8;
-				 *    } else {
-				 *        init_extent[reaction->getIndex()] = 0.0;
-				 *    }
-				 *}
-				 */
 				init_extent[reaction->getIndex()]
 					= system.getInitialGuessExtent(reaction->getName());
 			}
@@ -602,143 +566,4 @@ namespace chemmisol {
 					).solve_iter(system.getMaxIteration());
 		}
 	}
-	}
-
-
-	/*
-	 *ChemicalSystem::ChemicalSystem(
-	 *        double _K1, double _K2, double _K3, double initPH,
-	 *        double H, double P, double C,
-	 *        double N,
-	 *        double S, double SH, double SP, double SC
-	 *        ) :
-	 *    _K1(_K1), _K2(_K2), _K3(_K3), _initPH(initPH),
-	 *    H(H), P(P), C(C), N(N), S(S), SH(SH), SP(SP), SC(SC) {
-	 *        std::cout << "[Init] Mineral weight: " << mineral_weight/kg << "kg" << std::endl;
-	 *        std::cout << "[Init] H: " << H/mol << "mol = " << (H/mol)/(V/l) << "mol/L" << std::endl;
-	 *        std::cout << "[Init] P: " << P/mol << "mol = " << (P/mol)/(V/l) << "mol/L = " <<
-	 *            ((P/entities)*(30.973*u)/mg) / (mineral_weight/kg) << "mg/kg" << std::endl;
-	 *        std::cout << "[Init] C: " << C/mol << "mol = " << (C/mol)/(V/l) << "mol/L = " <<
-	 *            ((C/entities)*(12.010*u)/mg) / (mineral_weight/kg) << "mg/kg" << std::endl;
-	 *        std::cout << "[Init] pH: " << this->initPH() << std::endl;
-	 *        std::cout << std::endl;
-	 *        std::cout << "[Init] N: " << N << " sites (mol)." << std::endl;
-	 *        std::cout << "[Init] S : " << S/mol << " sites (mol)." << std::endl;
-	 *        std::cout << "[Init] SH: " << SH/mol << " sites (mol)." << std::endl;
-	 *        std::cout << "[Init] SP: " << SP/mol << " sites (mol)." << std::endl;
-	 *        std::cout << "[Init] SC: " << SC/mol << " sites (mol)." << std::endl;
-	 *    }
-	 */
-
-/*
- *    ChemicalSystem ChemicalSystem::equilibrium(
- *            double K1, double K2, double K3, double pH,
- *            double solution_P, double solution_C,
- *            double mineral_N
- *            ) {
- *        double _K1 = K1/V;
- *        double _K2 = K2/std::pow(V, 2);
- *        double _K3 = K3/V;
- *        double H = V*std::pow(10, -pH)*mol/l;
- *        double P = ((mineral_weight * solution_P)/(30.973*u)) * entities;
- *        double C = ((mineral_weight * solution_C)/(12.010*u)) * entities;
- *        double N = mineral_N;
- *
- *        // Assumes that the system starts at equilibrium
- *        double S = N/(1+_K1*H+_K2*H*P+_K3*C); // S+SH+SP+SC=N
- *        double SH = _K1 * S * H;
- *        double SP = _K2 * S * P * H;
- *        double SC = _K3 * S * C;
- *
- *        return ChemicalSystem(
- *                _K1, _K2, _K3, pH,
- *                H, P, C, N,
- *                S, SH, SP, SC);
- *    }
- */
-
-	/*
-	 *ChemicalSystem ChemicalSystem::defaultEquilibrium() {
-	 *    return equilibrium(
-	 *            std::pow(10, 8.5), // K1
-	 *            std::pow(10, 26.3), // K2
-	 *            std::pow(10, 0.6), // K3
-	 *            7.5, // pH
-	 *            1.43e-6 * gram / gram, // 1.43e-6 grams of P in solution by gram of soil
-	 *            729.0e-6 * gram / gram, // 729.0e-6 grams of C in solution by gram of soil
-	 *            1.45e19 * entities / gram * mineral_weight // 1.45e19 sites by gram of soil
-	 *            );
-	 *}
-	 */
-
-	/*
-	 *ChemicalSystem ChemicalSystem::Devau2011Control() {
-	 *    return equilibrium(
-	 *            // Kaolinite
-	 *            std::pow(10, 4.36),
-	 *            std::pow(10, 23),
-	 *            std::pow(10, 1),
-	 *            6.5,
-	 *            (279-69)*mg/kg,
-	 *            9.80*gram/kg,
-	 *            (6.15*entities/nm2)*(105*m2/gram)*(20.12*gram/l)*V
-	 *            );
-	 *}
-	 */
-
-	/*
-	 *ChemicalSystem ChemicalSystem::soilParameters(
-	 *            double K1, double K2, double K3,
-	 *            double pH, double mineral_P, double mineral_C,
-	 *            double mineral_N
-	 *            ) {
-	 *    double _K1 = K1/V;
-	 *    double _K2 = K2/std::pow(V, 2);
-	 *    double _K3 = K3/V;
-	 *    double N = mineral_N * mineral_weight;
-	 *    double H = V*std::pow(10, -pH)*mol/l;
-	 *    double P = ((mineral_weight * mineral_P)/(30.973*u)) * entities;
-	 *    double C = ((mineral_weight * mineral_C)/(12.010*u)) * entities;
-	 *
-	 *    ChemicalSystem system(
-	 *            _K1, _K2, _K3,
-	 *            H/2, P/2, C/2, N,
-	 *            S, H/2, P/2, C/2);
-	 *    system.setPH(pH);
-	 *    return system;
-	 *}
-	 */
-
-	/*
-	 *ChemicalSystem ChemicalSystem::defaultSoil() {
-	 *    return soilParameters(
-	 *            std::pow(10, 8.5), // K1
-	 *            std::pow(10, 26.3), // K2
-	 *            std::pow(10, 0.6), // K3
-	 *            7.5, // pH
-	 *            1.43e-6 * gram / gram, // 1.43e-6 grams of P in solution by gram of soil
-	 *            729.0e-6 * gram / gram, // 729.0e-6 grams of C in solution by gram of soil
-	 *            1.45e19 * entities / gram // 1.45e19 sites by gram of soil
-	 *            );
-	 *}
-	 */
-
-	/*
-	 *X ChemicalSystem::reactionQuotient() const {
-	 *    return {{
-	 *        0,
-	 *        SH / (S*H),
-	 *        SP / (S*H*P),
-	 *        SC / (S*C)
-	 *    }};
-	 *}
-	 *
-	 *void ChemicalSystem::distanceToEquilibrium() const {
-	 *    X reaction_quotient = reactionQuotient();
-	 *    std::cout << "pH: " << -std::log10((H/V)/(mol/l)) << std::endl;
-	 *    std::cout << "K1: " << reaction_quotient[1]/_K1 << std::endl;
-	 *    std::cout << "K2: " << reaction_quotient[2]/_K2 << std::endl;
-	 *    std::cout << "K3: " << reaction_quotient[3]/_K3 << std::endl;
-	 *}
-	 */
-
+}

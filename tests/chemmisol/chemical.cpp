@@ -330,8 +330,9 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction) {
 
 	checkEquilibrium();
 
+	CHEM_LOG(INFO) << "Basic NaCl reaction equilibrium test:";
 	for(auto& component : chemical_system.getComponents())
-		std::cout << component->getName() << ": " << component->concentration()/(1*mol/l) << " mol/l" << std::endl;
+		CHEM_LOG(INFO) << "  " << component->getName() << ": " << component->concentration()/(1*mol/l) << " mol/l";
 }
 
 TEST_F(ChemicalSystemTest, test_pH) {

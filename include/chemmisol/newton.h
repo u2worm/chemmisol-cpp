@@ -1,6 +1,7 @@
 #include <functional>
 #include <cmath>
 #include "gauss.h"
+#include "logging.h"
 
 namespace chemmisol {
 	template<typename T>
@@ -46,9 +47,9 @@ namespace chemmisol {
 
 	template<typename X, typename M>
 		X Newton<X, M>::solve_eps(const X& x, const X& f_x, float epsilon) const {
-			std::cout << "[NEWTON] Current X: " << x << std::endl;
-			std::cout << "[NEWTON] Current F(X): " << f_x << std::endl;
-			std::cout << "[NEWTON] Epsilon: " << norm(f_x) << std::endl;
+			CHEM_LOG(TRACE) << "[NEWTON] Current X: " << x;
+			CHEM_LOG(TRACE) << "[NEWTON] Current F(X): " << f_x;
+			CHEM_LOG(TRACE) << "[NEWTON] (e=" << epsilon << ") Epsilon: " << norm(f_x);
 			if(norm(f_x) < epsilon)
 				return x;
 			X _x = gauss::solve(df(x), -f_x);
@@ -58,9 +59,9 @@ namespace chemmisol {
 
 	template<typename X, typename M>
 		X Newton<X, M>::solve_iter(const X& x, const X& f_x, std::size_t n) const {
-			std::cout << "[NEWTON] Current X: " << x << std::endl;
-			std::cout << "[NEWTON] Current F(X): " << f_x << std::endl;
-			std::cout << "[NEWTON] Epsilon: " << norm(f_x) << std::endl;
+			CHEM_LOG(TRACE) << "[NEWTON] Current X: " << x;
+			CHEM_LOG(TRACE) << "[NEWTON] Current F(X): " << f_x;
+			CHEM_LOG(TRACE) << "[NEWTON] (n=" << n << ") Epsilon: " << norm(f_x);
 			if(n == 0)
 				return x;
 			X _x = gauss::solve(df(x), -f_x);

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <array>
+#include "logging.h"
 
 namespace chemmisol { namespace gauss {
 	template<typename X, typename A>
@@ -7,15 +8,12 @@ namespace chemmisol { namespace gauss {
 
 	template<typename M, typename X>
 		X solve(const M& m, const X& x) {
-			std::cout << "[GAUSS START]" << std::endl;
+			CHEM_LOG(TRACE) << "[GAUSS START]";
 			auto _m = augment(m, x);
 			std::size_t n = _m.size();
-			std::cout << "Step 0:" << std::endl;
+			CHEM_LOG(TRACE) << "Step 0:";
 			for(std::size_t i = 0; i < n; i++) {
-				for(std::size_t j = 0; j < _m[i].size(); j++) {
-					std::cout << _m[i][j] << ", ";
-				}
-				std::cout << std::endl;
+				CHEM_LOG(TRACE) << _m[i];
 			}
 
 			for(std::size_t i = 0; i < n; i++) {
@@ -27,13 +25,11 @@ namespace chemmisol { namespace gauss {
 				}
 			}
 
-			std::cout << "Step 1:" << std::endl;
+			CHEM_LOG(TRACE) << "Step 1:";
 			for(std::size_t i = 0; i < n; i++) {
-				for(std::size_t j = 0; j < _m[i].size(); j++) {
-					std::cout << _m[i][j] << ", ";
-				}
-				std::cout << std::endl;
+				CHEM_LOG(TRACE) << _m[i];
 			}
+			
 			X _x = x;
 			_x[n-1] = _m[n-1][n]/_m[n-1][n-1];
 
@@ -44,10 +40,10 @@ namespace chemmisol { namespace gauss {
 				}
 				_x[i] = _x[i]/_m[i][i];
 			}
-			std::cout << "Step 2:" << std::endl;
+			CHEM_LOG(TRACE) << "Step 2:";
 			for(std::size_t i = 0; i < _x.size(); i++)
-				std::cout << "x[" << i << "]=" << _x[i] << std::endl;
-			std::cout << "[GAUSS END]" << std::endl << std::endl;
+				CHEM_LOG(TRACE) << "x[" << i << "]=" << _x[i];
+			CHEM_LOG(TRACE) << "[GAUSS END]";
 			return _x;
 		}
 
