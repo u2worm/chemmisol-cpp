@@ -102,6 +102,15 @@ namespace chemmisol {
 			return std::sqrt(a);
 		}
 
+	template<typename T, int N>
+		X<T, N> abs(const X<T, N>& x) {
+			X<T, N> abs_x;
+			for(std::size_t i = 0; i < N; i++)
+				abs_x[i] = std::abs(x[i]);
+			return abs_x;
+		}
+
+
 	template<typename _M>
 		M<typename _M::coef_type, _M::n, _M::p+1>
 		augment(const _M& m, const X<typename _M::coef_type, _M::n>& x) {
@@ -163,6 +172,14 @@ namespace chemmisol {
 				a+=std::pow(v, 2);
 			}
 			return std::sqrt(a);
+		}
+
+	template<typename T>
+		VecX<T> abs(const VecX<T>& x) {
+			VecX<T> abs_x(x);
+			for(std::size_t i = 0; i < x.size(); i++)
+				abs_x[i] = std::abs(x[i]);
+			return abs_x;
 		}
 
 	template<typename T>

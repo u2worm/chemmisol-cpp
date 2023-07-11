@@ -1,0 +1,7 @@
+<map id="chemmisol::FixedMineralComponent" name="chemmisol::FixedMineralComponent">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,155,239,181"/>
+<area shape="rect" id="Node000002" href="$classchemmisol_1_1FixedComponent.html" title=" " alt="" coords="26,80,218,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="125,122,125,154,119,154,119,122"/>
+<area shape="rect" id="Node000003" href="$classchemmisol_1_1Component.html" title=" " alt="" coords="42,5,202,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="125,47,125,80,119,80,119,47"/>
+</map>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['x_0',['X',['../namespacemineral_1_1solver.html#a059039ee8a8a133d568ae67e9e994828',1,'mineral::solver']]]
+  ['x_0',['X',['../namespacechemmisol_1_1solver.html#acef248f3f6f278c7508316b120550faa',1,'chemmisol::solver']]]
 ];

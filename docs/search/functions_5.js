@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['incrementconcentration_0',['incrementConcentration',['../classmineral_1_1Component.html#a24982a6ec3f9e1b6bb04b6f3e07df8bc',1,'mineral::Component::incrementConcentration()'],['../classmineral_1_1FixedComponent.html#ab9226f1a78f6e0e353bfa531bfa1a1e5',1,'mineral::FixedComponent::incrementConcentration()'],['../classmineral_1_1AqueousComponent.html#acc3ad29b4e8e1ade9ec3e06d54bc8d33',1,'mineral::AqueousComponent::incrementConcentration()'],['../classmineral_1_1MineralComponent.html#a7f4a33879e88cbea7d80c5231c125455',1,'mineral::MineralComponent::incrementConcentration()']]],
-  ['initph_1',['initPH',['../classmineral_1_1ChemicalSystem.html#a373e932bd0e95e6ccda7e95c0b2e16b5',1,'mineral::ChemicalSystem']]],
-  ['initreactionmatrix_2',['initReactionMatrix',['../classmineral_1_1ChemicalSystem.html#a0a52f6e9471643e5a48840b9c053e9fe',1,'mineral::ChemicalSystem']]]
+  ['incrementconcentration_0',['incrementConcentration',['../classchemmisol_1_1Component.html#ad32f496a67621e76493ba222ab5b7b66',1,'chemmisol::Component::incrementConcentration()'],['../classchemmisol_1_1FixedComponent.html#a6d1e818aebaf79aea673d4a1386e68bc',1,'chemmisol::FixedComponent::incrementConcentration()'],['../classchemmisol_1_1AqueousComponent.html#a59c769005884551efcd579be5a26ef93',1,'chemmisol::AqueousComponent::incrementConcentration()'],['../classchemmisol_1_1MineralComponent.html#a57dcebd732f14cc5ae0bbef04bbd8593',1,'chemmisol::MineralComponent::incrementConcentration()']]],
+  ['initph_1',['initPH',['../classchemmisol_1_1ChemicalSystem.html#a4c4ed3274fa42003de15285cbc3cc91a',1,'chemmisol::ChemicalSystem']]],
+  ['initreactionmatrix_2',['initReactionMatrix',['../classchemmisol_1_1ChemicalSystem.html#ad3515212f15e303fdc115285997346cd',1,'chemmisol::ChemicalSystem']]]
 ];

@@ -8,6 +8,11 @@ namespace chemmisol {
 			return std::abs(x);
 		}
 
+	template<typename T>
+		T abs(const T& x) {
+			return std::abs(x);
+		}
+
 	template<typename X, typename M>
 		class Newton {
 			X x0;

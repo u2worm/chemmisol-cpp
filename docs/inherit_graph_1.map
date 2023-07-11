@@ -1,15 +1,15 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$classmineral_1_1Component.html" title=" " alt="" coords="5,56,144,83"/>
-<area shape="rect" id="Node000001" href="$classmineral_1_1AqueousComponent.html" title=" " alt="" coords="192,5,381,32"/>
-<area shape="poly" id="edge1_Node000000_Node000001" title=" " alt="" coords="147,49,227,30,228,35,148,55"/>
-<area shape="rect" id="Node000002" href="$classmineral_1_1FixedComponent.html" title=" " alt="" coords="201,56,372,83"/>
-<area shape="poly" id="edge2_Node000000_Node000002" title=" " alt="" coords="159,67,201,67,201,72,159,72"/>
-<area shape="rect" id="Node000006" href="$classmineral_1_1MineralComponent.html" title=" " alt="" coords="196,107,377,133"/>
-<area shape="poly" id="edge6_Node000000_Node000006" title=" " alt="" coords="148,84,228,103,227,109,147,89"/>
-<area shape="rect" id="Node000003" href="$classmineral_1_1FixedAqueousComponent.html" title=" " alt="" coords="429,5,650,32"/>
-<area shape="poly" id="edge3_Node000002_Node000003" title=" " alt="" coords="371,50,469,30,470,35,372,55"/>
-<area shape="rect" id="Node000004" href="$classmineral_1_1FixedMineralComponent.html" title=" " alt="" coords="434,56,646,83"/>
-<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="386,67,433,67,433,72,386,72"/>
-<area shape="rect" id="Node000005" href="$classmineral_1_1Solvent.html" title=" " alt="" coords="482,107,597,133"/>
-<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="372,84,482,106,481,111,370,89"/>
+<area shape="rect" id="Node000000" href="$classchemmisol_1_1Component.html" title=" " alt="" coords="5,56,165,83"/>
+<area shape="rect" id="Node000001" href="$classchemmisol_1_1AqueousComponent.html" title=" " alt="" coords="213,5,423,32"/>
+<area shape="poly" id="edge1_Node000000_Node000001" title=" " alt="" coords="163,50,253,30,254,35,164,55"/>
+<area shape="rect" id="Node000002" href="$classchemmisol_1_1FixedComponent.html" title=" " alt="" coords="222,56,414,83"/>
+<area shape="poly" id="edge2_Node000000_Node000002" title=" " alt="" coords="179,67,222,67,222,72,179,72"/>
+<area shape="rect" id="Node000006" href="$classchemmisol_1_1MineralComponent.html" title=" " alt="" coords="217,107,419,133"/>
+<area shape="poly" id="edge6_Node000000_Node000006" title=" " alt="" coords="164,84,254,103,253,109,163,89"/>
+<area shape="rect" id="Node000003" href="$classchemmisol_1_1FixedAqueousComponent.html" title=" " alt="" coords="471,5,713,32"/>
+<area shape="poly" id="edge3_Node000002_Node000003" title=" " alt="" coords="408,50,516,30,517,35,409,55"/>
+<area shape="rect" id="Node000004" href="$classchemmisol_1_1FixedMineralComponent.html" title=" " alt="" coords="476,56,709,83"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="428,67,475,67,475,72,428,72"/>
+<area shape="rect" id="Node000005" href="$classchemmisol_1_1Solvent.html" title=" " alt="" coords="524,107,660,133"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="409,83,524,105,523,110,408,89"/>
 </map>

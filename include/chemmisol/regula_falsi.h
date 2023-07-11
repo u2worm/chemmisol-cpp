@@ -32,7 +32,7 @@ namespace chemmisol {
 			F f_b = f(b_0);
 			if(f_a*f_b > 0)
 				throw std::logic_error(
-						"f(a_0) = " + std::to_string(f_a) +
+						" f(a_0) = " + std::to_string(f_a) +
 						" and f(b_0) " + std::to_string(f_b) +
 						" should be of opposite signs. (a_0=" +
 						std::to_string(a_0) + ", b_0=" + std::to_string(b_0) + ")"

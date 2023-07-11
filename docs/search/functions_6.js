@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['mineralcomponent_0',['MineralComponent',['../classmineral_1_1MineralComponent.html#a065e25f5b40e89c6d3883afa841c6340',1,'mineral::MineralComponent']]]
+  ['mineralcomponent_0',['MineralComponent',['../classchemmisol_1_1MineralComponent.html#ab304ef14e7dc890f8465ce43ad16240a',1,'chemmisol::MineralComponent']]]
 ];

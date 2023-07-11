@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['x_0',['X',['../structmineral_1_1X.html',1,'mineral']]]
+  ['solvent_0',['Solvent',['../classchemmisol_1_1Solvent.html',1,'chemmisol']]]
 ];

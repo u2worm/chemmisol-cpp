@@ -15,6 +15,8 @@ namespace chemmisol {
 		SOLVENT, AQUEOUS, MINERAL
 	};
 
+	std::ostream& operator<<(std::ostream& o, const Phase& phase);
+
 	/**
 	 * Namespace containing solver features.
 	 */

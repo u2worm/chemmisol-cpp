@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['newton_0',['Newton',['../classmineral_1_1Newton.html',1,'mineral']]]
+  ['m_0',['M',['../structchemmisol_1_1M.html',1,'chemmisol']]],
+  ['mineralcomponent_1',['MineralComponent',['../classchemmisol_1_1MineralComponent.html',1,'chemmisol']]]
 ];

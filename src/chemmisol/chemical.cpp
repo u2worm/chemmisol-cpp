@@ -14,6 +14,20 @@ namespace chemmisol {
 	 *const double ChemicalSystem::mineral_weight  = V*bulk_density;
 	 */
 
+	std::ostream& operator<<(std::ostream& o, const Phase& phase) {
+		switch(phase) {
+			case SOLVENT:
+				o << "SOLVENT";
+				break;
+			case AQUEOUS:
+				o << "AQUEOUS";
+				break;
+			case MINERAL:
+				o << "MINERAL";
+		}
+		return o;
+	}
+
 	const double Component::V = 1*l;
 
 	double MineralComponent::sites_count(
@@ -305,9 +319,21 @@ namespace chemmisol {
 
 		std::vector<const Reaction*> sorted_reactions;
 		{
+
 			// Sort reactions by logK() values
-			for(auto& reaction : getReactions())
-				sorted_reactions.push_back(reaction.get());
+			for(auto& reaction : getReactions()) {
+				double products_product = 1.0;
+				for(const auto& reagent : reaction->getReagents()) {
+					if(reagent.coefficient < 0.0) {
+						products_product *= getComponent(reagent.name).activity();
+					}
+				}
+				if(products_product == 0.0) {
+					// The guess algorithm can only be used when at least one
+					// product is missing
+					sorted_reactions.push_back(reaction.get());
+				}
+			}
 
 			std::sort(sorted_reactions.begin(), sorted_reactions.end(),
 					[] (const Reaction*& r1, const Reaction*& r2) {
@@ -350,11 +376,6 @@ namespace chemmisol {
 				} 
 			}
 
-			std::cout << "  Limiting reactive: " << limiting_reactive_coefficient
-				<< " " << limiting_reactive->getName() << " " << 
-				limiting_reactive_coefficient * smallest_limiting_factor << " mol/l"
-				<< std::endl;
-
 			// See the GuessF definition for more details.
 			// Return log(Q(x)) - logK where x is the extent of the reaction and
 			// Q is the reaction quotient with products at the numerator
@@ -362,6 +383,11 @@ namespace chemmisol {
 
 			double max_N;
 			if(smallest_limiting_factor < std::numeric_limits<double>::infinity()) {
+				std::cout << "  Limiting reactive: " << limiting_reactive_coefficient
+					<< " " << limiting_reactive->getName() << " " << 
+					limiting_reactive_coefficient * smallest_limiting_factor << " mol/l"
+					<< std::endl;
+
 				max_N = smallest_limiting_factor;
 			} else {
 				// In this case, there is no limiting factor. This for example
@@ -372,10 +398,6 @@ namespace chemmisol {
 				max_N = 1*mol/l;
 			}
 
-			//std::cout << 
-					//-(max_N) * (1 - std::numeric_limits<double>::epsilon())
-					//<< std::endl;
-
 			// Uses the RegulaFalsi method to find the root of f(x)=log(Q(x)) - logK
 			// Solutions are searched in ]-N, 0[ where N is the limiting factor.
 			// Due to the convention that products are specified with negative
@@ -385,7 +407,6 @@ namespace chemmisol {
 					// Value just below 0
 					- std::numeric_limits<double>::min(),
 					// Value just above -N
-					//-(max_N) * (1 - std::numeric_limits<double>::epsilon()),
 					-(max_N) * (1 - std::numeric_limits<double>::epsilon()),
 					// Function to optimize
 					f
