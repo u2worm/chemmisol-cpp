@@ -31,9 +31,9 @@ else()
 	configure_file(easylogging++/CMakeLists.txt.in
 		easylogging-download/CMakeLists.txt)
 	execute_process(COMMAND ${CMAKE_COMMAND} .
-		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/easylogging-download)
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/easylogging-download)
 	execute_process(COMMAND ${CMAKE_COMMAND} --build .
-		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/easylogging-download) 
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/easylogging-download) 
 	set(EASYLOGGING_SRC_PATH
 		${CMAKE_CURRENT_BINARY_DIR}/_deps/easyloggingcpp-src/src
 		)
