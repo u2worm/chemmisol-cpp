@@ -143,6 +143,10 @@ namespace chemmisol {
 					break;
 				case SOLVENT:
 					fixed_component = new Solvent(name, index);
+					break;
+				default:
+					// Should not append
+					fixed_component = nullptr;
 			}
 			components[index].reset(fixed_component);
 			existing_component->second = fixed_component;
@@ -347,7 +351,7 @@ namespace chemmisol {
 			// The limiting reactive is used to define the maximum possible
 			// extent of the reaction so that all reagent concentrations stay
 			// positive.
-			const Component* limiting_reactive;
+			const Component* limiting_reactive = nullptr;
 			double limiting_reactive_coefficient = 0;
 			double smallest_limiting_factor = std::numeric_limits<double>::infinity();
 
@@ -375,7 +379,7 @@ namespace chemmisol {
 			GuessF f = GuessF(*this, *reaction, guessed_concentrations);
 
 			double max_N;
-			if(smallest_limiting_factor < std::numeric_limits<double>::infinity()) {
+			if(limiting_reactive != nullptr) {
 				CHEM_LOG(DEBUG) << "  Limiting reactive: " << limiting_reactive_coefficient
 					<< " " << limiting_reactive->getName() << " " << 
 					limiting_reactive_coefficient * smallest_limiting_factor << " mol/l";

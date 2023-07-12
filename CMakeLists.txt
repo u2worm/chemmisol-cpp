@@ -5,24 +5,22 @@ project(chemmisol VERSION 0.1)
 # GoogleTest requires at least C++14
 set(CMAKE_CXX_STANDARD 14)
 
+set(CHEMMISOL_MEMORY_SANITIZE NO CACHE BOOL "Enables -fsanitize=address.")
+
 set(CMAKE_CXX_FLAGS_DEBUG "\
 ${CMAKE_CXX_FLAGS_DEBUG} -std=c++14 \
--Wall -Wextra -Wpedantic -Werror -Wno-error=pedantic \
+-Wall -Wextra -Wpedantic -Wno-error=pedantic \
 -Woverloaded-virtual -Wnon-virtual-dtor \
--fsanitize=address \
 -Wno-range-loop-construct \
 ")
+if(CHEMMISOL_MEMORY_SANITIZE)
+	message(STATUS "Enabling -fsanitize=address")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address")
+endif()
 
 set(CHEMMISOL_LOCAL_EASYLOGGING "" CACHE PATH
 	"Path to easylogging++ sources. If not specified, sources will be downloaded at configure time."
 )
-
-if($<CONFIG:Debug>$) 
-	message(STATUS "DEBUG")
-endif()
-if($<CONFIG:Release>$) 
-	message(STATUS "RELEASE")
-endif()
 
 if(CHEMMISOL_LOCAL_EASYLOGGING)
 	set(EASYLOGGING_SRC_PATH ${CHEMMISOL_LOCAL_EASYLOGGING})
