@@ -3,13 +3,12 @@
 INITIALIZE_EASYLOGGINGPP
 
 namespace chemmisol {
-	static el::Logger* init_logger();
 	void log_file(el::Logger*, const std::string&, bool);
 
-	el::Logger* chemmisol_core_logger = init_logger();
+	el::Logger* chemmisol_core_logger = init_logger(CHEM_CORE_LOGID);
 
-	static el::Logger* init_logger() {
-		el::Logger* logger = el::Loggers::getLogger(CHEM_CORE_LOGID);
+	el::Logger* init_logger(const char* logger_id) {
+		el::Logger* logger = el::Loggers::getLogger(logger_id);
 
 		el::Configurations chemmisol_core_logger_configuration;
 		// Global format
