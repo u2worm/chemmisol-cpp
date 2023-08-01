@@ -3,6 +3,13 @@
 #include <cstddef>
 #include <regex>
 
+namespace chemmisol {
+	std::ostream& operator<<(std::ostream& o, const ChemicalSpecies& s) {
+		o << "{i:" << s.getIndex() << ", name:" << s.getName() << ", phase:" << s.getPhase() << "}";
+		return o;
+	}
+}
+
 using namespace testing;
 using namespace chemmisol;
 
@@ -33,6 +40,7 @@ class ChemicalSystemTest : public Test {
 
 		chemical_system.addComponent("Na+", 0.1*mol/l);
 		chemical_system.addComponent("Cl-", 0.1*mol/l);
+		// Automatically adds the H+ component
 		chemical_system.fixPH(7);
 
 		chemical_system.initReactionMatrix();
@@ -43,13 +51,13 @@ class ChemicalSystemTest : public Test {
 		const double x_1 = x[chemical_system.getReaction("NaCl").getIndex()];
 		const double x_2 = x[chemical_system.getReaction("NaOH").getIndex()];
 
-		double h = chemical_system.getComponent("H+").concentration();
-		double ho = chemical_system.getComponent("OH-").concentration();
-		double nacl = chemical_system.getComponent("NaCl").concentration();
-		double na = chemical_system.getComponent("Na+").concentration();
-		double cl = chemical_system.getComponent("Cl-").concentration();
-		double naoh = chemical_system.getComponent("NaOH").concentration();
-		const double V = Component::V;
+		double h = chemical_system.getSpecies("H+").concentration();
+		double ho = chemical_system.getSpecies("OH-").concentration();
+		double nacl = chemical_system.getSpecies("NaCl").concentration();
+		double na = chemical_system.getSpecies("Na+").concentration();
+		double cl = chemical_system.getSpecies("Cl-").concentration();
+		double naoh = chemical_system.getSpecies("NaOH").concentration();
+		const double V = AqueousSpecies::V;
 
 		//h += (-x_0-x_2)/V;
 		h += 0; // Fixed
@@ -60,24 +68,24 @@ class ChemicalSystemTest : public Test {
 		naoh += -x_2/V;
 
 		std::array<double, 7> concentrations;
-		concentrations[chemical_system.getComponent("H+").getIndex()] = h;
-		concentrations[chemical_system.getComponent("OH-").getIndex()] = ho;
-		concentrations[chemical_system.getComponent("NaCl").getIndex()] = nacl;
-		concentrations[chemical_system.getComponent("Na+").getIndex()] = na;
-		concentrations[chemical_system.getComponent("Cl-").getIndex()] = cl;
-		concentrations[chemical_system.getComponent("NaOH").getIndex()] = naoh;
+		concentrations[chemical_system.getSpecies("H+").getIndex()] = h;
+		concentrations[chemical_system.getSpecies("OH-").getIndex()] = ho;
+		concentrations[chemical_system.getSpecies("NaCl").getIndex()] = nacl;
+		concentrations[chemical_system.getSpecies("Na+").getIndex()] = na;
+		concentrations[chemical_system.getSpecies("Cl-").getIndex()] = cl;
+		concentrations[chemical_system.getSpecies("NaOH").getIndex()] = naoh;
 
 		return concentrations;
 	}
 	std::array<double, 3> analytical_f(const std::array<double, 3>& x) const {
 		auto concentrations = analytical_concentrations(x);
 		
-		const double h = concentrations[chemical_system.getComponent("H+").getIndex()];
-		const double ho = concentrations[chemical_system.getComponent("OH-").getIndex()];
-		const double nacl = concentrations[chemical_system.getComponent("NaCl").getIndex()];
-		const double na = concentrations[chemical_system.getComponent("Na+").getIndex()];
-		const double cl = concentrations[chemical_system.getComponent("Cl-").getIndex()];
-		const double naoh = concentrations[chemical_system.getComponent("NaOH").getIndex()];
+		const double h = concentrations[chemical_system.getSpecies("H+").getIndex()];
+		const double ho = concentrations[chemical_system.getSpecies("OH-").getIndex()];
+		const double nacl = concentrations[chemical_system.getSpecies("NaCl").getIndex()];
+		const double na = concentrations[chemical_system.getSpecies("Na+").getIndex()];
+		const double cl = concentrations[chemical_system.getSpecies("Cl-").getIndex()];
+		const double naoh = concentrations[chemical_system.getSpecies("NaOH").getIndex()];
 
 		std::array<double, 3> f_x;
 		f_x[chemical_system.getReaction("OH-").getIndex()]
@@ -93,11 +101,11 @@ class ChemicalSystemTest : public Test {
 		std::array<std::array<double, 3>, 3> df_x;
 		auto concentrations = analytical_concentrations(x);
 		
-		const double ho = concentrations[chemical_system.getComponent("OH-").getIndex()];
-		const double nacl = concentrations[chemical_system.getComponent("NaCl").getIndex()];
-		const double na = concentrations[chemical_system.getComponent("Na+").getIndex()];
-		const double cl = concentrations[chemical_system.getComponent("Cl-").getIndex()];
-		const double naoh = concentrations[chemical_system.getComponent("NaOH").getIndex()];
+		const double ho = concentrations[chemical_system.getSpecies("OH-").getIndex()];
+		const double nacl = concentrations[chemical_system.getSpecies("NaCl").getIndex()];
+		const double na = concentrations[chemical_system.getSpecies("Na+").getIndex()];
+		const double cl = concentrations[chemical_system.getSpecies("Cl-").getIndex()];
+		const double naoh = concentrations[chemical_system.getSpecies("NaOH").getIndex()];
 
 		// df HO-
 		{
@@ -128,9 +136,9 @@ class ChemicalSystemTest : public Test {
 	void checkEquilibrium() {
 		{
 			// Check OH-
-			double H2O = chemical_system.getComponent("H2O").activity();
-			double H = chemical_system.getComponent("H+").activity();
-			double OH = chemical_system.getComponent("OH-").activity();
+			double H2O = chemical_system.getSpecies("H2O").activity();
+			double H = chemical_system.getSpecies("H+").activity();
+			double OH = chemical_system.getSpecies("OH-").activity();
 			ASSERT_FLOAT_EQ(
 					std::log10((H*OH)/H2O),
 					chemical_system.getReaction("OH-").getLogK()
@@ -138,9 +146,9 @@ class ChemicalSystemTest : public Test {
 		}
 		{
 			// Check NaCl
-			double NaCl = chemical_system.getComponent("NaCl").activity();
-			double Na = chemical_system.getComponent("Na+").activity();
-			double Cl = chemical_system.getComponent("Cl-").activity();
+			double NaCl = chemical_system.getSpecies("NaCl").activity();
+			double Na = chemical_system.getSpecies("Na+").activity();
+			double Cl = chemical_system.getSpecies("Cl-").activity();
 			ASSERT_FLOAT_EQ(
 					std::log10(NaCl/(Na*Cl)),
 					chemical_system.getReaction("NaCl").getLogK()
@@ -148,9 +156,9 @@ class ChemicalSystemTest : public Test {
 		}
 		{
 			// Check NaOH
-			double NaOH = chemical_system.getComponent("NaOH").activity();
-			double Na = chemical_system.getComponent("Na+").activity();
-			double H = chemical_system.getComponent("H+").activity();
+			double NaOH = chemical_system.getSpecies("NaOH").activity();
+			double Na = chemical_system.getSpecies("Na+").activity();
+			double H = chemical_system.getSpecies("H+").activity();
 			ASSERT_FLOAT_EQ(
 					std::log10((NaOH*H)/Na),
 					chemical_system.getReaction("NaOH").getLogK()
@@ -158,7 +166,7 @@ class ChemicalSystemTest : public Test {
 		}
 		{
 			// Check pH
-			double H = chemical_system.getComponent("H+").activity();
+			double H = chemical_system.getSpecies("H+").activity();
 			ASSERT_FLOAT_EQ(-std::log10(H), 7);
 		}
 	}
@@ -171,42 +179,82 @@ TEST_F(ChemicalSystemTest, get_components) {
 		ASSERT_THAT(components[i]->getIndex(), i);
 }
 
+TEST_F(ChemicalSystemTest, get_species) {
+	auto& species = chemical_system.getSpecies();
+
+	for(std::size_t i = 0; i < species.size(); i++)
+		ASSERT_THAT(species[i]->getIndex(), i);
+}
+
 TEST_F(ChemicalSystemTest, aqueous_species) {
+	ASSERT_THAT(chemical_system.getComponents(), UnorderedElementsAre(
+				Pointee(Property(&Component::getSpecies,
+						Pointee(Property(&ChemicalSpecies::getName, "H+"))
+						)),
+				Pointee(Property(&Component::getSpecies,
+						Pointee(Property(&ChemicalSpecies::getName, "Na+"))
+						)),
+				Pointee(Property(&Component::getSpecies,
+						Pointee(Property(&ChemicalSpecies::getName, "Cl-"))
+						))
+				));
+	// Test fixed components handling
 	for(auto& component : chemical_system.getComponents()) {
-		if(component->getName() == "H2O") {
-			ASSERT_THAT(component.get(), WhenDynamicCastTo<Solvent*>(Not(IsNull())));
+		if(component->isFixed())
+			ASSERT_THAT(
+					component.get()->getSpecies(),
+					WhenDynamicCastTo<FixedAqueousSpecies*>(Not(IsNull()))
+					);
+		else
+			ASSERT_THAT(
+					component.get()->getSpecies(),
+					WhenDynamicCastTo<AqueousSpecies*>(Not(IsNull()))
+					);
+	}
+
+	ASSERT_THAT(chemical_system.getSpecies(), UnorderedElementsAre(
+				Pointee(Property(&ChemicalSpecies::getName, "H2O")),
+				Pointee(Property(&ChemicalSpecies::getName, "H+")),
+				Pointee(Property(&ChemicalSpecies::getName, "OH-")),
+				Pointee(Property(&ChemicalSpecies::getName, "Na+")),
+				Pointee(Property(&ChemicalSpecies::getName, "Cl-")),
+				Pointee(Property(&ChemicalSpecies::getName, "NaCl")),
+				Pointee(Property(&ChemicalSpecies::getName, "NaOH"))
+				));
+	// Test all species
+	for(auto& species : chemical_system.getSpecies()) {
+		if(species->getName() == "H2O") {
+			ASSERT_THAT(species.get(), WhenDynamicCastTo<Solvent*>(Not(IsNull())));
 		} else {
-			if(component->isFixed())
-				ASSERT_THAT(
-						component.get(),
-						WhenDynamicCastTo<FixedAqueousComponent*>(Not(IsNull()))
-						);
-			else
-				ASSERT_THAT(
-						component.get(),
-						WhenDynamicCastTo<AqueousComponent*>(Not(IsNull()))
-						);
+			ASSERT_THAT(
+					species.get(),
+					// An aqueous species might be Fixed or not
+					AnyOf(
+						WhenDynamicCastTo<AqueousSpecies*>(Not(IsNull())),
+						WhenDynamicCastTo<FixedAqueousSpecies*>(Not(IsNull()))
+						)
+					);
 		}
 	}
 }
 
 TEST_F(ChemicalSystemTest, initial_aqueous_concentrations) {
-	// Manually specified components
-	ASSERT_FLOAT_EQ(chemical_system.getComponent("Na+").concentration(), 0.1*mol/l);
-	ASSERT_FLOAT_EQ(chemical_system.getComponent("Cl-").concentration(), 0.1*mol/l);
+	// User specified components
+	ASSERT_FLOAT_EQ(chemical_system.getSpecies("Na+").concentration(), 0.1*mol/l);
+	ASSERT_FLOAT_EQ(chemical_system.getSpecies("Cl-").concentration(), 0.1*mol/l);
 	
-	// Automatically added components
-	ASSERT_FLOAT_EQ(chemical_system.getComponent("NaCl").concentration(), 0);
-	ASSERT_FLOAT_EQ(chemical_system.getComponent("NaOH").concentration(), 0);
+	// Automatically added species
+	ASSERT_FLOAT_EQ(chemical_system.getSpecies("NaCl").concentration(), 0);
+	ASSERT_FLOAT_EQ(chemical_system.getSpecies("NaOH").concentration(), 0);
 }
 
 TEST_F(ChemicalSystemTest, activity) {
-	ASSERT_FLOAT_EQ(chemical_system.getComponent("Na+").activity(), 0.1);
-	ASSERT_FLOAT_EQ(chemical_system.getComponent("H+").activity(), std::pow(10, -7));
+	ASSERT_FLOAT_EQ(chemical_system.getSpecies("Na+").activity(), 0.1);
+	ASSERT_FLOAT_EQ(chemical_system.getSpecies("H+").activity(), std::pow(10, -7));
 }
 
 TEST_F(ChemicalSystemTest, H2O_activity) {
-	ASSERT_FLOAT_EQ(chemical_system.getComponent("H2O").activity(), 1.0);
+	ASSERT_FLOAT_EQ(chemical_system.getSpecies("H2O").activity(), 1.0);
 }
 
 TEST_F(ChemicalSystemTest, guess_extent) {
@@ -243,26 +291,26 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction_matrix) {
 		// Check OH-
 		const std::vector<double>& reaction
 			= reaction_matrix[chemical_system.getReaction("OH-").getIndex()];
-		ASSERT_THAT(reaction[chemical_system.getComponent("OH-").getIndex()], Eq(-1));
-		ASSERT_THAT(reaction[chemical_system.getComponent("H+").getIndex()], Eq(-1));
-		ASSERT_THAT(reaction[chemical_system.getComponent("H2O").getIndex()], Eq(1));
+		ASSERT_THAT(reaction[chemical_system.getSpecies("OH-").getIndex()], Eq(-1));
+		ASSERT_THAT(reaction[chemical_system.getSpecies("H+").getIndex()], Eq(-1));
+		ASSERT_THAT(reaction[chemical_system.getSpecies("H2O").getIndex()], Eq(1));
 	}
 	{
 		// Check NaCl
 		const std::vector<double>& reaction
 			= reaction_matrix[chemical_system.getReaction("NaCl").getIndex()];
-		ASSERT_THAT(reaction[chemical_system.getComponent("NaCl").getIndex()], Eq(-1));
-		ASSERT_THAT(reaction[chemical_system.getComponent("Na+").getIndex()], Eq(1));
-		ASSERT_THAT(reaction[chemical_system.getComponent("Cl-").getIndex()], Eq(1));
+		ASSERT_THAT(reaction[chemical_system.getSpecies("NaCl").getIndex()], Eq(-1));
+		ASSERT_THAT(reaction[chemical_system.getSpecies("Na+").getIndex()], Eq(1));
+		ASSERT_THAT(reaction[chemical_system.getSpecies("Cl-").getIndex()], Eq(1));
 	}
 	{
 		// Check NaOH
 		const std::vector<double>& reaction
 			= reaction_matrix[chemical_system.getReaction("NaOH").getIndex()];
-		ASSERT_THAT(reaction[chemical_system.getComponent("NaOH").getIndex()], Eq(-1));
-		ASSERT_THAT(reaction[chemical_system.getComponent("H+").getIndex()], Eq(-1));
-		ASSERT_THAT(reaction[chemical_system.getComponent("Na+").getIndex()], Eq(1));
-		ASSERT_THAT(reaction[chemical_system.getComponent("H2O").getIndex()], Eq(1));
+		ASSERT_THAT(reaction[chemical_system.getSpecies("NaOH").getIndex()], Eq(-1));
+		ASSERT_THAT(reaction[chemical_system.getSpecies("H+").getIndex()], Eq(-1));
+		ASSERT_THAT(reaction[chemical_system.getSpecies("Na+").getIndex()], Eq(1));
+		ASSERT_THAT(reaction[chemical_system.getSpecies("H2O").getIndex()], Eq(1));
 	}
 }
 
@@ -331,8 +379,8 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction) {
 	checkEquilibrium();
 
 	CHEM_LOG(INFO) << "Basic NaCl reaction equilibrium test:";
-	for(auto& component : chemical_system.getComponents())
-		CHEM_LOG(INFO) << "  " << component->getName() << ": " << component->concentration()/(1*mol/l) << " mol/l";
+	for(auto& species : chemical_system.getSpecies())
+		CHEM_LOG(INFO) << "  " << species->getName() << ": " << species->concentration()/(1*mol/l) << " mol/l";
 }
 
 TEST_F(ChemicalSystemTest, test_pH) {
@@ -351,9 +399,9 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction_quotient) {
 
 	{
 		// Check OH-
-		double H2O = chemical_system.getComponent("H2O").activity();
-		double H = chemical_system.getComponent("H+").activity();
-		double OH = chemical_system.getComponent("OH-").activity();
+		double H2O = chemical_system.getSpecies("H2O").activity();
+		double H = chemical_system.getSpecies("H+").activity();
+		double OH = chemical_system.getSpecies("OH-").activity();
 		ASSERT_FLOAT_EQ(
 				chemical_system.reactionQuotient("OH-"),
 				(H*OH)/H2O
@@ -361,9 +409,9 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction_quotient) {
 	}
 	{
 		// Check NaCl
-		double NaCl = chemical_system.getComponent("NaCl").activity();
-		double Na = chemical_system.getComponent("Na+").activity();
-		double Cl = chemical_system.getComponent("Cl-").activity();
+		double NaCl = chemical_system.getSpecies("NaCl").activity();
+		double Na = chemical_system.getSpecies("Na+").activity();
+		double Cl = chemical_system.getSpecies("Cl-").activity();
 		ASSERT_FLOAT_EQ(
 				chemical_system.reactionQuotient("NaCl"),
 				NaCl/(Na*Cl)
@@ -371,9 +419,9 @@ TEST_F(ChemicalSystemTest, basic_NaCl_reaction_quotient) {
 	}
 	{
 		// Check NaOH
-		double NaOH = chemical_system.getComponent("NaOH").activity();
-		double Na = chemical_system.getComponent("Na+").activity();
-		double H = chemical_system.getComponent("H+").activity();
+		double NaOH = chemical_system.getSpecies("NaOH").activity();
+		double Na = chemical_system.getSpecies("Na+").activity();
+		double H = chemical_system.getSpecies("H+").activity();
 		ASSERT_FLOAT_EQ(
 				chemical_system.reactionQuotient("NaOH"),
 				(NaOH*H)/Na
@@ -394,10 +442,30 @@ TEST_F(ChemicalSystemTest, copy_constructor) {
 		ASSERT_THAT(component,
 				AllOf(
 					Property(&Component::getIndex, other_component.getIndex()),
-					Property(&Component::getName, other_component.getName()),
-					Property(&Component::getPhase, other_component.getPhase()),
 					Property(&Component::isFixed, other_component.isFixed()),
-					Property(&Component::concentration, other_component.concentration())
+					Property(&Component::getSpecies, Pointee(
+							Property(
+								&ChemicalSpecies::getIndex,
+								other_component.getSpecies()->getIndex()
+								)
+							))
+					)
+				);
+	}
+
+	ASSERT_THAT(
+			chemical_system.getSpecies(),
+			SizeIs(other_system.getSpecies().size())
+			);
+	for(std::size_t i = 0; i < chemical_system.getSpecies().size(); i++) {
+		const ChemicalSpecies& species = *chemical_system.getSpecies()[i];
+		const ChemicalSpecies& other_species = *other_system.getSpecies()[i];
+		ASSERT_THAT(species,
+				AllOf(
+					Property(&ChemicalSpecies::getIndex, other_species.getIndex()),
+					Property(&ChemicalSpecies::getName, other_species.getName()),
+					Property(&ChemicalSpecies::getPhase, other_species.getPhase()),
+					Property(&ChemicalSpecies::concentration, other_species.concentration())
 					)
 				);
 	}
@@ -423,10 +491,10 @@ TEST_F(ChemicalSystemTest, copy_constructor) {
 	chemical_system.solveEquilibrium();
 	other_system.solveEquilibrium();
 
-	for(std::size_t i = 0; i < chemical_system.getComponents().size(); i++) {
+	for(std::size_t i = 0; i < chemical_system.getSpecies().size(); i++) {
 		ASSERT_FLOAT_EQ(
-				chemical_system.getComponents()[i]->concentration(),
-				other_system.getComponents()[i]->concentration()
+				chemical_system.getSpecies()[i]->concentration(),
+				other_system.getSpecies()[i]->concentration()
 				);
 	}
 }
@@ -462,29 +530,69 @@ class AdsorptionTest : public Test {
 
 TEST_F(AdsorptionTest, aqueous_and_mineral_species) {
 	std::regex surface_complex_regex("=S.*");
+	ASSERT_THAT(chemical_system.getComponents(), UnorderedElementsAre(
+				Pointee(Property(&Component::getSpecies,
+						Pointee(Property(&ChemicalSpecies::getName, "H+"))
+						)),
+				Pointee(Property(&Component::getSpecies,
+						Pointee(Property(&ChemicalSpecies::getName, "=SOH"))
+						))
+				));
+	// Test fixed components handling
 	for(auto& component : chemical_system.getComponents()) {
-		if(component->getName() == "H2O") {
-			ASSERT_THAT(component.get(), WhenDynamicCastTo<Solvent*>(Not(IsNull())));
-		} else if (std::regex_match(component->getName(), surface_complex_regex)) {
-			ASSERT_THAT(component.get(), WhenDynamicCastTo<MineralComponent*>(Not(IsNull())));
+		if(component->isFixed()) {
+			if (std::regex_match(component->getSpecies()->getName(), surface_complex_regex)) {
+				ASSERT_THAT(
+						component->getSpecies(),
+						WhenDynamicCastTo<MineralSpecies*>(Not(IsNull())));
+			} else {
+				ASSERT_THAT(
+						component.get()->getSpecies(),
+						WhenDynamicCastTo<FixedAqueousSpecies*>(Not(IsNull()))
+						);
+			}
 		} else {
-			if(component->isFixed())
+			if (std::regex_match(component->getSpecies()->getName(), surface_complex_regex)) {
 				ASSERT_THAT(
-						component.get(),
-						WhenDynamicCastTo<FixedAqueousComponent*>(Not(IsNull()))
+						component.get()->getSpecies(),
+						WhenDynamicCastTo<MineralSpecies*>(Not(IsNull()))
 						);
-			else
+			} else {
 				ASSERT_THAT(
-						component.get(),
-						WhenDynamicCastTo<AqueousComponent*>(Not(IsNull()))
+						component.get()->getSpecies(),
+						WhenDynamicCastTo<AqueousSpecies*>(Not(IsNull()))
 						);
+			}
+		}
+	}
+
+	ASSERT_THAT(chemical_system.getSpecies(), UnorderedElementsAre(
+				Pointee(Property(&ChemicalSpecies::getName, "H2O")),
+				Pointee(Property(&ChemicalSpecies::getName, "H+")),
+				Pointee(Property(&ChemicalSpecies::getName, "OH-")),
+				Pointee(Property(&ChemicalSpecies::getName, "=SOH")),
+				Pointee(Property(&ChemicalSpecies::getName, "=SOH2"))
+				));
+	for(auto& species : chemical_system.getSpecies()) {
+		if(species->getName() == "H2O") {
+			ASSERT_THAT(species.get(), WhenDynamicCastTo<Solvent*>(Not(IsNull())));
+		} else if (std::regex_match(species->getName(), surface_complex_regex)) {
+			ASSERT_THAT(species.get(), AnyOf(
+						WhenDynamicCastTo<MineralSpecies*>(Not(IsNull())),
+						WhenDynamicCastTo<FixedMineralSpecies*>(Not(IsNull()))
+						));
+		} else {
+			ASSERT_THAT(species.get(), AnyOf(
+					WhenDynamicCastTo<AqueousSpecies*>(Not(IsNull())),
+					WhenDynamicCastTo<FixedAqueousSpecies*>(Not(IsNull()))
+					));
 		}
 	}
 }
 
 TEST_F(AdsorptionTest, initial_mineral_concentrations) {
 	// Automatically added components
-	ASSERT_FLOAT_EQ(chemical_system.getComponent("=SOH").concentration(), 1.0);
-	ASSERT_FLOAT_EQ(chemical_system.getComponent("=SOH2").concentration(), 0);
+	ASSERT_FLOAT_EQ(chemical_system.getSpecies("=SOH").concentration(), 1.0);
+	ASSERT_FLOAT_EQ(chemical_system.getSpecies("=SOH2").concentration(), 0);
 }
 

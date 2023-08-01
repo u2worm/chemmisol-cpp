@@ -6,6 +6,7 @@
 #include <limits>
 #include <stdexcept>
 #include <algorithm>
+#include <cassert>
 
 namespace chemmisol {
 	/*
@@ -28,16 +29,16 @@ namespace chemmisol {
 		return o;
 	}
 
-	const double Component::V = 1*l;
+	const double AqueousSpecies::V = 1*l;
 
-	double MineralComponent::sites_count(
+	double MineralSpecies::sites_count(
 			double solid_concentration,
 			double specific_surface_area,
 			double site_concentration) {
-		return V*solid_concentration*specific_surface_area*site_concentration;
+		return AqueousSpecies::V*solid_concentration*specific_surface_area*site_concentration;
 	}
 
-	bool operator==(const ReactionComponent& c1, const ReactionComponent& c2) {
+	bool operator==(const Reagent& c1, const Reagent& c2) {
 		return c1.name == c2.name
 			&& c1.phase == c2.phase
 			&& c1.coefficient == c2.coefficient;
@@ -56,10 +57,10 @@ namespace chemmisol {
 		}
 
 	ChemicalSystem::ChemicalSystem(const ChemicalSystem& other) :
-				// Indexes initialized to 0 since components and reactions are
-				// copied using addComponent() and addReaction()
-				component_index(0),
-				reaction_index(0),
+				component_index(other.component_index),
+				species_index(other.species_index),
+				reaction_index(other.reaction_index),
+				species(other.species.size()), components(other.components.size()),
 				max_iteration(other.max_iteration),
 				solid_concentration(other.solid_concentration),
 				specific_surface_area(other.specific_surface_area),
@@ -67,15 +68,31 @@ namespace chemmisol {
 					for(auto& component : other.getComponents()) {
 						if(component->isFixed()) {
 							this->fixComponent(
-									component->getName(),
-									component->getPhase(),
-									component->concentration()
+									component->getSpecies()->getName(),
+									component->getSpecies()->getPhase(),
+									component->getSpecies()->concentration(),
+									component->getSpecies()->getIndex(),
+									component->getIndex()
 									);
 						} else {
 							this->addComponent(
-									component->getName(),
-									component->getPhase(),
-									component->concentration()
+									component->getSpecies()->getName(),
+									component->getSpecies()->getPhase(),
+									component->getSpecies()->concentration(),
+									component->getSpecies()->getIndex(),
+									component->getIndex()
+									);
+						}
+					}
+					for(auto& species : other.getSpecies()) {
+						if(!this->species[species->getIndex()]) {
+							// If false, the unique_ptr is empty so the species
+							// has not been added as a Component
+							this->addSpecies(
+									species->getName(),
+									species->getPhase(),
+									species->concentration(),
+									species->getIndex()
 									);
 						}
 					}
@@ -83,30 +100,48 @@ namespace chemmisol {
 						this->addReaction(
 								reaction->getName(),
 								reaction->getLogK(),
-								reaction->getReagents()
+								reaction->getReagents(),
+								reaction->getIndex()
 								);
 					}
 					this->reaction_matrix = other.reaction_matrix;
 			}
 
-	void ChemicalSystem::addReaction(Reaction* reaction) {
-		reactions.emplace_back(reaction);
-		reactions_by_name.emplace(reaction->getName(), reaction);
+	void ChemicalSystem::addSpecies(ChemicalSpecies* species, std::size_t index) {
+		this->species.resize(std::max(this->species.size(), index+1));
+		this->species[index].reset(species);
+		this->species_by_name[species->getName()] = species;
+	}
+
+	void ChemicalSystem::addComponent(Component* component,
+			std::size_t species_index, std::size_t component_index) {
+		addSpecies(component->getSpecies(), species_index);
+		components.resize(std::max(components.size(), component_index+1));
+		components[component_index].reset(component);
+		components_by_name[component->getSpecies()->getName()] = component;
+	}
+
+	void ChemicalSystem::addReaction(Reaction* reaction, std::size_t index) {
+		reactions.resize(std::max(reactions.size(), index+1));
+		reactions[index].reset(reaction);
+		reactions_by_name[reaction->getName()] = reaction;
 	}
 
 	void ChemicalSystem::addReaction(
 			std::string name,
 			double K,
-			std::vector<ReactionComponent> reactives
-			) {
+			std::vector<Reagent> reactives,
+			std::size_t index) {
 		addReaction(new Reaction(
-				name, reaction_index++, K, reactives
-				));
+				name, index, K, reactives
+				), index);
 	}
-
-	void ChemicalSystem::addComponent(Component* component) {
-		components.emplace_back(component);
-		components_by_name.emplace(component->getName(), component);
+	void ChemicalSystem::addReaction(
+			std::string name,
+			double K,
+			std::vector<Reagent> reactives
+			) {
+		addReaction(name, K, reactives, reaction_index++);
 	}
 
 	void ChemicalSystem::fixComponent(
@@ -119,56 +154,65 @@ namespace chemmisol {
 	void ChemicalSystem::fixComponent(
 			const std::string& name,
 			Phase phase,
+			double concentration,
+			std::size_t species_index,
+			std::size_t component_index
+			) {
+		FixedChemicalSpecies* fixed_species;
+
+		switch(phase) {
+			case AQUEOUS:
+				fixed_species = new FixedAqueousSpecies(
+						name, species_index,
+						concentration
+						);
+				break;
+			case MINERAL:
+				fixed_species = new FixedMineralSpecies(
+						name, species_index,
+						solid_concentration, specific_surface_area,
+						site_concentration,
+						concentration
+						);
+				break;
+			case SOLVENT:
+				fixed_species = new Solvent(name, species_index);
+				break;
+			default:
+				// Should not append
+				fixed_species = nullptr;
+		}
+		FixedComponent* fixed_component
+			= new FixedComponent(fixed_species, component_index);
+
+		auto existing_component = components_by_name.find(name);
+		if (existing_component != components_by_name.end()) {
+			components[component_index].reset(fixed_component);
+			species[species_index].reset(fixed_species);
+			existing_component->second = fixed_component;
+			species_by_name.find(fixed_species->getName())->second = fixed_species;
+		} else {
+			addComponent(fixed_component, species_index, component_index);
+		}
+	}
+	void ChemicalSystem::fixComponent(
+			const std::string& name,
+			Phase phase,
 			double concentration
 			) {
 
 		auto existing_component = components_by_name.find(name);
 		if (existing_component != components_by_name.end()) {
-			std::size_t index = existing_component->second->getIndex();
-			FixedComponent* fixed_component;
-			switch(phase) {
-				case AQUEOUS:
-					fixed_component = new FixedAqueousComponent(
-							name, index,
-							concentration
-							);
-					break;
-				case MINERAL:
-					fixed_component = new FixedMineralComponent(
-							name, index,
-							solid_concentration, specific_surface_area,
-							site_concentration,
-							concentration
-							);
-					break;
-				case SOLVENT:
-					fixed_component = new Solvent(name, index);
-					break;
-				default:
-					// Should not append
-					fixed_component = nullptr;
-			}
-			components[index].reset(fixed_component);
-			existing_component->second = fixed_component;
+			fixComponent(
+					name, phase, concentration, 
+					existing_component->second->getSpecies()->getIndex(),
+					existing_component->second->getIndex()
+					);
 		} else {
-			switch(phase) {
-				case AQUEOUS:
-					addComponent(new FixedAqueousComponent(
-							name, component_index++,
-							concentration
-							));
-					break;
-				case MINERAL:
-					addComponent(new FixedMineralComponent(
-							name, component_index++,
-							solid_concentration, specific_surface_area,
-							site_concentration,
-							concentration
-							));
-					break;
-				case SOLVENT:
-					addComponent(new Solvent(name, component_index++));
-			}
+			fixComponent(
+					name, phase, concentration, 
+					species_index++, component_index++
+					);
 		}
 	}
 
@@ -178,29 +222,61 @@ namespace chemmisol {
 
 	void ChemicalSystem::addComponent(
 			const std::string& name, Phase phase, double concentration) {
+		addComponent(name, phase, concentration, species_index++, component_index++);
+		}
+
+	void ChemicalSystem::addComponent(
+			const std::string& name, Phase phase, double concentration,
+			std::size_t species_index, std::size_t component_index) {
+		ChemicalSpecies* species;
 		switch(phase) {
 			case AQUEOUS:
-				addComponent(
-						new AqueousComponent(name, component_index++, concentration)
-						);
+				species = new AqueousSpecies(name, species_index, concentration);
 				break;
 			case MINERAL:
-				addComponent(
-						new MineralComponent(
-							name, component_index++,
-							solid_concentration, specific_surface_area, site_concentration,
-							concentration)
-						);
+				species = new MineralSpecies(
+						name, species_index,
+						solid_concentration, specific_surface_area, site_concentration,
+						concentration);
 				break;
 			case SOLVENT:
-				addComponent(new Solvent(name, component_index++));
+				species = new Solvent(name, species_index);
 		}
+		addComponent(
+				new Component(species, component_index), species_index, component_index
+				);
+	}
+
+	void ChemicalSystem::addSpecies(
+			const std::string& name, Phase phase) {
+		addSpecies(name, phase, 0, species_index++);
+	}
+
+	void ChemicalSystem::addSpecies(
+			const std::string& name, Phase phase, double concentration,
+			std::size_t species_index) {
+		ChemicalSpecies* species;
+		switch(phase) {
+			case AQUEOUS:
+				species = new AqueousSpecies(name, species_index, concentration);
+				break;
+			case MINERAL:
+				species = new MineralSpecies(
+						name, species_index,
+						solid_concentration, specific_surface_area, site_concentration,
+						concentration);
+				break;
+			case SOLVENT:
+				species = new Solvent(name, species_index);
+		}
+		addSpecies(species, species_index);
 	}
 
 	void ChemicalSystem::initPH(double pH) {
 		addComponent("H+", std::pow(10, -pH)*mol/l);
-		addComponent("OH-", std::pow(10, -pH)*mol/l);
+		//addComponent("OH-", std::pow(10, -pH)*mol/l);
 	}
+
 	void ChemicalSystem::fixPH(double pH) {
 		fixComponent(
 					"H+", AQUEOUS,
@@ -218,7 +294,7 @@ namespace chemmisol {
 	}
 
 	double ChemicalSystem::getPH() const {
-		return -log(getComponent("H+").concentration());
+		return -log(getComponent("H+").getSpecies()->concentration());
 	}
 
 	const Reaction& ChemicalSystem::getReaction(const std::string& name) const {
@@ -233,20 +309,36 @@ namespace chemmisol {
 		return *components[id];
 	}
 
+	const ChemicalSpecies& ChemicalSystem::getSpecies(const std::string& name) const {
+		return *species_by_name.find(name)->second;
+	}
+
+	const ChemicalSpecies& ChemicalSystem::getSpecies(const std::size_t& id) const {
+		return *species[id];
+	}
+
+
 	void ChemicalSystem::initReactionMatrix() {
 		for(auto& reaction : reactions) {
-			for(auto& component : reaction->getReagents()) {
-				if(components_by_name.find(component.name) == components_by_name.end()) {
-					addComponent(component.name, component.phase, 0);
+			for(auto& species : reaction->getReagents()) {
+				if(components_by_name.find(species.name) == components_by_name.end()) {
+					// All components are already added to the system using
+					// addCompoent(). All other reagents are considered as
+					// compound species.
+					if(species_by_name.find(species.name) == species_by_name.end()) {
+						// Adds the species only if it was not added from an
+						// other reaction
+						addSpecies(species.name, species.phase);
+					}
 				}
 			}
 		}
 
 		reaction_matrix.resize(reactions.size());
 		for(const auto& reaction : reactions) {
-			reaction_matrix[reaction->getIndex()].resize(components.size());
+			reaction_matrix[reaction->getIndex()].resize(species.size());
 			for(const auto& reactive : reaction->getReagents()) {
-				reaction_matrix[reaction->getIndex()][getComponent(reactive.name).getIndex()]
+				reaction_matrix[reaction->getIndex()][getSpecies(reactive.name).getIndex()]
 					= reactive.coefficient;
 			}
 		}
@@ -255,7 +347,7 @@ namespace chemmisol {
 	double GuessF::operator()(const double &extent) const {
 		double f = 0;
 		for(auto& reagent : reaction.getReagents()) {
-			f += reagent.coefficient * log(system.getComponent(reagent.name).activity(
+			f += reagent.coefficient * log(system.getSpecies(reagent.name).activity(
 					current_concentrations,
 					reagent.coefficient * extent
 					));
@@ -274,7 +366,7 @@ namespace chemmisol {
 				for(const auto& reagent : reaction->getReagents()) {
 					if(reagent.coefficient > 0.0) {
 						reactants_product *=
-							std::pow(getComponent(reagent.name).activity(), reagent.coefficient);
+							std::pow(getSpecies(reagent.name).activity(), reagent.coefficient);
 					}
 				}
 				if(reactants_product == 0.0) {
@@ -286,8 +378,8 @@ namespace chemmisol {
 			}
 		}
 		// Concentrations used in the incremental guess process
-		std::vector<double> guessed_concentrations(getComponents().size());
-		for(auto& component : getComponents())
+		std::vector<double> guessed_concentrations(getSpecies().size());
+		for(auto& component : getSpecies())
 			guessed_concentrations[component->getIndex()]
 				= component->concentration();
 
@@ -323,7 +415,7 @@ namespace chemmisol {
 				double products_product = 1.0;
 				for(const auto& reagent : reaction->getReagents()) {
 					if(reagent.coefficient < 0.0) {
-						products_product *= getComponent(reagent.name).activity();
+						products_product *= getSpecies(reagent.name).activity();
 					}
 				}
 				if(products_product == 0.0) {
@@ -351,21 +443,26 @@ namespace chemmisol {
 			// The limiting reactive is used to define the maximum possible
 			// extent of the reaction so that all reagent concentrations stay
 			// positive.
-			const Component* limiting_reactive = nullptr;
+			const ChemicalSpecies* limiting_reactive = nullptr;
 			double limiting_reactive_coefficient = 0;
 			double smallest_limiting_factor = std::numeric_limits<double>::infinity();
 
 			for(auto& reagent : reaction->getReagents()) {
 				if(reagent.coefficient > 0.0) {
 					// Consider only reactives
-					const Component& component = getComponent(reagent.name);
-					if(!component.isFixed()) {
+					const auto& component = components_by_name.find(reagent.name);
+					if(
+							// The reagent is not a component
+							component == components_by_name.end()
+							// Or if it is a component, it is not fixed
+							|| !(component->second->isFixed())) {
+						const ChemicalSpecies& species = getSpecies(reagent.name);
 						// A fixed reactive cannot be limiting
-						double limiting_factor = component.quantity(
-								guessed_concentrations[component.getIndex()]
+						double limiting_factor = species.quantity(
+								guessed_concentrations[species.getIndex()]
 								) / reagent.coefficient;
 						if(limiting_factor < smallest_limiting_factor) {
-							limiting_reactive = &component;
+							limiting_reactive = &species;
 							limiting_reactive_coefficient = reagent.coefficient;
 							smallest_limiting_factor = limiting_factor;
 						}
@@ -420,10 +517,10 @@ namespace chemmisol {
 			// Updates concentrations from the guessed extent, so that the
 			// system remains consistent for next reactions.
 			for(auto& reagent : reaction->getReagents()) {
-				auto& component = getComponent(reagent.name);
-				guessed_concentrations[component.getIndex()]
-					= component.concentration(
-							guessed_concentrations[component.getIndex()],
+				auto& species = getSpecies(reagent.name);
+				guessed_concentrations[species.getIndex()]
+					= species.concentration(
+							guessed_concentrations[species.getIndex()],
 							reagent.coefficient * guess_extent
 							);
 			}
@@ -439,7 +536,7 @@ namespace chemmisol {
 		solver::X dx = solve(*this);
 		for(auto& reaction : reactions) {
 			for(auto& component : reaction->getReagents()) {
-				components[getComponent(component.name).getIndex()]->incrementConcentration(
+				species[getSpecies(component.name).getIndex()]->incrementConcentration(
 						component.coefficient * dx[reaction->getIndex()]
 						);
 			}
@@ -450,7 +547,7 @@ namespace chemmisol {
 		double quotient = 1;
 		auto& reaction = getReaction(name);
 		for(auto& reactive : reaction.getReagents()) {
-			quotient *= std::pow(getComponent(reactive.name).activity(), reactive.coefficient);
+			quotient *= std::pow(getSpecies(reactive.name).activity(), reactive.coefficient);
 		}
 		// 1/quotient due to the following conventions:
 		// - products are given with **negative** stoichiometric coefficients
@@ -460,9 +557,9 @@ namespace chemmisol {
 
 	namespace solver {
 		F::F(const ChemicalSystem& system)
-			: system(system), init_concentrations(system.getComponents().size()) {
-				for(auto& component : system.getComponents()) {
-					init_concentrations[component->getIndex()] = component->concentration();
+			: system(system), init_concentrations(system.getSpecies().size()) {
+				for(auto& species : system.getSpecies()) {
+					init_concentrations[species->getIndex()] = species->concentration();
 				}
 			}
 
@@ -474,24 +571,24 @@ namespace chemmisol {
 					= system.getReactionMatrix()[reaction->getIndex()];
 				CHEM_LOG(TRACE) << "Calc concentrations from reaction " << reaction->getName();
 				for(
-						std::size_t component_index = 0;
-						component_index < coefficients.size();
-						component_index++) {
+						std::size_t species_index = 0;
+						species_index < coefficients.size();
+						species_index++) {
 
 					CHEM_LOG(TRACE) << "  " <<
-						system.getComponent(component_index).getName() << ": " <<
-						concentrations[component_index] << " + " <<
-						coefficients[component_index]*extent[reaction->getIndex()] << " = " <<
-						system.getComponent(component_index)
+						system.getSpecies(species_index).getName() << ": " <<
+						concentrations[species_index] << " + " <<
+						coefficients[species_index]*extent[reaction->getIndex()] << " = " <<
+						system.getSpecies(species_index)
 								.concentration(
-									concentrations[component_index],
-									coefficients[component_index]*extent[reaction->getIndex()]
+									concentrations[species_index],
+									coefficients[species_index]*extent[reaction->getIndex()]
 									);
-					concentrations[component_index] =
-						system.getComponent(component_index)
+					concentrations[species_index] =
+						system.getSpecies(species_index)
 								.concentration(
-									concentrations[component_index],
-									coefficients[component_index]*extent[reaction->getIndex()]
+									concentrations[species_index],
+									coefficients[species_index]*extent[reaction->getIndex()]
 									);
 				}
 			}
@@ -502,24 +599,24 @@ namespace chemmisol {
 		X F::f(const X& extent) const {
 			X concentrations = this->concentrations(extent);
 			CHEM_LOG(TRACE) << "Init F concentrations: ";
-			for(auto& component : system.getComponents())
-				CHEM_LOG(TRACE) << "  " << component->getName() << " " << concentrations[component->getIndex()];
+			for(auto& species : system.getSpecies())
+				CHEM_LOG(TRACE) << "  " << species->getName() << " " << concentrations[species->getIndex()];
 
 			X f(extent.size());
 			for(auto& reaction : system.getReactions()) {
 				const std::vector<double>& coefficients
 					= system.getReactionMatrix()[reaction->getIndex()];
 				for(
-						std::size_t component_index = 0;
-						component_index < coefficients.size();
-						component_index++) {
-					auto& component = system.getComponent(component_index);
+						std::size_t species_index = 0;
+						species_index < coefficients.size();
+						species_index++) {
+					auto& species = system.getSpecies(species_index);
 					f[reaction->getIndex()] +=
 						// Stoichiometric coefficient
-						coefficients[component_index] * log(
-								// Current activity of the component according
+						coefficients[species_index] * log(
+								// Current activity of the species according
 								// to the provided reaction extent
-								component.activity(concentrations[component_index])
+								species.activity(concentrations[species_index])
 								);
 				}
 				// The previous sum should be equal to log(K)
@@ -539,13 +636,13 @@ namespace chemmisol {
 					const std::vector<double>& coefficients_j
 						= system.getReactionMatrix()[dreaction->getIndex()];
 					double dfi_dxj = 0;
-					for(const auto& component : system.getComponents()) {
-						dfi_dxj += coefficients_i[component->getIndex()] *
-							component->Dactivity(
+					for(const auto& species : system.getSpecies()) {
+						dfi_dxj += coefficients_i[species->getIndex()] *
+							species->Dactivity(
 									current_concentrations,
-									coefficients_j[component->getIndex()]) /
-							component->activity(
-									current_concentrations[component->getIndex()]
+									coefficients_j[species->getIndex()]) /
+							species->activity(
+									current_concentrations[species->getIndex()]
 									) / ln10;
 					}
 					jacobian[reaction->getIndex()][dreaction->getIndex()] = dfi_dxj;

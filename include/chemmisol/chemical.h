@@ -161,33 +161,21 @@ namespace chemmisol {
 		X solve(const ChemicalSystem& system);
 	}
 
-	/**
-	 * An abstract chemical component that might be involved in a reaction.
-	 */
-	class Component {
-		public:
-			/**
-			 * Solution volume. Currently fixed to 1 liter.
-			 *
-			 * The volume is only required for internal calculation, but can be
-			 * chosen arbitrarily since the quantity is always represented as
-			 * concentrations for the user.
-			 */
-			static const double V;
+	class ChemicalSpecies {
 		private:
 			std::string name;
 			std::size_t index;
 
 		protected:
 			/**
-			 * Defines a simple component.
+			 * Defines a simple chemical species.
 			 *
-			 * @param name Name of the component
-			 * @param index Index used to retrieve the component in data
+			 * @param name Name of the species
+			 * @param index Index used to retrieve the species in data
 			 * structures used internally by the ChemicalSystem. The index can
-			 * also be used to uniquely identify each component of a system.
+			 * also be used to uniquely identify each species of a system.
 			 */
-			Component(const std::string& name, std::size_t index)
+			ChemicalSpecies(const std::string& name, std::size_t index)
 				: name(name), index(index) {
 				}
 
@@ -209,10 +197,6 @@ namespace chemmisol {
 			}
 
 			virtual Phase getPhase() const = 0;
-
-			virtual bool isFixed() const {
-				return false;
-			}
 
 			/**
 			 * Increments the concentration of the current component,
@@ -322,29 +306,26 @@ namespace chemmisol {
 					double d_coef
 					) const = 0;
 			
-			virtual ~Component() {
+			virtual ~ChemicalSpecies() {
 			}
 	};
 
-	class FixedComponent : public Component {
+	
+	class FixedChemicalSpecies : public ChemicalSpecies {
 		private:
 			double C;
 			double A;
 			double Q;
 
 		protected:
-			FixedComponent(
+			FixedChemicalSpecies(
 					const std::string& name, std::size_t index,
 					double C, double A, double Q
 					)
-				: Component(name, index), C(C), A(A), Q(Q) {
+				: ChemicalSpecies(name, index), C(C), A(A), Q(Q) {
 				}
 
 		public:
-			bool isFixed() const override {
-				return true;
-			}
-
 			void incrementConcentration(double) override {
 			}
 
@@ -379,27 +360,6 @@ namespace chemmisol {
 	};
 
 	/**
-	 * Solvent component.
-	 *
-	 * A solvent is a component always in excess, so that its activity is always
-	 * 1.0 and its concentration does not matter. This is typically the case for
-	 * water (H2O component).
-	 */
-	class Solvent : public FixedComponent {
-		public:
-			/**
-			 * Defines a solvent.
-			 */
-			Solvent(const std::string& name, std::size_t id)
-				: FixedComponent(name, id, 1*mol/l, 1.0, 1*mol/l*V) {
-				}
-
-			Phase getPhase() const override {
-				return SOLVENT;
-			}
-	};
-
-	/**
 	 * Aqueous Component implementation.
 	 *
 	 * The concentration of an aqueous component is defined as `C=n/V` where n
@@ -409,11 +369,20 @@ namespace chemmisol {
 	 * The activity of an aqueous component is defined as `C/C0` where C0 is the
 	 * standard state concentration defined as 1mol/L.
 	 */
-	class AqueousComponent : public Component {
+	class AqueousSpecies : public ChemicalSpecies {
 		private:
 			double C;
 		
 		public:
+			/**
+			 * Solution volume. Currently fixed to 1 liter.
+			 *
+			 * The volume is only required for internal calculation, but can be
+			 * chosen arbitrarily since the quantity is always represented as
+			 * concentrations for the user.
+			 */
+			static const double V;
+
 			/**
 			 * Defines a new AqueousComponent and initializes its concentration
 			 * to C. It is the responsibility of the user to ensure unit
@@ -423,10 +392,10 @@ namespace chemmisol {
 			 *     using namespace mineral;
 			 *     AqueousComponent component("Na+", i, 0.1*mol/l);
 			 */
-			AqueousComponent(
+			AqueousSpecies(
 					const std::string& name, std::size_t id,
 					double C)
-				: Component(name, id), C(C) {
+				: ChemicalSpecies(name, id), C(C) {
 				}
 
 			Phase getPhase() const override {
@@ -469,16 +438,37 @@ namespace chemmisol {
 			}
 	};
 
-	class FixedAqueousComponent : public FixedComponent {
+	class FixedAqueousSpecies : public FixedChemicalSpecies {
 		public:
-			FixedAqueousComponent(
+			FixedAqueousSpecies(
 					const std::string& name, std::size_t id,
 					double C)
-				: FixedComponent(name, id, C, C/(1*mol/l), C*V) {
+				: FixedChemicalSpecies(name, id, C, C/(1*mol/l), C*AqueousSpecies::V) {
 				}
 
 			Phase getPhase() const override {
 				return AQUEOUS;
+			}
+	};
+
+	/**
+	 * Solvent component.
+	 *
+	 * A solvent is a component always in excess, so that its activity is always
+	 * 1.0 and its concentration does not matter. This is typically the case for
+	 * water (H2O component).
+	 */
+	class Solvent : public FixedAqueousSpecies {
+		public:
+			/**
+			 * Defines a solvent.
+			 */
+			Solvent(const std::string& name, std::size_t id)
+				: FixedAqueousSpecies(name, id, 1*mol/l) {
+				}
+
+			Phase getPhase() const override {
+				return SOLVENT;
 			}
 	};
 
@@ -524,7 +514,7 @@ namespace chemmisol {
 	 * See [Hiemstra 1996](https://doi.org/10.1006/jcis.1996.0242) for more
 	 * detailed and theoretical considerations about surface complexes.
 	 */
-	class MineralComponent : public Component {
+	class MineralSpecies : public ChemicalSpecies {
 		private:
 			double fraction; // S/N
 			double N;
@@ -575,13 +565,13 @@ namespace chemmisol {
 			 */
 			// TODO: it is not efficient to specify solid parameters for ALL
 			// MineralComponents
-			MineralComponent(
+			MineralSpecies(
 					const std::string& name, std::size_t index,
 					double solid_concentration,
 					double specific_surface_area,
 					double site_concentration,
 					double fraction)
-				: Component(name, index), fraction(fraction),
+				: ChemicalSpecies(name, index), fraction(fraction),
 				N(sites_count(solid_concentration, specific_surface_area, site_concentration)) {
 				}
 			
@@ -625,17 +615,17 @@ namespace chemmisol {
 
 	};
 
-	class FixedMineralComponent : public FixedComponent {
+	class FixedMineralSpecies : public FixedChemicalSpecies {
 		public:
-			FixedMineralComponent(
+			FixedMineralSpecies(
 					const std::string& name, std::size_t id,
 					double solid_concentration,
 					double specific_surface_area,
 					double site_concentration,
 					double F
 					)
-				: FixedComponent(name, id, F, F,
-						MineralComponent::sites_count(
+				: FixedChemicalSpecies(name, id, F, F,
+						MineralSpecies::sites_count(
 							solid_concentration, specific_surface_area,
 							site_concentration
 							)*F) {
@@ -646,26 +636,67 @@ namespace chemmisol {
 			}
 	};
 
-	struct ReactionComponent {
+	class Component {
+		private:
+			ChemicalSpecies* species;
+			std::size_t index;
+
+		public:
+			Component(ChemicalSpecies* species, std::size_t index)
+				: species(species), index(index) {
+				}
+
+			ChemicalSpecies* getSpecies() {
+				return species;
+			}
+
+			const ChemicalSpecies* getSpecies() const {
+				return species;
+			}
+
+			std::size_t getIndex() const {
+				return index;
+			}
+
+			virtual bool isFixed() const {
+				return false;
+			}
+
+			virtual ~Component() {
+			}
+	};
+
+	class FixedComponent : public Component {
+		public:
+			FixedComponent(FixedChemicalSpecies* species, std::size_t index)
+				: Component(species, index) {
+				}
+
+			virtual bool isFixed() const override {
+				return true;
+			}
+	};
+
+	struct Reagent {
 		std::string name;
 		Phase phase;
 		double coefficient;
 
-		ReactionComponent() = default;
-		ReactionComponent(
+		Reagent() = default;
+		Reagent(
 				const std::string& name,
 				Phase phase,
 				double coefficient)
 			: name(name), phase(phase), coefficient(coefficient) {
 			}
-		ReactionComponent(
+		Reagent(
 				const std::string& name,
 				double coefficient)
 			: name(name), phase(name == "H2O" ? SOLVENT : AQUEOUS), coefficient(coefficient) {
 			}
 	};
 
-	bool operator==(const ReactionComponent& c1, const ReactionComponent& c2);
+	bool operator==(const Reagent& c1, const Reagent& c2);
 
 	/**
 	 * A chemical reaction is a process that transform _reactants_ into
@@ -744,7 +775,7 @@ namespace chemmisol {
 			std::string name;
 			std::size_t index;
 			double log_K;
-			std::vector<ReactionComponent> reagents;
+			std::vector<Reagent> reagents;
 
 		public:
 			/**
@@ -772,7 +803,7 @@ namespace chemmisol {
 			 */
 			Reaction(
 					const std::string& name, std::size_t index, double log_K,
-					const std::vector<ReactionComponent>& reagents
+					const std::vector<Reagent>& reagents
 					)
 				: name(name), index(index), log_K(log_K), reagents(reagents) {
 				}
@@ -804,7 +835,7 @@ namespace chemmisol {
 			/**
 			 * Reagents of the reaction.
 			 */
-			const std::vector<ReactionComponent> getReagents() const {
+			const std::vector<Reagent>& getReagents() const {
 				return reagents;
 			}
 	};
@@ -838,17 +869,23 @@ namespace chemmisol {
 	class ChemicalSystem {
 		private:
 			std::size_t component_index = 0;
+			std::size_t species_index = 0;
 			std::size_t reaction_index = 0;
 
+			std::vector<std::unique_ptr<ChemicalSpecies>> species;
+			std::unordered_map<std::string, const ChemicalSpecies*> species_by_name;
 			std::vector<std::unique_ptr<Component>> components;
 			std::unordered_map<std::string, const Component*> components_by_name;
 			std::vector<std::unique_ptr<Reaction>> reactions;
 			std::unordered_map<std::string, const Reaction*> reactions_by_name;
 			std::vector<std::vector<double>> reaction_matrix;
 
-			void addComponent(Component* component);
-			void fixComponent(FixedComponent* component);
-			void addReaction(Reaction* reaction);
+			void addSpecies(ChemicalSpecies* component, std::size_t index);
+			void addComponent(
+					Component* component,
+					std::size_t species_index,
+					std::size_t component_index);
+			void addReaction(Reaction* reaction, std::size_t index);
 
 			std::size_t max_iteration = 200;
 
@@ -859,6 +896,43 @@ namespace chemmisol {
 
 			std::unordered_map<std::string, double> initial_guess_extents;
 
+			void addComponent(
+					const std::string& name,
+					Phase phase,
+					double concentration,
+					std::size_t species_index,
+					std::size_t component_index
+					);
+			void fixComponent(
+					const std::string& name,
+					Phase phase,
+					double concentration,
+					std::size_t species_index,
+					std::size_t component_index
+					);
+
+			void addSpecies(
+					const std::string& name,
+					Phase phase,
+					double concentration,
+					std::size_t index
+					);
+
+			void addReaction(
+					std::string name,
+					double K,
+					std::vector<Reagent> reactives,
+					std::size_t index);
+
+		protected:
+			void addSpecies(
+					const std::string& name
+					);
+
+			void addSpecies(
+					const std::string& name,
+					Phase phase
+					);
 
 		public:
 			ChemicalSystem(const ChemicalSystem& other);
@@ -919,7 +993,7 @@ namespace chemmisol {
 			void addReaction(
 					std::string name,
 					double log_K,
-					std::vector<ReactionComponent> reagents
+					std::vector<Reagent> reagents
 					);
 
 			/**
@@ -994,11 +1068,36 @@ namespace chemmisol {
 			const Reaction& getReaction(const std::string& name) const;
 
 			/**
+			 * Gets the chemical species named `name`.
+			 *
+			 * The behavior of the method is unspecified if the name does not
+			 * correspond to any chemical species added explicitly with
+			 * addComponent() (called by the user or initialized by default by
+			 * initReactionMatrix()).
+			 *
+			 * @param name Name of the component
+			 */
+			const ChemicalSpecies& getSpecies(const std::string& name) const;
+
+			/**
+			 * Gets the component with the specified index, that can be
+			 * retrieved from an existing component with Component::getIndex().
+			 *
+			 * The behavior is unspecified if the index does not correspond to
+			 * any component added with addComponent() (called by the user or
+			 * initialized by default by initReactionMatrix()).
+			 *
+			 * @param index Index of the component
+			 */
+			const ChemicalSpecies& getSpecies(const std::size_t& id) const;
+
+			/**
 			 * Gets the component named `name`.
 			 *
 			 * The behavior of the method is unspecified if the name does not
-			 * correspond to any component added with addComponent() (called by
-			 * the user or initialized by default by initReactionMatrix()).
+			 * correspond to any component added explicitly with addComponent()
+			 * (called by the user or initialized by default by
+			 * initReactionMatrix()).
 			 *
 			 * @param name Name of the component
 			 */
@@ -1017,10 +1116,17 @@ namespace chemmisol {
 			const Component& getComponent(const std::size_t& id) const;
 
 			/**
-			 * Returns references to all the components in the system.
+			 * Returns references to all the chemical_species in the system.
 			 */
 			const std::vector<std::unique_ptr<Component>>& getComponents() const {
 				return components;
+			}
+
+			/**
+			 * Returns references to all the chemical_species in the system.
+			 */
+			const std::vector<std::unique_ptr<ChemicalSpecies>>& getSpecies() const {
+				return species;
 			}
 
 			/**

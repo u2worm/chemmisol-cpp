@@ -38,9 +38,9 @@ namespace chemmisol {
 
 			system_copy.solveEquilibrium();
 
-			for(auto& component : system_copy.getComponents())
-				results[component->getName()].push_back(
-						component->concentration()
+			for(auto& species : system_copy.getSpecies())
+				results[species->getName()].push_back(
+						species->concentration()
 						);
 			++t;
 		}
