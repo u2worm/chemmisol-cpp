@@ -1,5 +1,5 @@
 #include <gmock/gmock.h>
-#include "chemmisol/regula_falsi.h"
+#include "chemmisol/math/regula_falsi.h"
 
 TEST(RegulaFalsi, solve_iter) {
 	double x = chemmisol::RegulaFalsi<double>(0, 10, [] (const double& x) {

@@ -1,7 +1,7 @@
 #include <functional>
 #include <cmath>
 #include "gauss.h"
-#include "logging.h"
+#include "../logging.h"
 
 namespace chemmisol {
 	template<typename T>

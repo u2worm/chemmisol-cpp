@@ -4,12 +4,12 @@ enable_testing()
 
 add_executable(
   chemmisol-tests
-  chemmisol/linear.cpp
-  chemmisol/newton.cpp
-  chemmisol/chemical.cpp
-  chemmisol/gauss.cpp
-  chemmisol/experiment.cpp
-  chemmisol/regula_falsi.cpp
+  chemmisol/math/linear.cpp
+  chemmisol/math/newton.cpp
+  chemmisol/math/gauss.cpp
+  chemmisol/math/regula_falsi.cpp
+  chemmisol/chemical/system.cpp
+  chemmisol/chemical/experiment.cpp
 )
 target_link_libraries(
   chemmisol-tests

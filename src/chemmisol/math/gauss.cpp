@@ -1,4 +1,4 @@
-#include "chemmisol/gauss.h"
+#include "chemmisol/math/gauss.h"
 
 namespace chemmisol { namespace gauss {
 	template<>

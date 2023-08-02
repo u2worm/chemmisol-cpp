@@ -1,4 +1,4 @@
-#include "chemmisol/experiment.h"
+#include "chemmisol/chemical/experiment.h"
 #include <unordered_map>
 #include "chemmisol/logging.h"
 

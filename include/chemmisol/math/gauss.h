@@ -1,6 +1,6 @@
 #include <iostream>
 #include <array>
-#include "logging.h"
+#include "../logging.h"
 
 namespace chemmisol { namespace gauss {
 	template<typename X, typename A>

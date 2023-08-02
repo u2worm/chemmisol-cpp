@@ -39,9 +39,12 @@ endif()
 
 add_library(chemmisol
 	src/chemmisol/units.cpp
-	src/chemmisol/chemical.cpp
-	src/chemmisol/gauss.cpp
-	src/chemmisol/experiment.cpp
+	src/chemmisol/math/gauss.cpp
+	src/chemmisol/chemical/species.cpp
+	src/chemmisol/chemical/reaction.cpp
+	src/chemmisol/chemical/solver.cpp
+	src/chemmisol/chemical/system.cpp
+	src/chemmisol/chemical/experiment.cpp
 	src/chemmisol/logging.cpp
 	${EASYLOGGING_SRC_PATH}/easylogging++.cc
 	)

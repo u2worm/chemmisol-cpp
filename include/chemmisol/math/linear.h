@@ -3,7 +3,7 @@
 #include <initializer_list>
 #include <iostream>
 #include <cmath>
-#include "logging.h"
+#include "../logging.h"
 
 namespace chemmisol {
 	template<typename T>

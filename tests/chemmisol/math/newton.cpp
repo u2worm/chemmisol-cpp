@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "chemmisol/newton.h"
+#include "chemmisol/math/newton.h"
 
 TEST(NewtonTest, square_3) {
 	double x = chemmisol::Newton<double, double>(

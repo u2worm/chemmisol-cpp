@@ -1,5 +1,5 @@
 #include "gmock/gmock.h"
-#include "chemmisol/experiment.h"
+#include "chemmisol/chemical/experiment.h"
 
 using namespace testing;
 using namespace chemmisol;
