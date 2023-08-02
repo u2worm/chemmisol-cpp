@@ -49,6 +49,8 @@ namespace chemmisol {
 				std::vector<double> init_concentrations;
 
 			public:
+				void massConservationLaw(X& x) const;
+
 				/**
 				 * Returns the resulting concentrations in the current chemical
 				 * system that result from the provided extents.
@@ -868,6 +870,38 @@ namespace chemmisol {
 	 */
 	class ChemicalSystem {
 		private:
+			struct ComponentReagent {
+				double coefficient;
+				const Component* component;
+
+				ComponentReagent() = default;
+				ComponentReagent(
+						double coefficient, const Component* component)
+					: coefficient(coefficient), component(component) {
+					}
+			};
+
+			struct ChemicalSpeciesReagent {
+				double coefficient;
+				const ChemicalSpecies* species;
+
+				ChemicalSpeciesReagent() = default;
+				ChemicalSpeciesReagent(
+						double coefficient, const ChemicalSpecies* species)
+					: coefficient(coefficient), species(species) {
+					}
+			};
+
+			struct CompiledReaction {
+				const Reaction* reaction;
+				ChemicalSpeciesReagent produced_species;
+				std::vector<ComponentReagent> components;
+
+				CompiledReaction(const Reaction* reaction)
+					: reaction(reaction) {
+					}
+			};
+
 			std::size_t component_index = 0;
 			std::size_t species_index = 0;
 			std::size_t reaction_index = 0;
@@ -879,6 +913,8 @@ namespace chemmisol {
 			std::vector<std::unique_ptr<Reaction>> reactions;
 			std::unordered_map<std::string, const Reaction*> reactions_by_name;
 			std::vector<std::vector<double>> reaction_matrix;
+
+			std::vector<CompiledReaction> compiled_reactions;
 
 			void addSpecies(ChemicalSpecies* component, std::size_t index);
 			void addComponent(
@@ -923,6 +959,8 @@ namespace chemmisol {
 					double K,
 					std::vector<Reagent> reactives,
 					std::size_t index);
+
+			void compile(const Reaction* reaction);
 
 		protected:
 			void addSpecies(
@@ -1215,6 +1253,8 @@ namespace chemmisol {
 			 * @param name Reaction name
 			 */
 			double reactionQuotient(const std::string& name) const;
+
+			void massConservationLaw(std::vector<double>& x) const;
 
 			/**
 			 * Returns the maximum count of iterations allowed for the

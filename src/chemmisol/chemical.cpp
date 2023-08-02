@@ -318,6 +318,22 @@ namespace chemmisol {
 	}
 
 
+	void ChemicalSystem::compile(const Reaction* reaction) {
+		compiled_reactions.emplace_back(reaction);
+		CompiledReaction& compiled_reaction = compiled_reactions.back();
+		for(const auto& reagent : reaction->getReagents()) {
+			if(reagent.phase != SOLVENT) {
+				const auto& component = components_by_name.find(reagent.name);
+				if(component != components_by_name.end()) {
+					compiled_reaction.components.emplace_back(reagent.coefficient, component->second);
+				} else {
+					const auto& species = species_by_name.find(reagent.name);
+					compiled_reaction.produced_species = {reagent.coefficient, species->second};
+				}
+			}
+		}
+	}
+
 	void ChemicalSystem::initReactionMatrix() {
 		for(auto& reaction : reactions) {
 			for(auto& species : reaction->getReagents()) {
@@ -336,6 +352,8 @@ namespace chemmisol {
 
 		reaction_matrix.resize(reactions.size());
 		for(const auto& reaction : reactions) {
+			compiled_reactions.clear();
+			compile(reaction.get());
 			reaction_matrix[reaction->getIndex()].resize(species.size());
 			for(const auto& reactive : reaction->getReagents()) {
 				reaction_matrix[reaction->getIndex()][getSpecies(reactive.name).getIndex()]
@@ -553,6 +571,21 @@ namespace chemmisol {
 		// - products are given with **negative** stoichiometric coefficients
 		// - products from the numerous of the reaction quotient
 		return 1/quotient;
+	}
+
+	void ChemicalSystem::massConservationLaw(std::vector<double>& x) const {
+		for(auto& component : getComponents()) {
+			x[component->getIndex()]
+				= component->getSpecies()->quantity();
+		}
+		for(auto& reaction : compiled_reactions) {
+			for(const ComponentReagent& reagent
+					: reaction.components) {
+				x[reagent.component->getIndex()] +=
+					reagent.coefficient / (-reaction.produced_species.coefficient)
+					* reaction.produced_species.species->quantity();
+			}
+		}
 	}
 
 	namespace solver {
