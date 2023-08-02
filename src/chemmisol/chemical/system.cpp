@@ -29,12 +29,15 @@ namespace chemmisol {
 				component_index(other.component_index),
 				species_index(other.species_index),
 				reaction_index(other.reaction_index),
-				species(other.species.size()), components(other.components.size()),
+				species(other.species.size()),
+				components(other.components.size()),
+				reactions(other.reactions.size()),
+				compiled_reactions(other.compiled_reactions.size()),
 				max_iteration(other.max_iteration),
 				solid_concentration(other.solid_concentration),
 				specific_surface_area(other.specific_surface_area),
 				site_concentration(other.site_concentration) {
-					for(auto& component : other.getComponents()) {
+					for(const auto& component : other.getComponents()) {
 						if(component->isFixed()) {
 							this->fixComponent(
 									component->getSpecies()->getName(),
@@ -53,7 +56,7 @@ namespace chemmisol {
 									);
 						}
 					}
-					for(auto& species : other.getSpecies()) {
+					for(const auto& species : other.getSpecies()) {
 						if(!this->species[species->getIndex()]) {
 							// If false, the unique_ptr is empty so the species
 							// has not been added as a Component
@@ -65,7 +68,7 @@ namespace chemmisol {
 									);
 						}
 					}
-					for(auto& reaction : other.getReactions()) {
+					for(const auto& reaction : other.getReactions()) {
 						this->addReaction(
 								reaction->getName(),
 								reaction->getLogK(),
@@ -73,8 +76,32 @@ namespace chemmisol {
 								reaction->getIndex()
 								);
 					}
+					for(const auto& reaction : other.compiled_reactions) {
+						this->compiled_reactions[reaction.reaction->getIndex()]
+							= {this->reactions[reaction.reaction->getIndex()].get()};
+						CompiledReaction& compiled_reaction
+							= this->compiled_reactions[reaction.reaction->getIndex()];
+						compiled_reaction.produced_species = {
+							reaction.produced_species.coefficient,
+							this->species[reaction.produced_species.species->getIndex()].get()
+						};
+						for(auto& component : reaction.components) {
+							compiled_reaction.components.emplace_back(
+									component.coefficient,
+									this->components[component.component->getIndex()].get()
+									);
+						}
+					}
 					this->reaction_matrix = other.reaction_matrix;
 			}
+
+	void ChemicalSystem::setUp() {
+		initReactionMatrix();
+		compiled_reactions.clear();
+		compiled_reactions.resize(reactions.size());
+		for(const auto& reaction : reactions)
+			compile(reaction.get());
+	}
 
 	void ChemicalSystem::addSpecies(ChemicalSpecies* species, std::size_t index) {
 		this->species.resize(std::max(this->species.size(), index+1));
@@ -288,16 +315,25 @@ namespace chemmisol {
 
 
 	void ChemicalSystem::compile(const Reaction* reaction) {
-		compiled_reactions.emplace_back(reaction);
-		CompiledReaction& compiled_reaction = compiled_reactions.back();
+		compiled_reactions[reaction->getIndex()] = {reaction};
+		CompiledReaction& compiled_reaction = compiled_reactions[reaction->getIndex()];
 		for(const auto& reagent : reaction->getReagents()) {
 			if(reagent.phase != SOLVENT) {
 				const auto& component = components_by_name.find(reagent.name);
 				if(component != components_by_name.end()) {
-					compiled_reaction.components.emplace_back(reagent.coefficient, component->second);
+					compiled_reaction.components.emplace_back(
+							reagent.coefficient,
+							// Access in components since components_by_name
+							// gives only a const access to components
+							components[component->second->getIndex()].get()
+							);
 				} else {
-					const auto& species = species_by_name.find(reagent.name);
-					compiled_reaction.produced_species = {reagent.coefficient, species->second};
+					// Access in species since species_by_name gives only a
+					// const access to species
+					auto& species = this->species[
+						species_by_name.find(reagent.name)->second->getIndex()
+					];
+					compiled_reaction.produced_species = {reagent.coefficient, species.get()};
 				}
 			}
 		}
@@ -321,8 +357,6 @@ namespace chemmisol {
 
 		reaction_matrix.resize(reactions.size());
 		for(const auto& reaction : reactions) {
-			compiled_reactions.clear();
-			compile(reaction.get());
 			reaction_matrix[reaction->getIndex()].resize(species.size());
 			for(const auto& reactive : reaction->getReagents()) {
 				reaction_matrix[reaction->getIndex()][getSpecies(reactive.name).getIndex()]
@@ -503,18 +537,27 @@ namespace chemmisol {
 		return initial_guess_extents;
 	}
 
+	void ChemicalSystem::proceed(const Reaction& reaction, double extent) {
+		CompiledReaction& compiled_reaction
+			= compiled_reactions[reaction.getIndex()];
+		for(auto& component : compiled_reaction.components) {
+			component.component->getSpecies()->incrementConcentration(
+					component.coefficient * extent 
+					);
+		}
+		compiled_reaction.produced_species.species->incrementConcentration(
+				compiled_reaction.produced_species.coefficient * extent
+				);
+	}
+
 	void ChemicalSystem::solveEquilibrium() {
-		initReactionMatrix();
+		setUp();
 		guessInitialExtents();
 
 		using namespace solver;
 		solver::X dx = solve(*this);
 		for(auto& reaction : reactions) {
-			for(auto& component : reaction->getReagents()) {
-				species[getSpecies(component.name).getIndex()]->incrementConcentration(
-						component.coefficient * dx[reaction->getIndex()]
-						);
-			}
+			proceed(*reaction.get(), dx[reaction->getIndex()]);
 		}
 	}
 

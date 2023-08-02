@@ -2,6 +2,7 @@
 #include "chemmisol/chemical/system.h"
 #include <cstddef>
 #include <regex>
+#include <random>
 
 namespace chemmisol {
 	std::ostream& operator<<(std::ostream& o, const ChemicalSpecies& s) {
@@ -43,7 +44,7 @@ class ChemicalSystemTest : public Test {
 		// Automatically adds the H+ component
 		chemical_system.fixPH(7);
 
-		chemical_system.initReactionMatrix();
+		chemical_system.setUp();
 	}
 
 	std::array<double, 7> analytical_concentrations(const std::array<double, 3>& x) const {
@@ -257,6 +258,69 @@ TEST_F(ChemicalSystemTest, H2O_activity) {
 	ASSERT_FLOAT_EQ(chemical_system.getSpecies("H2O").activity(), 1.0);
 }
 
+TEST_F(ChemicalSystemTest, mass_conservation_law) {
+	std::vector<double> total_components(chemical_system.getComponents().size());
+	chemical_system.massConservationLaw(total_components);
+
+	double total_h = std::pow(10, -7) * AqueousSpecies::V;
+	double total_na = 0.1*mol/l;
+	double total_cl = 0.1*mol/l;
+	ASSERT_FLOAT_EQ(
+			total_components[chemical_system.getComponent("H+").getIndex()], total_h);
+	ASSERT_FLOAT_EQ(
+			total_components[chemical_system.getComponent("Na+").getIndex()], total_na);
+	ASSERT_FLOAT_EQ(
+			total_components[chemical_system.getComponent("Cl-").getIndex()], total_cl);
+
+	const ChemicalSpecies& ho = chemical_system.getSpecies("OH-");
+	const ChemicalSpecies& h = chemical_system.getSpecies("H+");
+	const ChemicalSpecies& na = chemical_system.getSpecies("Na+");
+	const ChemicalSpecies& cl = chemical_system.getSpecies("Cl-");
+	const ChemicalSpecies& nacl = chemical_system.getSpecies("NaCl");
+	const ChemicalSpecies& naoh = chemical_system.getSpecies("NaOH");
+
+	std::minstd_rand rd;
+	// Makes the system evolve randomly for N iterations, and check that the
+	// total quantity of each component is always preserved according to the
+	// massConservationLaw() implementation.
+	for(std::size_t i = 0; i < 100; i++) {
+		{
+			// OH- random extent
+			std::uniform_real_distribution<double> random_extent(
+					-h.quantity(),
+					ho.quantity()
+					);
+			chemical_system.proceed(
+					chemical_system.getReaction("OH-"), random_extent(rd));
+		}
+		{
+			// NaCl random extent
+			std::uniform_real_distribution<double> random_extent(
+					-std::min(na.quantity(), cl.quantity()),
+					nacl.quantity()
+					);
+			chemical_system.proceed(
+					chemical_system.getReaction("NaCl"), random_extent(rd));
+		}
+		{
+			// NaOH random extent
+			std::uniform_real_distribution<double> random_extent(
+					-na.quantity(),
+					naoh.quantity()
+					);
+			chemical_system.proceed(
+					chemical_system.getReaction("NaOH"), random_extent(rd));
+		}
+
+		ASSERT_FLOAT_EQ(
+				total_components[chemical_system.getComponent("H+").getIndex()], total_h);
+		ASSERT_FLOAT_EQ(
+				total_components[chemical_system.getComponent("Na+").getIndex()], total_na);
+		ASSERT_FLOAT_EQ(
+				total_components[chemical_system.getComponent("Cl-").getIndex()], total_cl);
+	}
+}
+
 TEST_F(ChemicalSystemTest, guess_extent) {
 	auto guesses = chemical_system.guessInitialExtents();
 
@@ -274,7 +338,7 @@ TEST_F(ChemicalSystemTest, guess_extent_similar_logK) {
 			{"Na+", 1},
 			{"H2O", 1}
 			});
-	chemical_system.initReactionMatrix();
+	chemical_system.setUp();
 
 	auto guesses = chemical_system.guessInitialExtents();
 
@@ -524,7 +588,7 @@ class AdsorptionTest : public Test {
 		
 		chemical_system.fixPH(7);
 
-		chemical_system.initReactionMatrix();
+		chemical_system.setUp();
 	}
 };
 

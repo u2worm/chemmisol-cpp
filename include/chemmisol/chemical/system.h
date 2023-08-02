@@ -22,22 +22,22 @@ namespace chemmisol {
 		private:
 			struct ComponentReagent {
 				double coefficient;
-				const Component* component;
+				Component* component;
 
 				ComponentReagent() = default;
 				ComponentReagent(
-						double coefficient, const Component* component)
+						double coefficient, Component* component)
 					: coefficient(coefficient), component(component) {
 					}
 			};
 
 			struct ChemicalSpeciesReagent {
 				double coefficient;
-				const ChemicalSpecies* species;
+				ChemicalSpecies* species;
 
 				ChemicalSpeciesReagent() = default;
 				ChemicalSpeciesReagent(
-						double coefficient, const ChemicalSpecies* species)
+						double coefficient, ChemicalSpecies* species)
 					: coefficient(coefficient), species(species) {
 					}
 			};
@@ -47,6 +47,7 @@ namespace chemmisol {
 				ChemicalSpeciesReagent produced_species;
 				std::vector<ComponentReagent> components;
 
+				CompiledReaction() = default;
 				CompiledReaction(const Reaction* reaction)
 					: reaction(reaction) {
 					}
@@ -112,6 +113,15 @@ namespace chemmisol {
 
 			void compile(const Reaction* reaction);
 
+			/**
+			 * Initializes the reaction matrix from all components and reactions
+			 * added to the system until now.
+			 *
+			 * Automatically called by solveEquilibrium(), but might be called
+			 * by the user.
+			 */
+			void initReactionMatrix();
+
 		protected:
 			void addSpecies(
 					const std::string& name
@@ -162,6 +172,8 @@ namespace chemmisol {
 					double site_concentration,
 					const std::string& surface_component
 					);
+
+			void setUp();
 
 			/**
 			 * Adds a new Reaction to the system.
@@ -369,16 +381,9 @@ namespace chemmisol {
 				return reaction_matrix;
 			}
 
-			/**
-			 * Initializes the reaction matrix from all components and reactions
-			 * added to the system until now.
-			 *
-			 * Automatically called by solveEquilibrium(), but might be called
-			 * by the user.
-			 */
-			void initReactionMatrix();
-
 			const std::unordered_map<std::string, double>& guessInitialExtents();
+
+			void proceed(const Reaction& reaction, double extent);
 
 			/**
 			 * Solves the equilibrium of the system using the Newton method (see
