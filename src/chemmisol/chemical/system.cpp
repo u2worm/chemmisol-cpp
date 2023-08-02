@@ -178,8 +178,9 @@ namespace chemmisol {
 				// Should not append
 				fixed_species = nullptr;
 		}
-		FixedComponent* fixed_component
-			= new FixedComponent(fixed_species, component_index);
+		FixedComponent* fixed_component = new FixedComponent(
+				fixed_species, component_index,
+				fixed_species->ChemicalSpecies::quantity());
 
 		auto existing_component = components_by_name.find(name);
 		if (existing_component != components_by_name.end()) {
@@ -239,7 +240,8 @@ namespace chemmisol {
 				species = new Solvent(name, species_index);
 		}
 		addComponent(
-				new Component(species, component_index), species_index, component_index
+				new Component(species, component_index, species->quantity()),
+				species_index, component_index
 				);
 	}
 

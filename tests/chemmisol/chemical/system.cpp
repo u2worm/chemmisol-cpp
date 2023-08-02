@@ -189,14 +189,25 @@ TEST_F(ChemicalSystemTest, get_species) {
 
 TEST_F(ChemicalSystemTest, aqueous_species) {
 	ASSERT_THAT(chemical_system.getComponents(), UnorderedElementsAre(
-				Pointee(Property(&Component::getSpecies,
-						Pointee(Property(&ChemicalSpecies::getName, "H+"))
+				Pointee(AllOf(
+						Property(&Component::getSpecies,
+							Pointee(Property(&ChemicalSpecies::getName, "H+"))
+						),
+						Property(&Component::getTotalQuantity,
+							std::pow(10, -7) * AqueousSpecies::V
+						)
 						)),
-				Pointee(Property(&Component::getSpecies,
-						Pointee(Property(&ChemicalSpecies::getName, "Na+"))
+				Pointee(AllOf(
+						Property(&Component::getSpecies,
+							Pointee(Property(&ChemicalSpecies::getName, "Na+"))
+						),
+						Property(&Component::getTotalQuantity, 0.1*mol/l)
 						)),
-				Pointee(Property(&Component::getSpecies,
+				Pointee(AllOf(
+						Property(&Component::getSpecies,
 						Pointee(Property(&ChemicalSpecies::getName, "Cl-"))
+						),
+						Property(&Component::getTotalQuantity, 0.1*mol/l)
 						))
 				));
 	// Test fixed components handling
@@ -262,9 +273,10 @@ TEST_F(ChemicalSystemTest, mass_conservation_law) {
 	std::vector<double> total_components(chemical_system.getComponents().size());
 	chemical_system.massConservationLaw(total_components);
 
-	double total_h = std::pow(10, -7) * AqueousSpecies::V;
-	double total_na = 0.1*mol/l;
-	double total_cl = 0.1*mol/l;
+	double total_h = chemical_system.getComponent("H+").getTotalQuantity();
+	double total_na = chemical_system.getComponent("Na+").getTotalQuantity();
+	double total_cl = chemical_system.getComponent("Cl-").getTotalQuantity();
+
 	ASSERT_FLOAT_EQ(
 			total_components[chemical_system.getComponent("H+").getIndex()], total_h);
 	ASSERT_FLOAT_EQ(
