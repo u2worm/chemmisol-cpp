@@ -3,127 +3,278 @@
 
 namespace chemmisol {
 	namespace solver {
-		F::F(const ChemicalSystem& system)
-			: system(system), init_concentrations(system.getSpecies().size()) {
-				for(auto& species : system.getSpecies()) {
-					init_concentrations[species->getIndex()] = species->concentration();
-				}
-			}
+		const std::size_t F::INVALID_INDEX = -1;
 
-		X F::concentrations(const X& extent) const {
-			// Init concentrations of all components
-			std::vector<double> concentrations = init_concentrations;
-			for(auto& reaction : system.getReactions()) {
-				const std::vector<double>& coefficients
-					= system.getReactionMatrix()[reaction->getIndex()];
-				CHEM_LOG(TRACE) << "Calc concentrations from reaction " << reaction->getName();
-				for(
-						std::size_t species_index = 0;
-						species_index < coefficients.size();
-						species_index++) {
+		F::F(const ChemicalSystem& system) :
+			system(system),
+			x_size(system.getSpecies().size()),
+			f_x_size(system.getComponents().size()
+					+ system.getReactions().size()),
+			reaction_offset(system.getComponents().size()),
+			components_indexes(system.getComponents().size()),
+			species_offsets(system.getSpecies().size()),
+			species_indexes(system.getSpecies().size()),
+			fixed_activities(system.getComponents().size()) {
+				for(const auto& component : system.getComponents())
+					components_indexes[component->getIndex()] = component->getIndex();
+				for(const auto& species : system.getSpecies())
+					species_indexes[species->getIndex()]
+						= species->getIndex();
 
-					CHEM_LOG(TRACE) << "  " <<
-						system.getSpecies(species_index).getName() << ": " <<
-						concentrations[species_index] << " + " <<
-						coefficients[species_index]*extent[reaction->getIndex()] << " = " <<
-						system.getSpecies(species_index)
-								.concentration(
-									concentrations[species_index],
-									coefficients[species_index]*extent[reaction->getIndex()]
-									);
-					concentrations[species_index] =
-						system.getSpecies(species_index)
-								.concentration(
-									concentrations[species_index],
-									coefficients[species_index]*extent[reaction->getIndex()]
-									);
-				}
-			}
-			// Activities of all components resulting from the extent of all
-			// reactions
-			return concentrations;
-		}
-		X F::f(const X& extent) const {
-			X concentrations = this->concentrations(extent);
-			CHEM_LOG(TRACE) << "Init F concentrations: ";
-			for(auto& species : system.getSpecies())
-				CHEM_LOG(TRACE) << "  " << species->getName() << " " << concentrations[species->getIndex()];
-
-			X f(extent.size());
-			for(auto& reaction : system.getReactions()) {
-				const std::vector<double>& coefficients
-					= system.getReactionMatrix()[reaction->getIndex()];
-				for(
-						std::size_t species_index = 0;
-						species_index < coefficients.size();
-						species_index++) {
-					auto& species = system.getSpecies(species_index);
-					f[reaction->getIndex()] +=
-						// Stoichiometric coefficient
-						coefficients[species_index] * log(
-								// Current activity of the species according
-								// to the provided reaction extent
-								species.activity(concentrations[species_index])
-								);
-				}
-				// The previous sum should be equal to log(K)
-				f[reaction->getIndex()] += reaction->getLogK();
-			}
-			return f;
-		}
-		M F::df(const X& extent) const {
-			X current_concentrations = this->concentrations(extent);
-			M jacobian(extent.size()); // reactions count
-
-			for(auto& reaction : system.getReactions()) {
-				jacobian[reaction->getIndex()].resize(extent.size());
-				const std::vector<double>& coefficients_i
-					= system.getReactionMatrix()[reaction->getIndex()];
-				for(auto& dreaction : system.getReactions()) {
-					const std::vector<double>& coefficients_j
-						= system.getReactionMatrix()[dreaction->getIndex()];
-					double dfi_dxj = 0;
-					for(const auto& species : system.getSpecies()) {
-						dfi_dxj += coefficients_i[species->getIndex()] *
-							species->Dactivity(
-									current_concentrations,
-									coefficients_j[species->getIndex()]) /
-							species->activity(
-									current_concentrations[species->getIndex()]
-									) / ln10;
+				for(const auto& component : system.getComponents()) {
+					if(component->isFixed()) {
+						fixed_activities[component->getIndex()]
+							= component->getSpecies()->activity();
+						--x_size;
+						--f_x_size;
+						--reaction_offset;
+						// This component index cannot be used
+						components_indexes[component->getIndex()] = INVALID_INDEX;
+						for(
+								std::size_t i = component->getIndex()+1;
+								i < components_indexes.size(); i++) {
+							--components_indexes[i];
+						}
+						// This species index cannot be used
+						species_indexes[component->getSpecies()->getIndex()] = INVALID_INDEX;
+						for(
+								std::size_t i = component->getSpecies()->getIndex()+1;
+								i < species_indexes.size(); i++) {
+							--species_indexes[i];
+							++species_offsets[i];
+						}
 					}
-					jacobian[reaction->getIndex()][dreaction->getIndex()] = dfi_dxj;
+				}
+
+				revert_species_indexes.resize(x_size);
+				for(const auto& species : system.getSpecies()) {
+					if(species_indexes[species->getIndex()] != INVALID_INDEX)
+						revert_species_indexes[species_indexes[species->getIndex()]]
+							= species_indexes[species->getIndex()]+species_offsets[species->getIndex()];
 				}
 			}
 
+/*
+ *        X F::concentrations(const X& extent) const {
+ *            // Init concentrations of all components
+ *            std::vector<double> x = init_x;
+ *            for(auto& reaction : system.getReactions()) {
+ *                const std::vector<double>& coefficients
+ *                    = system.getReactionMatrix()[reaction->getIndex()];
+ *                CHEM_LOG(TRACE) << "Calc concentrations from reaction " << reaction->getName();
+ *                for(
+ *                        std::size_t species_index = 0;
+ *                        species_index < coefficients.size();
+ *                        species_index++) {
+ *
+ *                    CHEM_LOG(TRACE) << "  " <<
+ *                        system.getSpecies(species_index).getName() << ": " <<
+ *                        concentrations[species_index] << " + " <<
+ *                        coefficients[species_index]*extent[reaction->getIndex()] << " = " <<
+ *                        system.getSpecies(species_index)
+ *                                .concentration(
+ *                                    concentrations[species_index],
+ *                                    coefficients[species_index]*extent[reaction->getIndex()]
+ *                                    );
+ *                    concentrations[species_index] =
+ *                        system.getSpecies(species_index)
+ *                                .concentration(
+ *                                    concentrations[species_index],
+ *                                    coefficients[species_index]*extent[reaction->getIndex()]
+ *                                    );
+ *                }
+ *            }
+ *            // Activities of all components resulting from the extent of all
+ *            // reactions
+ *            return concentrations;
+ *        }
+ */
+		X F::reducedActivities() const {
+			X x(x_size);
+			for(const auto& species : system.getSpecies())
+				if(species_indexes[species->getIndex()] != INVALID_INDEX)
+					x[species_indexes[species->getIndex()]] = species->activity();
+			return x;
+		}
+
+		X F::completeActivities(const X& reduced_activities) const {
+			X complete_activities(system.getSpecies().size());
+			for(const auto& component : system.getComponents())
+				if(component->isFixed())
+					complete_activities[component->getSpecies()->getIndex()]
+						= component->getSpecies()->activity();
+			for(std::size_t i = 0; i < reduced_activities.size(); i++) {
+				complete_activities[revert_species_indexes[i]]
+					= reduced_activities[i];
+			}
+			return complete_activities;
+		}
+
+		X F::f(const X& activities) const {
+			X f_x(f_x_size);
+			// Complete activities vector with an entry for each species, so
+			// that it is compatible with ChemicalSystem::massConservationLaw()
+			// and ChemicalSystem::distanceToEquilibrium().
+			// TODO: improve this, too many copies for nothing.
+			X complete_activities = completeActivities(activities);
+			{
+				X mass_conservation_results(system.getSpecies().size());
+								// Actual total quantity of each component
+				system.massConservationLaw(
+						complete_activities, mass_conservation_results);
+				for(std::size_t i = 0; i < mass_conservation_results.size(); i++) {
+					if(species_indexes[i] != INVALID_INDEX)
+						f_x[species_indexes[i]] = mass_conservation_results[i];
+				}
+			}
+			for(auto& component : system.getComponents()) {
+				// Distance from the desired total quantity of the component
+				if(components_indexes[component->getIndex()] != INVALID_INDEX)
+					f_x[components_indexes[component->getIndex()]]
+						-= component->getTotalQuantity();
+			}
+			for(const auto& reaction : system.getReactions()) {
+				f_x[reaction_offset+reaction->getIndex()]
+					= system.distanceToEquilibrium(complete_activities, *reaction);
+			}
+			return f_x;
+		}
+
+		M F::df(const X& activities) const {
+			M jacobian(f_x_size);
+			std::vector<std::size_t> component_offsets;
+
+			// Begin mass conservation law equations
+			for(auto& component : system.getComponents()) {
+				if(components_indexes[component->getIndex()] != INVALID_INDEX) {
+					auto& d_f = jacobian[components_indexes[component->getIndex()]];
+					d_f.resize(x_size);
+					d_f[species_indexes[component->getSpecies()->getIndex()]] = 1.0;
+				}
+			}
+			for(const auto& reaction : system.getReactions()) {
+				// Species produced by this reaction
+				const ChemicalSpeciesReagent& species
+					= system.getSpeciesReagent(*reaction);
+				// The index of the species produced by the reaction is
+				// necessarily valid.
+				for(const auto& reagent : system.getComponentReagents(*reaction)) {
+					if(components_indexes[reagent.component->getIndex()] != INVALID_INDEX)
+						jacobian
+							[components_indexes[reagent.component->getIndex()]]
+							[species_indexes[species.species->getIndex()]]
+								= reagent.coefficient/(-species.coefficient);
+				}
+			}
+			// End mass conservation law equations
+
+			// Begin equilibrium equations
+			for(const auto& reaction : system.getReactions()) {
+				auto& d_f = jacobian[reaction_offset + reaction->getIndex()];
+				d_f.resize(x_size);
+				// dx_species: activity variable from which the current reaction
+				// d_f is derived
+				for(const auto& dx_species : system.getSpecies()) {
+					// No derivative to compute for fixed species (that
+					// correspond to invalid indexes)
+					if(species_indexes[dx_species->getIndex()] != INVALID_INDEX) {
+						d_f[species_indexes[dx_species->getIndex()]] = 0.0;
+						double d_reactives = -reaction->getK();
+						double d_products = 1.0;
+						double species_coefficient_in_reactions;
+						bool species_in_reaction = false;
+
+						// Process the produced species
+						const auto& reagent = system.getSpeciesReagent(*reaction);
+						if(reagent.species == dx_species.get()) {
+							// The current reagent is the variable from which
+							// d_f is derived
+							species_coefficient_in_reactions = reagent.coefficient;
+							species_in_reaction = true;
+						} else {
+							// The produced reagent cannot be fixed (currently)
+							// so it necessarily corresponds to a valid index
+							if(activities[species_indexes[reagent.species->getIndex()]] > 0.0) {
+								if(reagent.coefficient < 0.0) {
+									d_products *= std::pow(
+											activities[species_indexes[reagent.species->getIndex()]],
+											-reagent.coefficient
+											);
+								} else {
+									d_reactives *= std::pow(
+											activities[species_indexes[reagent.species->getIndex()]],
+											reagent.coefficient
+											);
+								}
+							} else {
+								if(reagent.coefficient < 0.0) {
+									d_products = 0.0;
+								} else {
+									d_reactives = 0.0;
+								}
+							}
+						}
+
+						// Process reaction components
+						for(const auto& reagent : system.getComponentReagents(*reaction)) {
+							if(reagent.component->getSpecies() == dx_species.get()) {
+								species_coefficient_in_reactions = reagent.coefficient;
+								species_in_reaction = true;
+							} else {
+								double species_activity = 0.0;
+								if(species_indexes[reagent.component->getSpecies()->getIndex()] != INVALID_INDEX) {
+									species_activity = activities[species_indexes[reagent.component->getSpecies()->getIndex()]];
+								} else {
+									species_activity = fixed_activities[reagent.component->getIndex()];
+								}
+								if(species_activity > 0.0) {
+									if(reagent.coefficient < 0.0) {
+										d_products *= std::pow(
+												species_activity,
+												-reagent.coefficient
+												);
+									} else {
+										d_reactives *= std::pow(
+												species_activity,
+												reagent.coefficient
+												);
+									}
+								} else {
+									if(reagent.coefficient < 0.0) {
+										d_products = 0.0;
+									} else {
+										d_reactives = 0.0;
+									}
+								}
+							}
+						}
+						// If the species is not in the reaction,
+						// d_f/dx_species = 0.0
+						if(species_in_reaction) {
+							if(species_coefficient_in_reactions < 0)
+								d_f[species_indexes[dx_species->getIndex()]] = 
+									-species_coefficient_in_reactions * d_products;
+							else
+								d_f[species_indexes[dx_species->getIndex()]] =
+									species_coefficient_in_reactions * d_reactives;
+						}
+					}
+				}
+			}
+			// End equilibrium equations
 			return jacobian;
 		}
 
 		X solve(const ChemicalSystem& system) {
 			F f(system);
-			// Initially all to 0
-			X init_extent(system.getReactions().size());
-			for(const auto& reaction : system.getReactions()) {
-				init_extent[reaction->getIndex()]
-					= system.getInitialGuessExtent(reaction->getName());
-			}
-			return Newton<X, M>(
-					init_extent,
+			// Initial activities in the system
+			X reduced_activities = f.reducedActivities();
+			reduced_activities = AbsoluteNewton<X, M>(
+					reduced_activities,
 					[&f] (const X& x) {return f.f(x);},
 					[&f] (const X& x) {return f.df(x);}
 					).solve_iter(system.getMaxIteration());
+			return f.completeActivities(reduced_activities);
 		}
-	}
-
-	double GuessF::operator()(const double &extent) const {
-		double f = 0;
-		for(auto& reagent : reaction.getReagents()) {
-			f += reagent.coefficient * log(system.getSpecies(reagent.name).activity(
-					current_concentrations,
-					reagent.coefficient * extent
-					));
-		}
-		f += reaction.getLogK();
-		return f;
 	}
 }

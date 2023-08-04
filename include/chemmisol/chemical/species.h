@@ -109,6 +109,8 @@ namespace chemmisol {
 			 */
 			virtual double activity(double concentration) const = 0;
 
+			virtual void setActivity(double activity) = 0;
+
 			double quantity() const {
 				return quantity(concentration());
 			}
@@ -193,6 +195,9 @@ namespace chemmisol {
 				return A;
 			}
 
+			void setActivity(double) override {
+			}
+
 			double activity(
 					const std::vector<double>&,
 					double) const override {
@@ -274,6 +279,10 @@ namespace chemmisol {
 					const std::vector<double>& current_concentrations,
 					double extent) const override {
 				return activity(current_concentrations[getIndex()] + (extent/V));
+			}
+
+			void setActivity(double activity) override {
+				C = activity * 1*mol/l;
 			}
 
 			double Dactivity(
@@ -444,6 +453,10 @@ namespace chemmisol {
 
 			double activity(double current_concentration) const override {
 				return current_concentration;
+			}
+
+			void setActivity(double activity) override {
+				fraction = activity;
 			}
 
 			double activity(

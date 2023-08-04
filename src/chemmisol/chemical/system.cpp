@@ -225,24 +225,40 @@ namespace chemmisol {
 	void ChemicalSystem::addComponent(
 			const std::string& name, Phase phase, double concentration,
 			std::size_t species_index, std::size_t component_index) {
-		ChemicalSpecies* species;
 		switch(phase) {
 			case AQUEOUS:
-				species = new AqueousSpecies(name, species_index, concentration);
-				break;
 			case MINERAL:
-				species = new MineralSpecies(
-						name, species_index,
-						solid_concentration, specific_surface_area, site_concentration,
-						concentration);
+				{
+					ChemicalSpecies* species = nullptr;
+					switch(phase) {
+						case AQUEOUS:
+							species = new AqueousSpecies(name, species_index, concentration);
+							break;
+						case MINERAL:
+							species = new MineralSpecies(
+									name, species_index,
+									solid_concentration, specific_surface_area, site_concentration,
+									concentration);
+							break;
+						default:
+							// Cannot occur
+							break;
+					}
+					addComponent(
+							new Component(species, component_index, species->quantity()),
+							species_index, component_index
+							);
+				}
 				break;
 			case SOLVENT:
-				species = new Solvent(name, species_index);
+				Solvent* solvent = new Solvent(name, species_index);
+				addComponent(
+						new FixedComponent(
+							solvent, component_index, solvent->ChemicalSpecies::quantity()
+							),
+						species_index, component_index
+						);
 		}
-		addComponent(
-				new Component(species, component_index, species->quantity()),
-				species_index, component_index
-				);
 	}
 
 	void ChemicalSystem::addSpecies(
@@ -315,6 +331,14 @@ namespace chemmisol {
 		return *species[id];
 	}
 
+	const std::vector<ComponentReagent>& ChemicalSystem::getComponentReagents(
+			const Reaction& reaction) const {
+		return compiled_reactions[reaction.getIndex()].components;
+	}
+	const ChemicalSpeciesReagent& ChemicalSystem::getSpeciesReagent(
+			const Reaction& reaction) const {
+		return compiled_reactions[reaction.getIndex()].produced_species;
+	}
 
 	void ChemicalSystem::compile(const Reaction* reaction) {
 		compiled_reactions[reaction->getIndex()] = {reaction};
@@ -367,178 +391,6 @@ namespace chemmisol {
 		}
 	}
 
-	const std::unordered_map<std::string, double>& ChemicalSystem::guessInitialExtents() {
-		for(const auto& reaction : getReactions()) {
-			if(initial_guess_extents.find(reaction->getName())
-					== initial_guess_extents.end()) {
-				// No manually specified guess extent: automatically compute one
-
-				double reactants_product = 1.0;
-				for(const auto& reagent : reaction->getReagents()) {
-					if(reagent.coefficient > 0.0) {
-						reactants_product *=
-							std::pow(getSpecies(reagent.name).activity(), reagent.coefficient);
-					}
-				}
-				if(reactants_product == 0.0) {
-					// TODO: support for this situation?
-					throw std::logic_error(
-							"Some reactants are missing: the problem is ill formed."
-							);
-				}
-			}
-		}
-		// Concentrations used in the incremental guess process
-		std::vector<double> guessed_concentrations(getSpecies().size());
-		for(auto& component : getSpecies())
-			guessed_concentrations[component->getIndex()]
-				= component->concentration();
-
-		// The overall idea of the guess process is that we have an initial
-		// quantity of reactives, specified by the user, and some null products.
-		// We need to:
-		// 1. initialize the products quantity to a non null value.
-		// 2. initialize it to a value as close as possible to the final
-		// equilibrium so the Newton method can converge.
-		//
-		// The logK() values are the first hint to find activities. Considering
-		// that all free products concentrations are null, reactions
-		// with a big positive logK() value will try to consume as much
-		// reactive as possible to maximise the products quantity and establish
-		// the equilibrium, while reactions with a big negative logK() value
-		// will only need to consumme a negligible quantity of reactives to
-		// establish the equilibrium.
-		//
-		// In order to estimate the final equilibrium, we start by ordering
-		// reactions by their logK() value, so that reactions that need a lot of
-		// reactives will be handled first. Then the algorithm consists in
-		// solving each reaction as if they where alone in the system. At each
-		// reaction, the estimated quantity of reactives consumed is updated in
-		// guessed_concentrations, so that the first reaction with big logK()
-		// value have a lot of reactives at the beginning, and the last one can
-		// still get close to the equilibrium from what's left.
-
-		std::vector<const Reaction*> sorted_reactions;
-		{
-
-			// Sort reactions by logK() values
-			for(auto& reaction : getReactions()) {
-				double products_product = 1.0;
-				for(const auto& reagent : reaction->getReagents()) {
-					if(reagent.coefficient < 0.0) {
-						products_product *= getSpecies(reagent.name).activity();
-					}
-				}
-				if(products_product == 0.0) {
-					// The guess algorithm can only be used when at least one
-					// product is missing
-					sorted_reactions.push_back(reaction.get());
-				}
-			}
-
-			std::sort(sorted_reactions.begin(), sorted_reactions.end(),
-					[] (const Reaction*& r1, const Reaction*& r2) {
-					// > instead of < so that the list is sorted in descending
-					// order
-					return r1->getLogK() > r2->getLogK();
-					});
-		}
-
-		for(auto& reaction : sorted_reactions) {
-			CHEM_LOG(INFO) <<
-				"Try to guess extent for reaction " << reaction->getName() <<
-				" (log K = " << reaction->getLogK() << ")";
-
-			// Limiting reactive finding algorithm
-			//
-			// The limiting reactive is used to define the maximum possible
-			// extent of the reaction so that all reagent concentrations stay
-			// positive.
-			const ChemicalSpecies* limiting_reactive = nullptr;
-			double limiting_reactive_coefficient = 0;
-			double smallest_limiting_factor = std::numeric_limits<double>::infinity();
-
-			for(auto& reagent : reaction->getReagents()) {
-				if(reagent.coefficient > 0.0) {
-					// Consider only reactives
-					const auto& component = components_by_name.find(reagent.name);
-					if(
-							// The reagent is not a component
-							component == components_by_name.end()
-							// Or if it is a component, it is not fixed
-							|| !(component->second->isFixed())) {
-						const ChemicalSpecies& species = getSpecies(reagent.name);
-						// A fixed reactive cannot be limiting
-						double limiting_factor = species.quantity(
-								guessed_concentrations[species.getIndex()]
-								) / reagent.coefficient;
-						if(limiting_factor < smallest_limiting_factor) {
-							limiting_reactive = &species;
-							limiting_reactive_coefficient = reagent.coefficient;
-							smallest_limiting_factor = limiting_factor;
-						}
-					}
-				} 
-			}
-
-			// See the GuessF definition for more details.
-			// Return log(Q(x)) - logK where x is the extent of the reaction and
-			// Q is the reaction quotient with products at the numerator
-			GuessF f = GuessF(*this, *reaction, guessed_concentrations);
-
-			double max_N;
-			if(limiting_reactive != nullptr) {
-				CHEM_LOG(DEBUG) << "  Limiting reactive: " << limiting_reactive_coefficient
-					<< " " << limiting_reactive->getName() << " " << 
-					limiting_reactive_coefficient * smallest_limiting_factor << " mol/l";
-
-				max_N = smallest_limiting_factor;
-			} else {
-				// In this case, there is no limiting factor. This for example
-				// the case for the reaction OH-: H2O <-> H+ + OH- where H2O is
-				// a solvent and H+ is fixed with the pH. Using a value of max_N
-				// = 1mol/l still allows to find the corresponding OH-
-				// concentration using the RegulaFalsi solver.
-				max_N = 1*mol/l;
-			}
-
-			// Uses the RegulaFalsi method to find the root of f(x)=log(Q(x)) - logK
-			// Solutions are searched in ]-N, 0[ where N is the limiting factor.
-			// Due to the convention that products are specified with negative
-			// coefficients and that we find a solution that necessarily form
-			// products, extents considered are negative.
-			double guess_extent = RegulaFalsi<double>(
-					// Value just below 0
-					- std::numeric_limits<double>::min(),
-					// Value just above -N
-					-(max_N) * (1 - std::numeric_limits<double>::epsilon()),
-					// Function to optimize
-					f
-					).solve_iter(10000);
-			// About std::numeric_limits<double>::epsilon():
-			// epsilon is the next float that can be represented after 1.0, so
-			// that it is the smallest quantity such that:
-			// 1.0 - epsilon < 1.0 < 1.0 + epsilon
-			// Multiplying this inequality by N gives the "just above -N" value.
-
-			CHEM_LOG(INFO) << "  Guessed extent: " << guess_extent;
-
-			// Set up the guessed value
-			initial_guess_extents[reaction->getName()] = guess_extent;
-			// Updates concentrations from the guessed extent, so that the
-			// system remains consistent for next reactions.
-			for(auto& reagent : reaction->getReagents()) {
-				auto& species = getSpecies(reagent.name);
-				guessed_concentrations[species.getIndex()]
-					= species.concentration(
-							guessed_concentrations[species.getIndex()],
-							reagent.coefficient * guess_extent
-							);
-			}
-		}
-		return initial_guess_extents;
-	}
-
 	void ChemicalSystem::proceed(const Reaction& reaction, double extent) {
 		CompiledReaction& compiled_reaction
 			= compiled_reactions[reaction.getIndex()];
@@ -552,14 +404,46 @@ namespace chemmisol {
 				);
 	}
 
+	double ChemicalSystem::distanceToEquilibrium(
+			const std::vector<double>& activities,
+			const Reaction& reaction) const {
+		double reactives = reaction.getK();
+		double products = 1.0;
+		auto& compiled_reaction = compiled_reactions[reaction.getIndex()];
+		for(const auto& reagent : compiled_reaction.components) {
+			double activity = activities[reagent.component->getSpecies()->getIndex()];
+			if(activity > 0.0) {
+				if(reagent.coefficient > 0) {
+					reactives *= std::pow(activity, reagent.coefficient);
+				} else {
+					products *= std::pow(activity, -reagent.coefficient);
+				}
+			}
+		}
+		double activity = activities[compiled_reaction.produced_species.species->getIndex()];
+		if(activity > 0.0)
+			// This coefficient is necessarily negative
+			products *= std::pow(
+					activity,
+					-compiled_reaction.produced_species.coefficient);
+		return products - reactives;
+	}
+
+	double ChemicalSystem::distanceToEquilibrium(const Reaction& reaction) const {
+		std::vector<double> activities(species.size());
+		for(const auto& species : this->species)
+			activities[species->getIndex()] = species->activity();
+		return distanceToEquilibrium(activities, reaction);
+	}
+
 	void ChemicalSystem::solveEquilibrium() {
 		setUp();
-		guessInitialExtents();
 
 		using namespace solver;
-		solver::X dx = solve(*this);
-		for(auto& reaction : reactions) {
-			proceed(*reaction.get(), dx[reaction->getIndex()]);
+		solver::X activities = solve(*this);
+		CHEM_LOG(TRACE) << "Solved activities: " << activities;
+		for(std::size_t index = 0; index < activities.size(); index++) {
+			species[index]->setActivity(activities[index]);
 		}
 	}
 
@@ -575,18 +459,29 @@ namespace chemmisol {
 		return 1/quotient;
 	}
 
-	void ChemicalSystem::massConservationLaw(std::vector<double>& x) const {
+	void ChemicalSystem::massConservationLaw(
+			const std::vector<double>& activities,
+			std::vector<double>& result) const {
 		for(auto& component : getComponents()) {
-			x[component->getIndex()]
-				= component->getSpecies()->quantity();
+			result[component->getIndex()]
+				= activities[component->getIndex()];
 		}
 		for(auto& reaction : compiled_reactions) {
 			for(const ComponentReagent& reagent
 					: reaction.components) {
-				x[reagent.component->getIndex()] +=
-					reagent.coefficient / (-reaction.produced_species.coefficient)
-					* reaction.produced_species.species->quantity();
+				if(!reagent.component->isFixed())
+					result[reagent.component->getIndex()] +=
+						reagent.coefficient / (-reaction.produced_species.coefficient)
+						* activities[reaction.produced_species.species->getIndex()];
 			}
 		}
+
+	}
+
+	void ChemicalSystem::massConservationLaw(std::vector<double>& result) const {
+		std::vector<double> activities(species.size());
+		for(const auto& species : this->species)
+			activities[species->getIndex()] = species->activity();
+		massConservationLaw(activities, result);
 	}
 }

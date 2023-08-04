@@ -1,5 +1,6 @@
 #include <string>
 #include "species.h"
+#include <cmath>
 
 namespace chemmisol {
 
@@ -100,6 +101,7 @@ namespace chemmisol {
 		private:
 			std::string name;
 			std::size_t index;
+			double K;
 			double log_K;
 			std::vector<Reagent> reagents;
 
@@ -131,7 +133,7 @@ namespace chemmisol {
 					const std::string& name, std::size_t index, double log_K,
 					const std::vector<Reagent>& reagents
 					)
-				: name(name), index(index), log_K(log_K), reagents(reagents) {
+				: name(name), index(index), K(std::pow(10, log_K)), log_K(log_K), reagents(reagents) {
 				}
 
 			/**
@@ -149,6 +151,10 @@ namespace chemmisol {
 			 */
 			std::size_t getIndex() const {
 				return index;
+			}
+
+			double getK() const {
+				return K;
 			}
 
 			/**

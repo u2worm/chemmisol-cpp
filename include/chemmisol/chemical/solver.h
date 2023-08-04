@@ -30,23 +30,41 @@ namespace chemmisol {
 		 */
 		class F {
 			private:
+				static const std::size_t INVALID_INDEX;
 				const ChemicalSystem& system;
-				std::vector<double> init_concentrations;
+				std::size_t x_size;
+				std::size_t f_x_size;
+				std::size_t reaction_offset;
+				std::vector<std::size_t> components_indexes;
+				std::vector<std::size_t> species_offsets;
+				std::vector<std::size_t> species_indexes;
+				std::vector<std::size_t> revert_species_indexes;
+				std::vector<double> fixed_activities;
 
 			public:
-				void massConservationLaw(X& x) const;
 
 				/**
 				 * Returns the resulting concentrations in the current chemical
 				 * system that result from the provided extents.
 				 */
-				X concentrations(const X& extents) const;
+				//X concentrations(const X& extents) const;
 
 				/**
 				 * Initializes a function F to find the equilibrium of the
 				 * provided chemical system.
 				 */
 				F(const ChemicalSystem& system);
+
+				X reducedActivities() const;
+				X completeActivities(const X& reduced_activities) const;
+
+				const std::vector<std::size_t>& componentsIndexes() const {
+					return components_indexes;
+				}
+
+				const std::vector<std::size_t>& speciesIndexes() const {
+					return species_indexes;
+				}
 
 				/**
 				 * Returns the value of f for the provided extents.
@@ -147,23 +165,4 @@ namespace chemmisol {
 		 */
 		X solve(const ChemicalSystem& system);
 	}
-
-	class GuessF {
-		private:
-			const ChemicalSystem& system;
-			const Reaction& reaction;
-			const std::vector<double>& current_concentrations;
-
-		public:
-			GuessF(
-					const ChemicalSystem& system,
-					const Reaction& reaction,
-					const std::vector<double>& current_concentrations
-					) :
-				system(system), reaction(reaction),
-				current_concentrations(current_concentrations) {
-				}
-			double operator()(const double& extent) const;
-	};
-
 }

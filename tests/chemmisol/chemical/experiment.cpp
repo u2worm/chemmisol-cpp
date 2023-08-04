@@ -30,6 +30,7 @@ class TestExperiment : public Test {
 
 		chemical_system.addComponent("Na+", 0.1*mol/l);
 		chemical_system.addComponent("Cl-", 0.1*mol/l);
+		chemical_system.addComponent("H2O", SOLVENT, 0);
 	}
 };
 

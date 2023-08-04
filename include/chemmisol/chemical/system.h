@@ -10,6 +10,28 @@
 #include "../logging.h"
 
 namespace chemmisol {
+	struct ComponentReagent {
+		double coefficient;
+		Component* component;
+
+		ComponentReagent() = default;
+		ComponentReagent(
+				double coefficient, Component* component)
+			: coefficient(coefficient), component(component) {
+			}
+	};
+
+	struct ChemicalSpeciesReagent {
+		double coefficient;
+		ChemicalSpecies* species;
+
+		ChemicalSpeciesReagent() = default;
+		ChemicalSpeciesReagent(
+				double coefficient, ChemicalSpecies* species)
+			: coefficient(coefficient), species(species) {
+			}
+	};
+
 	/**
 	 * A ChemicalSystem is defined by a set of Components that interact
 	 * according to defined Reactions.
@@ -20,28 +42,6 @@ namespace chemmisol {
 	 */
 	class ChemicalSystem {
 		private:
-			struct ComponentReagent {
-				double coefficient;
-				Component* component;
-
-				ComponentReagent() = default;
-				ComponentReagent(
-						double coefficient, Component* component)
-					: coefficient(coefficient), component(component) {
-					}
-			};
-
-			struct ChemicalSpeciesReagent {
-				double coefficient;
-				ChemicalSpecies* species;
-
-				ChemicalSpeciesReagent() = default;
-				ChemicalSpeciesReagent(
-						double coefficient, ChemicalSpecies* species)
-					: coefficient(coefficient), species(species) {
-					}
-			};
-
 			struct CompiledReaction {
 				const Reaction* reaction;
 				ChemicalSpeciesReagent produced_species;
@@ -80,8 +80,6 @@ namespace chemmisol {
 			double solid_concentration;
 			double specific_surface_area;
 			double site_concentration;
-
-			std::unordered_map<std::string, double> initial_guess_extents;
 
 			void addComponent(
 					const std::string& name,
@@ -336,18 +334,10 @@ namespace chemmisol {
 				return reactions;
 			}
 
-			void setInitialGuessExtent(const std::string& reaction, double guess) {
-				initial_guess_extents[reaction] = guess;
-				CHEM_LOG(INFO) << "User specified extent guess for " << reaction
-					<< ": " << guess;
-			}
-
-			double getInitialGuessExtent(const std::string& reaction) const {
-				auto guess = initial_guess_extents.find(reaction);
-				if(guess != initial_guess_extents.end())
-					return guess->second;
-				return 0;
-			}
+			const std::vector<ComponentReagent>& getComponentReagents(
+					const Reaction& reaction) const;
+			const ChemicalSpeciesReagent& getSpeciesReagent(
+					const Reaction& reaction) const;
 
 			/**
 			 * Returns the reaction matrix describing the system.
@@ -381,9 +371,12 @@ namespace chemmisol {
 				return reaction_matrix;
 			}
 
-			const std::unordered_map<std::string, double>& guessInitialExtents();
-
 			void proceed(const Reaction& reaction, double extent);
+
+			double distanceToEquilibrium(
+					const std::vector<double>& activities,
+					const Reaction& reaction) const;
+			double distanceToEquilibrium(const Reaction& reaction) const;
 
 			/**
 			 * Solves the equilibrium of the system using the Newton method (see
@@ -409,7 +402,11 @@ namespace chemmisol {
 			 */
 			double reactionQuotient(const std::string& name) const;
 
-			void massConservationLaw(std::vector<double>& x) const;
+			void massConservationLaw(
+					const std::vector<double>& activities,
+					std::vector<double>& result) const;
+
+			void massConservationLaw(std::vector<double>& result) const;
 
 			/**
 			 * Returns the maximum count of iterations allowed for the
