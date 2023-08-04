@@ -4,6 +4,7 @@ enable_testing()
 
 add_executable(
   chemmisol-tests
+  googletest/main.cpp
   chemmisol/math/linear.cpp
   chemmisol/math/newton.cpp
   chemmisol/math/gauss.cpp
@@ -14,8 +15,8 @@ add_executable(
 target_link_libraries(
   chemmisol-tests
   chemmisol
-  GTest::gtest_main
-  GTest::gmock_main
+  GTest::gtest
+  GTest::gmock
 )
 
 include(GoogleTest)
