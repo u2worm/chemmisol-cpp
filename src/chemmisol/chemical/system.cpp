@@ -261,6 +261,11 @@ namespace chemmisol {
 		}
 	}
 
+	void ChemicalSystem::addSolvent(const std::string& name) {
+		addComponent(name, SOLVENT, 0.0); // Concentration is ignored when
+										  // phase=SOLVENT
+	}
+
 	void ChemicalSystem::addSpecies(
 			const std::string& name, Phase phase) {
 		addSpecies(name, phase, 0, species_index++);

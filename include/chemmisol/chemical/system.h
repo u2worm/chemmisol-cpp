@@ -233,6 +233,8 @@ namespace chemmisol {
 					double concentration
 					);
 
+			void addSolvent(const std::string& name);
+
 			/**
 			 * Initializes the pH of the chemical system, setting a
 			 * concentration of 10^-pH for HO- and H+ species.

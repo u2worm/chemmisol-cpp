@@ -41,7 +41,8 @@ class ChemicalSystemTest : public Test {
 
 		chemical_system.addComponent("Na+", 0.1*mol/l);
 		chemical_system.addComponent("Cl-", 0.1*mol/l);
-		chemical_system.addComponent("H2O", SOLVENT, 0);
+		chemical_system.addSolvent("H2O");
+
 		// Automatically adds the H+ component
 		chemical_system.fixPH(7);
 
