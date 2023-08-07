@@ -216,12 +216,21 @@ namespace chemmisol {
 						// If the species is not in the reaction,
 						// d_f/dx_species = 0.0
 						if(species_in_reaction) {
+							std::size_t index = species_indexes[dx_species->getIndex()];
+							double activity = activities[index];
+							// d x^a/dx = a * x^(a-1)
 							if(species_coefficient_in_reactions < 0)
-								d_f[species_indexes[dx_species->getIndex()]] = 
-									-species_coefficient_in_reactions * d_products;
+								d_f[index] = -species_coefficient_in_reactions
+									* std::pow(
+											activity,
+											-species_coefficient_in_reactions-1
+											) * d_products;
 							else
-								d_f[species_indexes[dx_species->getIndex()]] =
-									species_coefficient_in_reactions * d_reactives;
+								d_f[index] = species_coefficient_in_reactions
+									* std::pow(
+											activity,
+											species_coefficient_in_reactions-1
+											) * d_reactives;
 						}
 					}
 				}
