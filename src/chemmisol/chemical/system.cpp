@@ -96,6 +96,12 @@ namespace chemmisol {
 		compiled_reactions.resize(reactions.size());
 		for(const auto& reaction : reactions)
 			compile(reaction.get());
+		CHEM_LOG(INFO) << "Chemical system components:";
+		for(auto& component : components)
+			CHEM_LOG(INFO) << "  " << component->getSpecies()->getName();
+		CHEM_LOG(INFO) << "Chemical system species:";
+		for(auto& species : this->species)
+			CHEM_LOG(INFO) << "  " << species->getName();
 	}
 
 	void ChemicalSystem::addSpecies(ChemicalSpecies* species, std::size_t index) {
@@ -441,8 +447,9 @@ namespace chemmisol {
 
 		using namespace solver;
 		solver::X activities = solve(*this);
-		CHEM_LOG(TRACE) << "Solved activities: " << activities;
+		CHEM_LOG(INFO) << "Solved activities:";
 		for(std::size_t index = 0; index < activities.size(); index++) {
+			CHEM_LOG(INFO) << "  " << species[index]->getName() << ": " << activities[index];
 			species[index]->setActivity(activities[index]);
 		}
 	}
