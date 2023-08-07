@@ -7,11 +7,6 @@
 #include <cassert>
 
 namespace chemmisol {
-	/*
-	 *const double ChemicalSystem::bulk_density = 1.17*gram/cm3;
-	 *const double ChemicalSystem::V = std::pow(1*cm, 3);
-	 *const double ChemicalSystem::mineral_weight  = V*bulk_density;
-	 */
 
 	ChemicalSystem::ChemicalSystem(
 					double solid_concentration,
