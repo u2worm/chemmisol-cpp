@@ -54,41 +54,6 @@ namespace chemmisol {
 				}
 			}
 
-/*
- *        X F::concentrations(const X& extent) const {
- *            // Init concentrations of all components
- *            std::vector<double> x = init_x;
- *            for(auto& reaction : system.getReactions()) {
- *                const std::vector<double>& coefficients
- *                    = system.getReactionMatrix()[reaction->getIndex()];
- *                CHEM_LOG(TRACE) << "Calc concentrations from reaction " << reaction->getName();
- *                for(
- *                        std::size_t species_index = 0;
- *                        species_index < coefficients.size();
- *                        species_index++) {
- *
- *                    CHEM_LOG(TRACE) << "  " <<
- *                        system.getSpecies(species_index).getName() << ": " <<
- *                        concentrations[species_index] << " + " <<
- *                        coefficients[species_index]*extent[reaction->getIndex()] << " = " <<
- *                        system.getSpecies(species_index)
- *                                .concentration(
- *                                    concentrations[species_index],
- *                                    coefficients[species_index]*extent[reaction->getIndex()]
- *                                    );
- *                    concentrations[species_index] =
- *                        system.getSpecies(species_index)
- *                                .concentration(
- *                                    concentrations[species_index],
- *                                    coefficients[species_index]*extent[reaction->getIndex()]
- *                                    );
- *                }
- *            }
- *            // Activities of all components resulting from the extent of all
- *            // reactions
- *            return concentrations;
- *        }
- */
 		X F::reducedActivities() const {
 			X x(x_size);
 			for(const auto& species : system.getSpecies())

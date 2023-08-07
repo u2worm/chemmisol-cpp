@@ -424,6 +424,12 @@ namespace chemmisol {
 				} else {
 					products *= std::pow(activity, -reagent.coefficient);
 				}
+			} else {
+				if(reagent.coefficient > 0) {
+					reactives = 0.0;
+				} else {
+					products = 0.0;
+				}
 			}
 		}
 		double activity = activities[compiled_reaction.produced_species.species->getIndex()];
@@ -432,6 +438,8 @@ namespace chemmisol {
 			products *= std::pow(
 					activity,
 					-compiled_reaction.produced_species.coefficient);
+		else
+			products = 0.0;
 		return products - reactives;
 	}
 
