@@ -1,3 +1,6 @@
+#ifndef CHEMMISOL_EXPERIMENT_H
+#define CHEMMISOL_EXPERIMENT_H
+
 #include "system.h"
 #include <fstream>
 #include <functional>
@@ -25,3 +28,4 @@ namespace chemmisol {
 		std::unordered_map<std::string, std::vector<double>> run(unsigned long time);
 	};
 }
+#endif /*CHEMMISOL_EXPERIMENT_H*/

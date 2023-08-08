@@ -1,10 +1,7 @@
-#include <array>
-#include <cmath>
-#include <iostream>
-#include <limits>
+#ifndef CHEMMISOL_SYSTEM_H
+#define CHEMMISOL_SYSTEM_H
+
 #include <unordered_map>
-#include <vector>
-#include <memory>
 #include "chemmisol/math/linear.h"
 #include "solver.h"
 #include "../logging.h"
@@ -315,6 +312,9 @@ namespace chemmisol {
 			 */
 			const Component& getComponent(const std::size_t& id) const;
 
+			bool isComponent(const std::string& species_name) const;
+			bool isComponent(const ChemicalSpecies& species) const;
+
 			/**
 			 * Returns references to all the chemical_species in the system.
 			 */
@@ -428,3 +428,4 @@ namespace chemmisol {
 	};
 
 }
+#endif /*CHEMMISOL_SYSTEM_H*/

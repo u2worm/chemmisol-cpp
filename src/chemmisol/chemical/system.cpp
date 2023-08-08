@@ -94,8 +94,21 @@ namespace chemmisol {
 		initReactionMatrix();
 		compiled_reactions.clear();
 		compiled_reactions.resize(reactions.size());
-		for(const auto& reaction : reactions)
-			compile(reaction.get());
+		for(const auto& reaction : reactions) {
+			try {
+				compile(reaction.get());
+			}
+			catch (const MissingProducedSpeciesInReaction& e) {
+				throw e;
+			}
+			catch (const InvalidSpeciesInReaction& e) {
+				throw e;
+			}
+			catch (const InvalidReaction& e) {
+				throw e;
+			}
+		}
+
 		CHEM_LOG(INFO) << "Chemical system components:";
 		for(auto& component : components)
 			CHEM_LOG(INFO) << "  " << component->getSpecies()->getName();
@@ -329,6 +342,14 @@ namespace chemmisol {
 		return *components[id];
 	}
 
+	bool ChemicalSystem::isComponent(const std::string &species_name) const {
+		return components_by_name.find(species_name) != components_by_name.end();
+	}
+
+	bool ChemicalSystem::isComponent(const ChemicalSpecies& species) const {
+		return isComponent(species.getName());
+	}
+
 	const ChemicalSpecies& ChemicalSystem::getSpecies(const std::string& name) const {
 		return *species_by_name.find(name)->second;
 	}
@@ -349,6 +370,7 @@ namespace chemmisol {
 	void ChemicalSystem::compile(const Reaction* reaction) {
 		compiled_reactions[reaction->getIndex()] = {reaction};
 		CompiledReaction& compiled_reaction = compiled_reactions[reaction->getIndex()];
+		bool found_produced_species = false;
 		for(const auto& reagent : reaction->getReagents()) {
 			if(reagent.phase != SOLVENT) {
 				const auto& component = components_by_name.find(reagent.name);
@@ -360,14 +382,26 @@ namespace chemmisol {
 							components[component->second->getIndex()].get()
 							);
 				} else {
-					// Access in species since species_by_name gives only a
-					// const access to species
-					auto& species = this->species[
-						species_by_name.find(reagent.name)->second->getIndex()
-					];
-					compiled_reaction.produced_species = {reagent.coefficient, species.get()};
+					if(found_produced_species)
+						// Only one produced species must be specified
+						throw InvalidSpeciesInReaction(this, reaction);
+
+					// The species is necessarily found if it's not a component,
+					// because the initReactionMatrix() method adds all the
+					// missing reagents as species
+					const auto& species = species_by_name.find(reagent.name);
+					compiled_reaction.produced_species = {
+						reagent.coefficient,
+						// Access in species since species_by_name gives only a
+						// const access to species
+						this->species[species->second->getIndex()].get()
+					};
+					found_produced_species = true;
 				}
 			}
+		}
+		if(!found_produced_species) {
+			throw MissingProducedSpeciesInReaction(this, reaction);
 		}
 	}
 
@@ -451,7 +485,18 @@ namespace chemmisol {
 	}
 
 	void ChemicalSystem::solveEquilibrium() {
-		setUp();
+		try {
+			setUp();
+		}
+		catch (const MissingProducedSpeciesInReaction& e) {
+			throw e;
+		}
+		catch (const InvalidSpeciesInReaction& e) {
+			throw e;
+		}
+		catch (const InvalidReaction& e) {
+			throw e;
+		}
 
 		using namespace solver;
 		solver::X activities = solve(*this);

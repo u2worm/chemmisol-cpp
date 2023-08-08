@@ -1,3 +1,6 @@
+#ifndef CHEMMISOL_SPECIES_H
+#define CHEMMISOL_SPECIES_H
+
 #include <string>
 #include <vector>
 #include "../units.h"
@@ -552,3 +555,4 @@ namespace chemmisol {
 	};
 
 }
+#endif /*CHEMMISOL_SPECIES_H*/

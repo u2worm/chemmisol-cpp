@@ -1,3 +1,6 @@
+#ifndef CHEMMISOL_REACTION_H
+#define CHEMMISOL_REACTION_H
+
 #include <string>
 #include "species.h"
 #include <cmath>
@@ -24,6 +27,57 @@ namespace chemmisol {
 	};
 
 	bool operator==(const Reagent& c1, const Reagent& c2);
+
+	class ChemicalSystem;
+	class Reaction;
+
+	class InvalidReaction : public std::exception {
+		protected:
+			const ChemicalSystem* chemical_system;
+			const Reaction* invalid_reaction;
+
+		public:
+			InvalidReaction(
+					const ChemicalSystem* chemical_system,
+					const Reaction* invalid_reaction)
+				: chemical_system(chemical_system), invalid_reaction(invalid_reaction) {
+				}
+
+			const ChemicalSystem& getChemicalSystem() const {
+				return *chemical_system;
+			}
+
+			const Reaction& getInvalidReaction() const {
+				return *invalid_reaction;
+			}
+	};
+
+	class MissingProducedSpeciesInReaction : public InvalidReaction {
+		private:
+			std::string message;
+		public:
+			MissingProducedSpeciesInReaction(
+					const ChemicalSystem* chemical_system,
+					const Reaction* invalid_reaction);
+
+			const char* what() const noexcept override {
+				return message.c_str();
+			}
+	};
+
+	class InvalidSpeciesInReaction : public InvalidReaction {
+		private:
+			std::string message;
+
+		public:
+			InvalidSpeciesInReaction(
+					const ChemicalSystem* chemical_system,
+					const Reaction* invalid_reaction);
+
+			const char* what() const noexcept override {
+				return message.c_str();
+			}
+	};
 
 	/**
 	 * A chemical reaction is a process that transform _reactants_ into
@@ -173,3 +227,4 @@ namespace chemmisol {
 	};
 
 }
+#endif /*CHEMMISOL_REACTION_H*/

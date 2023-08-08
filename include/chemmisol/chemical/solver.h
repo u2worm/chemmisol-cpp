@@ -1,3 +1,6 @@
+#ifndef CHEMMISOL_SOLVER_H
+#define CHEMMISOL_SOLVER_H
+
 #include "reaction.h"
 
 namespace chemmisol {
@@ -166,3 +169,4 @@ namespace chemmisol {
 		X solve(const ChemicalSystem& system);
 	}
 }
+#endif /*CHEMMISOL_SOLVER_H*/
