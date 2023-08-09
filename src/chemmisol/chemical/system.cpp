@@ -108,13 +108,6 @@ namespace chemmisol {
 				throw e;
 			}
 		}
-
-		CHEM_LOG(INFO) << "Chemical system components:";
-		for(auto& component : components)
-			CHEM_LOG(INFO) << "  " << component->getSpecies()->getName();
-		CHEM_LOG(INFO) << "Chemical system species:";
-		for(auto& species : this->species)
-			CHEM_LOG(INFO) << "  " << species->getName();
 	}
 
 	void ChemicalSystem::addSpecies(ChemicalSpecies* species, std::size_t index) {
@@ -498,13 +491,41 @@ namespace chemmisol {
 			throw e;
 		}
 
+#ifndef ELPP_DISABLE_INFO_LOGS
+		CHEM_LOG(INFO) << "Solving chemical equilibrium.";
+		CHEM_LOG(INFO) << "Init activities:";
+		{
+			for(const auto& species : this->species) {
+				if(isComponent(*species)) {
+					CHEM_LOG(INFO) << " (C) " << species->getName() << ": "
+						<< species->activity();
+				} else {
+					CHEM_LOG(INFO) << "     " << species->getName() << ": "
+						<< species->activity();
+				}
+			}
+		}
+#endif
+
 		using namespace solver;
 		solver::X activities = solve(*this);
-		CHEM_LOG(INFO) << "Solved activities:";
+
 		for(std::size_t index = 0; index < activities.size(); index++) {
-			CHEM_LOG(INFO) << "  " << species[index]->getName() << ": " << activities[index];
 			species[index]->setActivity(activities[index]);
 		}
+
+#ifndef ELPP_DISABLE_INFO_LOGS
+		CHEM_LOG(INFO) << "Solved activities:";
+		for(const auto& species : this->species) {
+			if(isComponent(*species)) {
+				CHEM_LOG(INFO) << " (C) " << species->getName() << ": "
+					<< species->activity();
+			} else {
+				CHEM_LOG(INFO) << "     " << species->getName() << ": "
+					<< species->activity();
+			}
+		}
+#endif
 	}
 
 	double ChemicalSystem::reactionQuotient(const std::string& name) const {

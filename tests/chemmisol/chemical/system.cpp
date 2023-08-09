@@ -704,10 +704,6 @@ TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction) {
 	chemical_system.solveEquilibrium();
 
 	checkEquilibrium();
-
-	CHEM_LOG(INFO) << "Basic NaCl reaction equilibrium test:";
-	for(auto& species : chemical_system.getSpecies())
-		CHEM_LOG(INFO) << "  " << species->getName() << ": " << species->concentration()/(1*mol/l) << " mol/l";
 }
 
 TEST_F(NaClChemicalSystemTest, test_pH) {
@@ -1015,10 +1011,6 @@ TEST_F(PO4ChemicalSystemTest, complex_H3PO4_reaction) {
 	chemical_system.solveEquilibrium();
 
 	checkEquilibrium();
-
-	CHEM_LOG(INFO) << "Complex H3PO4 reaction equilibrium test:";
-	for(auto& species : chemical_system.getSpecies())
-		CHEM_LOG(INFO) << "  " << species->getName() << ": " << species->concentration()/(1*mol/l) << " mol/l";
 }
 
 /**
@@ -1363,10 +1355,6 @@ TEST_F(AgClChemicalSystemTest, complex_AgCl_reaction) {
 	chemical_system.solveEquilibrium();
 
 	checkEquilibrium();
-
-	CHEM_LOG(INFO) << "Complex AgCl reaction equilibrium test:";
-	for(auto& species : chemical_system.getSpecies())
-		CHEM_LOG(INFO) << "  " << species->getName() << ": " << species->concentration()/(1*mol/l) << " mol/l";
 }
 
 class AdsorptionTest : public Test {

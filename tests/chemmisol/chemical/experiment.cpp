@@ -31,6 +31,16 @@ class TestExperiment : public Test {
 		chemical_system.addComponent("Na+", 0.1*mol/l);
 		chemical_system.addComponent("Cl-", 0.1*mol/l);
 		chemical_system.addComponent("H2O", SOLVENT, 0);
+
+		el::Configurations conf;
+		conf.set(el::Level::Info, el::ConfigurationType::Enabled, "false");
+		el::Loggers::reconfigureLogger(chemmisol_core_logger, conf);
+	}
+
+	void TearDown() override {
+		el::Configurations conf;
+		conf.set(el::Level::Info, el::ConfigurationType::Enabled, "true");
+		el::Loggers::reconfigureLogger(chemmisol_core_logger, conf);
 	}
 };
 
