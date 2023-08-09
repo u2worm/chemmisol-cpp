@@ -500,14 +500,14 @@ namespace chemmisol {
 			}
 	};
 
-	class Component {
+	class ChemicalComponent {
 		private:
 			ChemicalSpecies* species;
 			std::size_t index;
 			double total_quantity;
 
 		public:
-			Component(
+			ChemicalComponent(
 					ChemicalSpecies* species,
 					std::size_t index, double total_quantity)
 				: species(species), index(index), total_quantity(total_quantity) {
@@ -537,16 +537,16 @@ namespace chemmisol {
 				total_quantity = quantity;
 			}
 
-			virtual ~Component() {
+			virtual ~ChemicalComponent() {
 			}
 	};
 
-	class FixedComponent : public Component {
+	class FixedChemicalComponent : public ChemicalComponent {
 		public:
-			FixedComponent(
+			FixedChemicalComponent(
 					FixedChemicalSpecies* species,
 					std::size_t index, double total_quantity)
-				: Component(species, index, total_quantity) {
+				: ChemicalComponent(species, index, total_quantity) {
 				}
 
 			virtual bool isFixed() const override {

@@ -182,27 +182,27 @@ TEST_F(BasicChemicalSystemTest, get_species_reagents) {
 TEST_F(BasicChemicalSystemTest, aqueous_species) {
 	ASSERT_THAT(chemical_system.getComponents(), UnorderedElementsAre(
 				Pointee(AllOf(
-						Property(&Component::getSpecies,
+						Property(&ChemicalComponent::getSpecies,
 							Pointee(Property(&ChemicalSpecies::getName, "H+"))
 						),
-						Property(&Component::getTotalQuantity,
+						Property(&ChemicalComponent::getTotalQuantity,
 							std::pow(10, -7) * AqueousSpecies::V
 						)
 						)),
 				Pointee(AllOf(
-						Property(&Component::getSpecies,
+						Property(&ChemicalComponent::getSpecies,
 							Pointee(Property(&ChemicalSpecies::getName, "Na+"))
 						),
-						Property(&Component::getTotalQuantity, 0.1*mol/l)
+						Property(&ChemicalComponent::getTotalQuantity, 0.1*mol/l)
 						)),
 				Pointee(AllOf(
-						Property(&Component::getSpecies,
+						Property(&ChemicalComponent::getSpecies,
 						Pointee(Property(&ChemicalSpecies::getName, "Cl-"))
 						),
-						Property(&Component::getTotalQuantity, 0.1*mol/l)
+						Property(&ChemicalComponent::getTotalQuantity, 0.1*mol/l)
 						)),
 				Pointee(AllOf(
-						Property(&Component::getSpecies,
+						Property(&ChemicalComponent::getSpecies,
 						Pointee(Property(&ChemicalSpecies::getName, "H2O"))
 						)
 						))
@@ -255,13 +255,13 @@ TEST_F(BasicChemicalSystemTest, copy_constructor) {
 			SizeIs(other_system.getComponents().size())
 			);
 	for(std::size_t i = 0; i < chemical_system.getComponents().size(); i++) {
-		const Component& component = *chemical_system.getComponents()[i];
-		const Component& other_component = *other_system.getComponents()[i];
+		const ChemicalComponent& component = *chemical_system.getComponents()[i];
+		const ChemicalComponent& other_component = *other_system.getComponents()[i];
 		ASSERT_THAT(component,
 				AllOf(
-					Property(&Component::getIndex, other_component.getIndex()),
-					Property(&Component::isFixed, other_component.isFixed()),
-					Property(&Component::getSpecies, Pointee(
+					Property(&ChemicalComponent::getIndex, other_component.getIndex()),
+					Property(&ChemicalComponent::isFixed, other_component.isFixed()),
+					Property(&ChemicalComponent::getSpecies, Pointee(
 							Property(
 								&ChemicalSpecies::getIndex,
 								other_component.getSpecies()->getIndex()
@@ -1401,10 +1401,10 @@ class AdsorptionTest : public Test {
 TEST_F(AdsorptionTest, aqueous_and_mineral_species) {
 	std::regex surface_complex_regex("=S.*");
 	ASSERT_THAT(chemical_system.getComponents(), UnorderedElementsAre(
-				Pointee(Property(&Component::getSpecies,
+				Pointee(Property(&ChemicalComponent::getSpecies,
 						Pointee(Property(&ChemicalSpecies::getName, "H+"))
 						)),
-				Pointee(Property(&Component::getSpecies,
+				Pointee(Property(&ChemicalComponent::getSpecies,
 						Pointee(Property(&ChemicalSpecies::getName, "=SOH"))
 						))
 				));

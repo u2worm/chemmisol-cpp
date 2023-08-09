@@ -9,11 +9,11 @@
 namespace chemmisol {
 	struct ComponentReagent {
 		double coefficient;
-		Component* component;
+		ChemicalComponent* component;
 
 		ComponentReagent() = default;
 		ComponentReagent(
-				double coefficient, Component* component)
+				double coefficient, ChemicalComponent* component)
 			: coefficient(coefficient), component(component) {
 			}
 	};
@@ -56,8 +56,8 @@ namespace chemmisol {
 
 			std::vector<std::unique_ptr<ChemicalSpecies>> species;
 			std::unordered_map<std::string, const ChemicalSpecies*> species_by_name;
-			std::vector<std::unique_ptr<Component>> components;
-			std::unordered_map<std::string, const Component*> components_by_name;
+			std::vector<std::unique_ptr<ChemicalComponent>> components;
+			std::unordered_map<std::string, const ChemicalComponent*> components_by_name;
 			std::vector<std::unique_ptr<Reaction>> reactions;
 			std::unordered_map<std::string, const Reaction*> reactions_by_name;
 			std::vector<std::vector<double>> reaction_matrix;
@@ -66,7 +66,7 @@ namespace chemmisol {
 
 			void addSpecies(ChemicalSpecies* component, std::size_t index);
 			void addComponent(
-					Component* component,
+					ChemicalComponent* component,
 					std::size_t species_index,
 					std::size_t component_index);
 			void addReaction(Reaction* reaction, std::size_t index);
@@ -298,7 +298,7 @@ namespace chemmisol {
 			 *
 			 * @param name Name of the component
 			 */
-			const Component& getComponent(const std::string& name) const;
+			const ChemicalComponent& getComponent(const std::string& name) const;
 
 			/**
 			 * Gets the component with the specified index, that can be
@@ -310,7 +310,7 @@ namespace chemmisol {
 			 *
 			 * @param index Index of the component
 			 */
-			const Component& getComponent(const std::size_t& id) const;
+			const ChemicalComponent& getComponent(const std::size_t& id) const;
 
 			bool isComponent(const std::string& species_name) const;
 			bool isComponent(const ChemicalSpecies& species) const;
@@ -318,7 +318,7 @@ namespace chemmisol {
 			/**
 			 * Returns references to all the chemical_species in the system.
 			 */
-			const std::vector<std::unique_ptr<Component>>& getComponents() const {
+			const std::vector<std::unique_ptr<ChemicalComponent>>& getComponents() const {
 				return components;
 			}
 

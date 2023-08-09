@@ -123,7 +123,7 @@ namespace chemmisol {
 		this->species_by_name[species->getName()] = species;
 	}
 
-	void ChemicalSystem::addComponent(Component* component,
+	void ChemicalSystem::addComponent(ChemicalComponent* component,
 			std::size_t species_index, std::size_t component_index) {
 		addSpecies(component->getSpecies(), species_index);
 		components.resize(std::max(components.size(), component_index+1));
@@ -192,7 +192,7 @@ namespace chemmisol {
 				// Should not append
 				fixed_species = nullptr;
 		}
-		FixedComponent* fixed_component = new FixedComponent(
+		FixedChemicalComponent* fixed_component = new FixedChemicalComponent(
 				fixed_species, component_index,
 				fixed_species->ChemicalSpecies::quantity());
 
@@ -259,7 +259,7 @@ namespace chemmisol {
 							break;
 					}
 					addComponent(
-							new Component(species, component_index, species->quantity()),
+							new ChemicalComponent(species, component_index, species->quantity()),
 							species_index, component_index
 							);
 				}
@@ -267,7 +267,7 @@ namespace chemmisol {
 			case SOLVENT:
 				Solvent* solvent = new Solvent(name, species_index);
 				addComponent(
-						new FixedComponent(
+						new FixedChemicalComponent(
 							solvent, component_index, solvent->ChemicalSpecies::quantity()
 							),
 						species_index, component_index
@@ -334,11 +334,11 @@ namespace chemmisol {
 		return *reactions_by_name.find(name)->second;
 	}
 
-	const Component& ChemicalSystem::getComponent(const std::string& name) const {
+	const ChemicalComponent& ChemicalSystem::getComponent(const std::string& name) const {
 		return *components_by_name.find(name)->second;
 	}
 
-	const Component& ChemicalSystem::getComponent(const std::size_t& id) const {
+	const ChemicalComponent& ChemicalSystem::getComponent(const std::size_t& id) const {
 		return *components[id];
 	}
 
