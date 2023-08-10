@@ -242,7 +242,10 @@ namespace chemmisol {
 			 *
 			 * @param pH Initial pH
 			 */
-			void initPH(double pH);
+			void initPH(double pH, const std::string& h_component_name);
+			void initPH(double pH) {
+				initPH(pH, "H+");
+			}
 
 			/**
 			 * Adds a constraint to the system so that at equilibrium the pH
@@ -250,7 +253,10 @@ namespace chemmisol {
 			 *
 			 * @param pH Fixed pH
 			 */
-			void fixPH(double pH);
+			void fixPH(double pH, const std::string& h_component_name);
+			void fixPH(double pH) {
+				fixPH(pH, "H+");
+			};
 
 			double getPH() const;
 

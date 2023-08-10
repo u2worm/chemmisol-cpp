@@ -298,25 +298,15 @@ namespace chemmisol {
 		addSpecies(species, species_index);
 	}
 
-	void ChemicalSystem::initPH(double pH) {
-		addComponent("H+", std::pow(10, -pH)*mol/l);
-		//addComponent("OH-", std::pow(10, -pH)*mol/l);
+	void ChemicalSystem::initPH(double pH, const std::string& h_component_name) {
+		addComponent(h_component_name, std::pow(10, -pH)*mol/l);
 	}
 
-	void ChemicalSystem::fixPH(double pH) {
+	void ChemicalSystem::fixPH(double pH, const std::string& h_component_name) {
 		fixComponent(
-					"H+", AQUEOUS,
+					h_component_name, AQUEOUS,
 					std::pow(10, -pH)*mol/l
 				);
-		//addComponent(
-					//"OH-", AQUEOUS,
-					//std::pow(10, getReaction("OH-").getLogK())
-						/// std::pow(10, -pH)*mol/l
-				//);
-		//initPH(pH);
-		// A fake reaction that produces (or consumes) as much H+ as needed to
-		// fix the pH to the provided value
-		//addReaction("pH", -pH, {{"H+", -1}});
 	}
 
 	double ChemicalSystem::getPH() const {
