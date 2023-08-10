@@ -518,9 +518,8 @@ namespace chemmisol {
 #endif
 	}
 
-	double ChemicalSystem::reactionQuotient(const std::string& name) const {
+	double ChemicalSystem::reactionQuotient(const Reaction& reaction) const {
 		double quotient = 1;
-		auto& reaction = getReaction(name);
 		for(auto& reactive : reaction.getReagents()) {
 			quotient *= std::pow(getSpecies(reactive.name).activity(), reactive.coefficient);
 		}
@@ -528,6 +527,10 @@ namespace chemmisol {
 		// - products are given with **negative** stoichiometric coefficients
 		// - products from the numerous of the reaction quotient
 		return 1/quotient;
+	}
+
+	double ChemicalSystem::reactionQuotient(const std::string& name) const {
+		return reactionQuotient(getReaction(name));
 	}
 
 	void ChemicalSystem::massConservationLaw(

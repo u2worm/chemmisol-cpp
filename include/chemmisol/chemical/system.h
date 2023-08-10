@@ -396,7 +396,7 @@ namespace chemmisol {
 			void solveEquilibrium();
 
 			/**
-			 * Computes the reaction quotient of the reaction named name.
+			 * Computes the reaction quotient of the specified reaction.
 			 *
 			 * By convention, the products of the reaction (i.e. reagents with a
 			 * negative coefficient) form the numerous of the quotient.
@@ -406,7 +406,14 @@ namespace chemmisol {
 			 * correspond to any component added with addComponent() (called by
 			 * the user or initialized by default by initReactionMatrix()).
 			 *
-			 * @param name Reaction name
+			 * @param reaction Reaction
+			 */
+			double reactionQuotient(const Reaction& name) const;
+			/**
+			 * Computes the reaction quotient of the reaction corresponding to
+			 * the specified name.
+			 *
+			 * @see reactionQuotient(const Reaction&)
 			 */
 			double reactionQuotient(const std::string& name) const;
 
