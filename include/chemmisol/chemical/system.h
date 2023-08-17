@@ -258,6 +258,9 @@ namespace chemmisol {
 				fixPH(pH, "H+");
 			};
 
+			void setTotalQuantity(const ChemicalComponent& component, double quantity);
+			void setTotalConcentration(const ChemicalComponent& component, double concentration);
+
 			double getPH() const;
 
 			/**

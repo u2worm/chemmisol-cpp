@@ -510,6 +510,29 @@ class NaClChemicalSystemTest : public BasicChemicalSystemTest {
 		}
 
 		void checkEquilibrium() {
+			// Check mass conservation
+			// Note: no mass conservation for H+ since H+ is fixed
+			{
+				// Na
+				double Na = chemical_system.getSpecies("Na+").quantity();
+				double NaCl = chemical_system.getSpecies("NaCl").quantity();
+				double NaOH = chemical_system.getSpecies("NaOH").quantity();
+				ASSERT_FLOAT_EQ(
+						Na + NaCl + NaOH,
+						chemical_system.getComponent("Na+").getTotalQuantity()
+						);
+			}
+			{
+				// Cl
+				double Cl = chemical_system.getSpecies("Cl-").quantity();
+				double NaCl = chemical_system.getSpecies("NaCl").quantity();
+				ASSERT_FLOAT_EQ(
+						Cl + NaCl,
+						chemical_system.getComponent("Cl-").getTotalQuantity()
+						);
+			}
+
+			// Reaction quotients
 			{
 				// Check OH-
 				double H2O = chemical_system.getSpecies("H2O").activity();
@@ -697,11 +720,49 @@ TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction_df) {
 	}
 }
 
-TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction) {
-	auto reaction_matrix = chemical_system.getReactionMatrix();
-
+TEST_F(NaClChemicalSystemTest, solve_equilibrium) {
 	chemical_system.setMaxIteration(10);
 	chemical_system.solveEquilibrium();
+
+	checkEquilibrium();
+}
+
+TEST_F(NaClChemicalSystemTest, set_total_quantity) {
+	chemical_system.setTotalQuantity(
+			chemical_system.getComponent("Na+"),
+			0.16*mol/l*AqueousSpecies::V);
+	chemical_system.setTotalQuantity(
+			chemical_system.getComponent("Cl-"),
+			0.02*mol/l*AqueousSpecies::V);
+
+	chemical_system.solveEquilibrium();
+
+	ASSERT_FLOAT_EQ(
+			chemical_system.getComponent("Na+").getTotalQuantity(),
+			0.16*mol/l*AqueousSpecies::V);
+	ASSERT_FLOAT_EQ(
+			chemical_system.getComponent("Cl-").getTotalQuantity(),
+			0.02*mol/l*AqueousSpecies::V);
+
+	checkEquilibrium();
+}
+
+TEST_F(NaClChemicalSystemTest, set_total_concentration) {
+	chemical_system.setTotalConcentration(
+			chemical_system.getComponent("Na+"),
+			0.16*mol/l);
+	chemical_system.setTotalConcentration(
+			chemical_system.getComponent("Cl-"),
+			0.02*mol/l);
+
+	chemical_system.solveEquilibrium();
+
+	ASSERT_FLOAT_EQ(
+			chemical_system.getComponent("Na+").getTotalQuantity(),
+			0.16*mol/l*AqueousSpecies::V);
+	ASSERT_FLOAT_EQ(
+			chemical_system.getComponent("Cl-").getTotalQuantity(),
+			0.02*mol/l*AqueousSpecies::V);
 
 	checkEquilibrium();
 }
@@ -859,6 +920,18 @@ class PO4ChemicalSystemTest : public Test {
 	}
 
 	void checkEquilibrium() {
+		// Mass conservation
+		// Note: no mass conservation for H+ since H+ is fixed
+		{
+			double PO4 = chemical_system.getSpecies("PO4-3").quantity();
+			double H3PO4 = chemical_system.getSpecies("H3PO4").quantity();
+			ASSERT_FLOAT_EQ(
+					PO4 + H3PO4,
+					chemical_system.getComponent("PO4-3").getTotalQuantity()
+					);
+		}
+
+		// Reaction quotients
 		{
 			// Check OH-
 			double H2O = chemical_system.getSpecies("H2O").activity();
@@ -1004,11 +1077,23 @@ TEST_F(PO4ChemicalSystemTest, complex_H3PO4_reaction_df) {
 	}
 }
 
-TEST_F(PO4ChemicalSystemTest, complex_H3PO4_reaction) {
-	auto reaction_matrix = chemical_system.getReactionMatrix();
-
+TEST_F(PO4ChemicalSystemTest, solve_equilibrium) {
 	chemical_system.setMaxIteration(10);
 	chemical_system.solveEquilibrium();
+
+	checkEquilibrium();
+}
+
+TEST_F(PO4ChemicalSystemTest, set_total_concentration) {
+	chemical_system.setTotalConcentration(
+			chemical_system.getComponent("PO4-3"),
+			1.5e-6 * mol/l);
+
+	chemical_system.solveEquilibrium();
+
+	ASSERT_FLOAT_EQ(
+			chemical_system.getComponent("PO4-3").getTotalQuantity(),
+			1.5e-6 * mol/l * AqueousSpecies::V);
 
 	checkEquilibrium();
 }
@@ -1177,6 +1262,32 @@ class AgClChemicalSystemTest : public Test {
 	}
 
 	void checkEquilibrium() {
+		// Mass conservation
+		// Note: no mass conservation for H+ since H+ is fixed
+		{
+			// Ag+
+			double Ag = chemical_system.getSpecies("Ag+").quantity();
+			double AgCl = chemical_system.getSpecies("AgCl").quantity();
+			double AgCl2 = chemical_system.getSpecies("AgCl2-").quantity();
+			double AgCl3 = chemical_system.getSpecies("AgCl3-2").quantity();
+			ASSERT_FLOAT_EQ(
+					Ag + AgCl + AgCl2 + AgCl3,
+					chemical_system.getComponent("Ag+").getTotalQuantity()
+					);
+		}
+		{
+			// Cl-
+			double Cl = chemical_system.getSpecies("Cl-").quantity();
+			double AgCl = chemical_system.getSpecies("AgCl").quantity();
+			double AgCl2 = chemical_system.getSpecies("AgCl2-").quantity();
+			double AgCl3 = chemical_system.getSpecies("AgCl3-2").quantity();
+			ASSERT_FLOAT_EQ(
+					Cl + AgCl + 2*AgCl2 + 3*AgCl3,
+					chemical_system.getComponent("Cl-").getTotalQuantity()
+					);
+		}
+
+		// Reaction quotients
 		{
 			// Check OH-
 			double H2O = chemical_system.getSpecies("H2O").activity();
@@ -1348,15 +1459,32 @@ TEST_F(AgClChemicalSystemTest, complex_AgCl_reaction_df) {
 	}
 }
 
-TEST_F(AgClChemicalSystemTest, complex_AgCl_reaction) {
-	auto reaction_matrix = chemical_system.getReactionMatrix();
-
+TEST_F(AgClChemicalSystemTest, solve_equilibrium) {
 	chemical_system.setMaxIteration(10);
 	chemical_system.solveEquilibrium();
 
 	checkEquilibrium();
 }
 
+TEST_F(AgClChemicalSystemTest, set_total_concentration) {
+	chemical_system.setTotalConcentration(
+			chemical_system.getComponent("Ag+"),
+			0.002 * mol/l);
+	chemical_system.setTotalConcentration(
+			chemical_system.getComponent("Cl-"),
+			0.8 * mol/l);
+
+	chemical_system.solveEquilibrium();
+
+	ASSERT_FLOAT_EQ(
+			chemical_system.getComponent("Ag+").getTotalQuantity(),
+			0.002 * mol/l * AqueousSpecies::V);
+	ASSERT_FLOAT_EQ(
+			chemical_system.getComponent("Cl-").getTotalQuantity(),
+			0.8 * mol/l * AqueousSpecies::V);
+
+	checkEquilibrium();
+}
 class AdsorptionTest : public Test {
 	protected:
 	ChemicalSystem chemical_system {

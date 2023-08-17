@@ -112,13 +112,24 @@ namespace chemmisol {
 			 */
 			virtual double activity(double concentration) const = 0;
 
+			/**
+			 * Computes the quantity of the current component corresponding to
+			 * the specified `concentration`.
+			 *
+			 * Notice that `concentration` might be different from
+			 * concentration(), and that this call does **not** modify the
+			 * quantity of the current component.
+			 *
+			 * @param concentration Concentration of the component
+			 * @return Computed quantity of the component
+			 */
+			virtual double quantity(double concentration) const = 0;
+
 			virtual void setActivity(double activity) = 0;
 
 			double quantity() const {
 				return quantity(concentration());
 			}
-
-			virtual double quantity(double concentration) const = 0;
 
 			/**
 			 * Computes the activity that would result if a quantity of
@@ -158,7 +169,7 @@ namespace chemmisol {
 					const std::vector<double>& current_concentrations,
 					double d_coef
 					) const = 0;
-			
+
 			virtual ~ChemicalSpecies() {
 			}
 	};
@@ -535,6 +546,10 @@ namespace chemmisol {
 
 			void setTotalQuantity(double quantity) {
 				total_quantity = quantity;
+			}
+
+			void setTotalConcentration(double concentration) {
+				total_quantity = species->quantity(concentration);
 			}
 
 			virtual ~ChemicalComponent() {

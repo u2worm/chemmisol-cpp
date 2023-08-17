@@ -309,6 +309,15 @@ namespace chemmisol {
 				);
 	}
 
+	void ChemicalSystem::setTotalQuantity(
+			const ChemicalComponent& component, double quantity) {
+		this->components[component.getIndex()]->setTotalQuantity(quantity);
+	}
+
+	void ChemicalSystem::setTotalConcentration(const ChemicalComponent& component, double concentration) {
+		this->components[component.getIndex()]->setTotalConcentration(concentration);
+	}
+
 	double ChemicalSystem::getPH() const {
 		return -log(getComponent("H+").getSpecies()->concentration());
 	}
