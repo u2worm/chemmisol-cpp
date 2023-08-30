@@ -11,7 +11,6 @@ add_executable(
   chemmisol/math/regula_falsi.cpp
   chemmisol/chemical/system.cpp
   chemmisol/chemical/reaction.cpp
-  chemmisol/chemical/experiment.cpp
 )
 target_link_libraries(
   chemmisol-tests

@@ -44,7 +44,6 @@ add_library(chemmisol
 	src/chemmisol/chemical/reaction.cpp
 	src/chemmisol/chemical/solver.cpp
 	src/chemmisol/chemical/system.cpp
-	src/chemmisol/chemical/experiment.cpp
 	src/chemmisol/logging.cpp
 	${EASYLOGGING_SRC_PATH}/easylogging++.cc
 	)
