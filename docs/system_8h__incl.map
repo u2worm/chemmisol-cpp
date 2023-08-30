@@ -1,0 +1,33 @@
+<map id="include/chemmisol/chemical/system.h" name="include/chemmisol/chemical/system.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="328,5,513,48"/>
+<area shape="rect" id="Node000002" href="$linear_8h.html" title=" " alt="" coords="267,171,430,197"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="413,49,363,158,358,156,408,47"/>
+<area shape="rect" id="Node000010" href="$solver_8h.html" title=" " alt="" coords="441,96,509,123"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="436,47,460,82,456,85,432,50"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="331,245,381,272"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="352,198,356,230,351,231,347,198"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="425,320,482,347"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="360,196,396,244,439,306,435,309,391,247,356,199"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="5,245,102,272"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="297,201,117,245,116,239,296,195"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="126,245,197,272"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="317,200,209,242,207,237,315,195"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="457,245,514,272"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="373,196,450,236,447,240,371,200"/>
+<area shape="rect" id="Node000008" href="$logging_8h_source.html" title=" " alt="" coords="222,245,307,272"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="335,200,291,238,288,234,332,196"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="206,320,323,347"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="267,273,267,305,262,305,262,273"/>
+<area shape="rect" id="Node000011" href="$reaction_8h_source.html" title=" " alt="" coords="454,171,533,197"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="481,123,489,156,484,157,476,124"/>
+<area shape="poly" id="edge16_Node000011_Node000007" title=" " alt="" coords="495,198,491,231,486,230,489,198"/>
+<area shape="rect" id="Node000012" href="$species_8h_source.html" title=" " alt="" coords="539,245,616,272"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="510,196,554,234,551,238,506,200"/>
+<area shape="poly" id="edge12_Node000012_Node000004" title=" " alt="" coords="557,275,489,315,486,310,555,270"/>
+<area shape="rect" id="Node000013" href="$units_8h_source.html" title=" " alt="" coords="541,320,614,347"/>
+<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="580,273,580,305,575,305,575,273"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="470,395,581,421"/>
+<area shape="poly" id="edge14_Node000013_Node000014" title=" " alt="" coords="571,349,545,384,541,381,566,346"/>
+<area shape="rect" id="Node000015" title=" " alt="" coords="604,395,658,421"/>
+<area shape="poly" id="edge15_Node000013_Node000015" title=" " alt="" coords="589,346,615,381,611,384,585,349"/>
+</map>

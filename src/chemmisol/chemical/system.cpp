@@ -98,10 +98,13 @@ namespace chemmisol {
 			try {
 				compile(reaction.get());
 			}
+			catch (const EmptyReagents& e) {
+				throw e;
+			}
 			catch (const MissingProducedSpeciesInReaction& e) {
 				throw e;
 			}
-			catch (const InvalidSpeciesInReaction& e) {
+			catch (const TooManyProducedSpeciesInReaction& e) {
 				throw e;
 			}
 			catch (const InvalidReaction& e) {
@@ -124,27 +127,29 @@ namespace chemmisol {
 		components_by_name[component->getSpecies()->getName()] = component;
 	}
 
-	void ChemicalSystem::addReaction(Reaction* reaction, std::size_t index) {
+	const Reaction& ChemicalSystem::addReaction(Reaction* reaction, std::size_t index) {
 		reactions.resize(std::max(reactions.size(), index+1));
 		reactions[index].reset(reaction);
 		reactions_by_name[reaction->getName()] = reaction;
+		return *reaction;
 	}
 
-	void ChemicalSystem::addReaction(
-			std::string name,
+	const Reaction& ChemicalSystem::addReaction(
+			const std::string& name,
 			double K,
-			std::vector<Reagent> reactives,
+			const std::vector<Reagent>& reagents,
 			std::size_t index) {
-		addReaction(new Reaction(
-				name, index, K, reactives
+		return addReaction(new Reaction(
+				name, index, K, reagents
 				), index);
 	}
-	void ChemicalSystem::addReaction(
-			std::string name,
+
+	const Reaction& ChemicalSystem::addReaction(
+			const std::string& name,
 			double K,
-			std::vector<Reagent> reactives
+			const std::vector<Reagent>& reagents
 			) {
-		addReaction(name, K, reactives, reaction_index++);
+		return addReaction(name, K, reagents, reaction_index++);
 	}
 
 	void ChemicalSystem::fixComponent(
@@ -186,8 +191,7 @@ namespace chemmisol {
 				fixed_species = nullptr;
 		}
 		FixedChemicalComponent* fixed_component = new FixedChemicalComponent(
-				fixed_species, component_index,
-				fixed_species->ChemicalSpecies::quantity());
+				fixed_species, component_index);
 
 		auto existing_component = components_by_name.find(name);
 		if (existing_component != components_by_name.end()) {
@@ -261,7 +265,7 @@ namespace chemmisol {
 				Solvent* solvent = new Solvent(name, species_index);
 				addComponent(
 						new FixedChemicalComponent(
-							solvent, component_index, solvent->ChemicalSpecies::quantity()
+							solvent, component_index
 							),
 						species_index, component_index
 						);
@@ -271,11 +275,6 @@ namespace chemmisol {
 	void ChemicalSystem::addSolvent(const std::string& name) {
 		addComponent(name, SOLVENT, 0.0); // Concentration is ignored when
 										  // phase=SOLVENT
-	}
-
-	void ChemicalSystem::addSpecies(
-			const std::string& name, Phase phase) {
-		addSpecies(name, phase, 0, species_index++);
 	}
 
 	void ChemicalSystem::addSpecies(
@@ -309,6 +308,12 @@ namespace chemmisol {
 				);
 	}
 
+	double ChemicalSystem::getPH(const std::string& h_component_name) const {
+		return -std::log10(
+				getComponent(h_component_name).getSpecies()->concentration()/mol/l
+				);
+	}
+
 	void ChemicalSystem::setTotalQuantity(
 			const ChemicalComponent& component, double quantity) {
 		this->components[component.getIndex()]->setTotalQuantity(quantity);
@@ -316,10 +321,6 @@ namespace chemmisol {
 
 	void ChemicalSystem::setTotalConcentration(const ChemicalComponent& component, double concentration) {
 		this->components[component.getIndex()]->setTotalConcentration(concentration);
-	}
-
-	double ChemicalSystem::getPH() const {
-		return -log(getComponent("H+").getSpecies()->concentration());
 	}
 
 	const Reaction& ChemicalSystem::getReaction(const std::string& name) const {
@@ -363,6 +364,8 @@ namespace chemmisol {
 		compiled_reactions[reaction->getIndex()] = {reaction};
 		CompiledReaction& compiled_reaction = compiled_reactions[reaction->getIndex()];
 		bool found_produced_species = false;
+		if(reaction->getReagents().empty())
+			throw EmptyReagents(this, reaction);
 		for(const auto& reagent : reaction->getReagents()) {
 			if(reagent.phase != SOLVENT) {
 				const auto& component = components_by_name.find(reagent.name);
@@ -376,7 +379,7 @@ namespace chemmisol {
 				} else {
 					if(found_produced_species)
 						// Only one produced species must be specified
-						throw InvalidSpeciesInReaction(this, reaction);
+						throw TooManyProducedSpeciesInReaction(this, reaction);
 
 					// The species is necessarily found if it's not a component,
 					// because the initReactionMatrix() method adds all the
@@ -407,7 +410,7 @@ namespace chemmisol {
 					if(species_by_name.find(species.name) == species_by_name.end()) {
 						// Adds the species only if it was not added from an
 						// other reaction
-						addSpecies(species.name, species.phase);
+						addSpecies(species.name, species.phase, 0, species_index++);
 					}
 				}
 			}
@@ -480,10 +483,13 @@ namespace chemmisol {
 		try {
 			setUp();
 		}
+		catch (const EmptyReagents& e) {
+			throw e;
+		}
 		catch (const MissingProducedSpeciesInReaction& e) {
 			throw e;
 		}
-		catch (const InvalidSpeciesInReaction& e) {
+		catch (const TooManyProducedSpeciesInReaction& e) {
 			throw e;
 		}
 		catch (const InvalidReaction& e) {
@@ -546,8 +552,11 @@ namespace chemmisol {
 			const std::vector<double>& activities,
 			std::vector<double>& result) const {
 		for(auto& component : getComponents()) {
-			result[component->getIndex()]
-				= activities[component->getIndex()];
+			if(component->isFixed())
+				result[component->getIndex()] = 0.0;
+			else
+				result[component->getIndex()]
+					= activities[component->getSpecies()->getIndex()];
 		}
 		for(auto& reaction : compiled_reactions) {
 			for(const ComponentReagent& reagent
@@ -558,7 +567,11 @@ namespace chemmisol {
 						* activities[reaction.produced_species.species->getIndex()];
 			}
 		}
-
+		for(auto& component : getComponents()) {
+			if(!component->isFixed())
+				result[component->getIndex()]
+					-= component->getTotalQuantity();
+		}
 	}
 
 	void ChemicalSystem::massConservationLaw(std::vector<double>& result) const {

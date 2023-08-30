@@ -4,32 +4,78 @@
 #include <math.h>
 #include <string>
 
+/**
+ * @file chemmisol/math/regula_falsi.h
+ *
+ * Implementation of the [regula
+ * falsi](https://en.wikipedia.org/wiki/Regula_falsi) method.
+ */
+
 namespace chemmisol {
 
-	template<typename F>
+	/**
+	 * [Regula falsi](https://en.wikipedia.org/wiki/Regula_falsi) solver.
+	 */
+	template<typename T>
 		class RegulaFalsi {
 			private:
-				F a_0;
-				F b_0;
+				T a_0;
+				T b_0;
 
-				std::function<F(const F&)> f;
+				std::function<T(const T&)> f;
 
-				F solve_iter(F a, F b, F f_a, F f_b, std::size_t n) const;
-				F solve_eps(F a, F b, F f_a, F f_b, F eps) const;
+				T solve_iter(T a, T b, T f_a, T f_b, std::size_t n) const;
+				T solve_eps(T a, T b, T f_a, T f_b, T eps) const;
 
 			public:
-				RegulaFalsi(F a, F b, std::function<F(const F&)> f) :
+				/**
+				 * Defines a RegulaFalsi solver, that aims at finding x such
+				 * that `f(x)=0`.
+				 *
+				 * Tor the solver to work, f(a) and f(b) should be of opposite
+				 * signs.
+				 *
+				 * @param a Initial left bound of the bracketing interval.
+				 * @param b Initial right bound of the bracketing interval.
+				 * @param f Tunction to solve.
+				 */
+				RegulaFalsi(T a, T b, std::function<T(const T&)> f) :
 					a_0(a), b_0(b), f(f) {
 					}
 
-				F solve_iter(std::size_t n) const;
-				F solve_eps(F eps) const;
+				/**
+				 * Runs the solver for n iterations and returns the found value
+				 * of x such that `f(x)=0`.
+				 *
+				 * @warning
+				 * The algorithm is not guaranteed to converge.
+				 *
+				 * @param n Count of iterations.
+				 *
+				 * @throws std::logic_error If f(a) and f(b) are not of opposite
+				 * signs.
+				 */
+				T solve_iter(std::size_t n) const;
+
+				/**
+				 * Runs the solver until `f(x) < eps` for n iterations and
+				 * returns the found value of x such that `f(x) < eps`.
+				 *
+				 * @warning
+				 * The algorithm is not guaranteed to converge.
+				 *
+				 * @param eps Required precision.
+				 *
+				 * @throws std::logic_error If f(a) and f(b) are not of opposite
+				 * signs.
+				 */
+				T solve_eps(T eps) const;
 		};
 
-	template<typename F>
-		F RegulaFalsi<F>::solve_iter(std::size_t n) const {
-			F f_a = f(a_0);
-			F f_b = f(b_0);
+	template<typename T>
+		T RegulaFalsi<T>::solve_iter(std::size_t n) const {
+			T f_a = f(a_0);
+			T f_b = f(b_0);
 			if(f_a*f_b > 0)
 				throw std::logic_error(
 						" f(a_0) = " + std::to_string(f_a) +
@@ -40,14 +86,14 @@ namespace chemmisol {
 			return solve_iter(a_0, b_0, f_a, f_b, n);
 		}
 
-	template<typename F>
-		F RegulaFalsi<F>::solve_iter(F a, F b, F f_a, F f_b, std::size_t n) const {
+	template<typename T>
+		T RegulaFalsi<T>::solve_iter(T a, T b, T f_a, T f_b, std::size_t n) const {
 			if(f_a == f_b)
 				return a;
-			F c = (a * f_b - b * f_a) / (f_b - f_a);
+			T c = (a * f_b - b * f_a) / (f_b - f_a);
 			if(n==0)
 				return c;
-			F f_c = f(c);
+			T f_c = f(c);
 			if(f_c == 0.0)
 				return c;
 			if(f_c * f_a < 0)
@@ -55,10 +101,10 @@ namespace chemmisol {
 			return solve_iter(c, b, f_c, f_b, n-1);
 		}
 
-	template<typename F>
-		F RegulaFalsi<F>::solve_eps(F eps) const {
-			F f_a = f(a_0);
-			F f_b = f(b_0);
+	template<typename T>
+		T RegulaFalsi<T>::solve_eps(T eps) const {
+			T f_a = f(a_0);
+			T f_b = f(b_0);
 			if(f_a*f_b > 0)
 				throw std::logic_error(
 						"f(a_0) = " + std::to_string(f_a) +
@@ -69,12 +115,12 @@ namespace chemmisol {
 			return solve_eps(a_0, b_0, f_a, f_b, eps);
 		}
 
-	template<typename F>
-		F RegulaFalsi<F>::solve_eps(F a, F b, F f_a, F f_b, F eps) const {
+	template<typename T>
+		T RegulaFalsi<T>::solve_eps(T a, T b, T f_a, T f_b, T eps) const {
 			if(f_a == f_b)
 				return a;
-			F c = (a * f_b - b * f_a) / (f_b - f_a);
-			F f_c = f(c);
+			T c = (a * f_b - b * f_a) / (f_b - f_a);
+			T f_c = f(c);
 			if(std::abs(f_c) < eps)
 				return c;
 			if(f_c * f_a < 0)

@@ -113,7 +113,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Vector type used by the <a class="el" href="classchemmisol_1_1Newton.html">Newton</a> method.</p>
-<p>Each value corresponds to an <b>extent</b> of each reaction of the system, so that <code><a class="el" href="structchemmisol_1_1X.html">X</a>[reaction.getIndex()]</code> corresponds to the extent of a given <code>reaction</code>. </p>
+<p>Each value corresponds to an <b>extent</b> of each reaction of the system, so that <code>X[reaction.getIndex()]</code> corresponds to the extent of a given <code>reaction</code>. </p>
 
 </div>
 </div>
@@ -149,7 +149,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Finds and returns reactions extents that will bring back the system to equilibrium, finding the root of <a class="el" href="classchemmisol_1_1solver_1_1F.html">F</a> with the <a class="el" href="classchemmisol_1_1Newton.html">Newton</a> method. </p>
+<p>Finds and returns activities that correspond to the system to equilibrium, finding the root of <a class="el" href="classchemmisol_1_1solver_1_1F.html">F</a> with the AbsoluteNewton method.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">system</td><td>Chemical system to solve. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A complete vector of activities A, such that A[i] corresponds to the found activity of species with index i. </dd></dl>
 
 </div>
 </div>

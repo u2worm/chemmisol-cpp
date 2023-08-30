@@ -12,12 +12,12 @@ TEST(LinearTest, X_array) {
 
 TEST(LinearTest, M_array) {
 	// Checks that the redefined constructor does the job
-	M<int, 4> x({
-			{3, 7, 12, 14},
-			{1, 4, 22, -6},
-			{8, 0, 1, 16},
-			{2, 9, 2, -5},
-			});
+	M<int, 4> x({{
+			{{3, 7, 12, 14}},
+			{{1, 4, 22, -6}},
+			{{8, 0, 1, 16}},
+			{{2, 9, 2, -5}},
+			}});
 
 	ASSERT_THAT(x, ElementsAre(
 				ElementsAre(3, 7, 12, 14),
@@ -41,11 +41,11 @@ TEST(LinearTest, sum_array) {
 }
 
 TEST(LinearTest, augment_array) {
-	M<double, 3> m1({
-		{1, 2, 3},
-		{5, 3, 7},
-		{3, 0, 2}
-	});
+	M<double, 3> m1({{
+			{{1, 2, 3}},
+			{{5, 3, 7}},
+			{{3, 0, 2}}
+			}});
 
 	X<double, 3> x = {{
 		4,
@@ -62,12 +62,12 @@ TEST(LinearTest, augment_array) {
 }
 
 TEST(LinearTest, product_array) {
-	M<double, 4> m1({
-		{1, 2, 3, 4},
-		{5, 3, 7, 9},
-		{3, 0, 2, 7},
-		{4, 4, 1, 12}
-	});
+	M<double, 4> m1({{
+			{{1, 2, 3, 4}},
+			{{5, 3, 7, 9}},
+			{{3, 0, 2, 7}},
+			{{4, 4, 1, 12}}
+	}});
 
 	X<double, 4> x = {{
 		6,

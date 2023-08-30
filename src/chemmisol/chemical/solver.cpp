@@ -12,7 +12,6 @@ namespace chemmisol {
 					+ system.getReactions().size()),
 			reaction_offset(system.getComponents().size()),
 			components_indexes(system.getComponents().size()),
-			species_offsets(system.getSpecies().size()),
 			species_indexes(system.getSpecies().size()),
 			fixed_activities(system.getComponents().size()) {
 				for(const auto& component : system.getComponents())
@@ -21,6 +20,7 @@ namespace chemmisol {
 					species_indexes[species->getIndex()]
 						= species->getIndex();
 
+				std::vector<std::size_t> species_offsets(system.getSpecies().size());
 				for(const auto& component : system.getComponents()) {
 					if(component->isFixed()) {
 						fixed_activities[component->getIndex()]
@@ -83,21 +83,16 @@ namespace chemmisol {
 			// TODO: improve this, too many copies for nothing.
 			X complete_activities = completeActivities(activities);
 			{
-				X mass_conservation_results(system.getSpecies().size());
-								// Actual total quantity of each component
+				X mass_conservation_results(system.getComponents().size());
+				// Actual total quantity of each component
 				system.massConservationLaw(
 						complete_activities, mass_conservation_results);
 				for(std::size_t i = 0; i < mass_conservation_results.size(); i++) {
-					if(species_indexes[i] != INVALID_INDEX)
-						f_x[species_indexes[i]] = mass_conservation_results[i];
+					if(components_indexes[i] != INVALID_INDEX)
+						f_x[components_indexes[i]] = mass_conservation_results[i];
 				}
 			}
-			for(auto& component : system.getComponents()) {
-				// Distance from the desired total quantity of the component
-				if(components_indexes[component->getIndex()] != INVALID_INDEX)
-					f_x[components_indexes[component->getIndex()]]
-						-= component->getTotalQuantity();
-			}
+			
 			for(const auto& reaction : system.getReactions()) {
 				f_x[reaction_offset+reaction->getIndex()]
 					= system.distanceToEquilibrium(complete_activities, *reaction);

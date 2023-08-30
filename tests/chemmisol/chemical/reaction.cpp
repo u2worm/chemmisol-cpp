@@ -4,6 +4,29 @@
 using namespace chemmisol;
 using namespace testing;
 
+TEST(InvalidReaction, empty_reagents_in_reaction_set_up) {
+	ChemicalSystem system;
+	system.addReaction("O2", -10, {});
+
+	EXPECT_THROW(system.setUp(), EmptyReagents);
+	try {
+		system.setUp();
+	} catch(const EmptyReagents& e) {
+		ASSERT_THAT(e.getChemicalSystem(), Ref(system));
+		ASSERT_THAT(e.getInvalidReaction(), Ref(system.getReaction("O2")));
+		CHEM_LOGV(5) << "Thrown EmptyReagentsMissingProducedSpeciesInReaction exception:" << std::endl << e.what();
+	}
+
+	EXPECT_THROW(system.solveEquilibrium(), EmptyReagents);
+	try {
+		system.solveEquilibrium();
+	} catch(const EmptyReagents& e) {
+		ASSERT_THAT(e.getChemicalSystem(), Ref(system));
+		ASSERT_THAT(e.getInvalidReaction(), Ref(system.getReaction("O2")));
+		CHEM_LOGV(5) << "Thrown EmptyReagents exception:" << std::endl << e.what();
+	}
+}
+
 TEST(InvalidReaction, missing_produced_species_in_reaction_set_up) {
 	ChemicalSystem system;
 	system.addComponent("H2O", AQUEOUS);
@@ -43,18 +66,18 @@ TEST(InvalidReaction, invalid_species_in_reaction) {
 			{"O2", -1}
 			});
 
-	EXPECT_THROW(system.setUp(), InvalidSpeciesInReaction);
+	EXPECT_THROW(system.setUp(), TooManyProducedSpeciesInReaction);
 	try {
 		system.solveEquilibrium();
-	} catch(const InvalidSpeciesInReaction& e) {
+	} catch(const TooManyProducedSpeciesInReaction& e) {
 		ASSERT_THAT(e.getChemicalSystem(), Ref(system));
 		ASSERT_THAT(e.getInvalidReaction(), Ref(system.getReaction("O2")));
 		CHEM_LOGV(5) << "Thrown InvalidReaction exception:" << std::endl << e.what();
 	}
-	EXPECT_THROW(system.solveEquilibrium(), InvalidSpeciesInReaction);
+	EXPECT_THROW(system.solveEquilibrium(), TooManyProducedSpeciesInReaction);
 	try {
 		system.solveEquilibrium();
-	} catch(const InvalidSpeciesInReaction& e) {
+	} catch(const TooManyProducedSpeciesInReaction& e) {
 		ASSERT_THAT(e.getChemicalSystem(), Ref(system));
 		ASSERT_THAT(e.getInvalidReaction(), Ref(system.getReaction("O2")));
 		CHEM_LOGV(5) << "Thrown InvalidReaction exception:" << std::endl << e.what();

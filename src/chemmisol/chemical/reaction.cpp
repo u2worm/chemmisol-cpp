@@ -3,12 +3,25 @@
 #include "chemmisol/chemical/system.h"
 
 namespace chemmisol {
-	bool operator==(const Reagent& c1, const Reagent& c2) {
-		return c1.name == c2.name
-			&& c1.phase == c2.phase
-			&& c1.coefficient == c2.coefficient;
-	}
 
+	EmptyReagents::EmptyReagents(
+			const ChemicalSystem* chemical_system,
+			const Reaction* invalid_reaction) :
+		InvalidReaction(chemical_system, invalid_reaction) {
+			std::ostringstream message_stream;
+			message_stream << "Empty reagents list in the reaction " <<
+				invalid_reaction->getName() << "."
+				<< std::endl;
+			message_stream << "Components currently declared in the chemical system :"
+				<< std::endl;
+			for(const auto& component : chemical_system->getComponents()) {
+				message_stream << "  "
+					<< component->getSpecies()->getName() << " "
+					<< "(" << component->getSpecies()->getPhase() << ")"
+					<< std::endl;
+			}
+			message = message_stream.str();
+		}
 	MissingProducedSpeciesInReaction::MissingProducedSpeciesInReaction(
 			const ChemicalSystem* chemical_system,
 			const Reaction* invalid_reaction) :
@@ -32,27 +45,19 @@ namespace chemmisol {
 					<< "(" << component->getSpecies()->getPhase() << ")"
 					<< std::endl;
 			}
-			message_stream << "Species currently available in the chemical system :"
-				<< std::endl;
-			for(const auto& species : chemical_system->getSpecies()) {
-				message_stream << "  "
-					<< species->getName() << " "
-					<< "(" << species->getPhase() << ")"
-					<< std::endl;
-			}
 			message = message_stream.str();
 		}
 
-	InvalidSpeciesInReaction::InvalidSpeciesInReaction(
+	TooManyProducedSpeciesInReaction::TooManyProducedSpeciesInReaction(
 			const ChemicalSystem* chemical_system,
 			const Reaction* invalid_reaction) :
 		InvalidReaction(chemical_system, invalid_reaction) {
 			std::ostringstream message_stream;
-			message_stream << "Too many species specified in the reaction " <<
+			message_stream << "Too many produced species detected in the reaction " <<
 				invalid_reaction->getName() << ". Reactions must currently be "
-				"specified in a canocical form, i.e. each reaction equation must "
+				"specified in a canonical form, i.e. each reaction equation must "
 				"include exactly one compound chemical species (the \"produced "
-				"species\") and chimical components. Either check your "
+				"species\") and chemical components. Either check your "
 				"components definition, or refactor your chemical equation "
 				"system." << std::endl;
 			std::list<Reagent> compound_reagents;

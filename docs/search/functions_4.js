@@ -1,13 +1,11 @@
 var searchData=
 [
-  ['getcomponent_0',['getComponent',['../classchemmisol_1_1ChemicalSystem.html#a947bbff888b6a6b0d10a0cd6880948a9',1,'chemmisol::ChemicalSystem::getComponent(const std::string &amp;name) const'],['../classchemmisol_1_1ChemicalSystem.html#a648bf5e2c4ac9b85fcebb720b887c8ba',1,'chemmisol::ChemicalSystem::getComponent(const std::size_t &amp;id) const']]],
-  ['getcomponents_1',['getComponents',['../classchemmisol_1_1ChemicalSystem.html#a851f8a0c9df31665bf712b60e054c628',1,'chemmisol::ChemicalSystem']]],
-  ['getindex_2',['getIndex',['../classchemmisol_1_1Component.html#a43ae4be3a2d33da57e17a26a1f87f3fe',1,'chemmisol::Component::getIndex()'],['../classchemmisol_1_1Reaction.html#a0b1c3b9a4a3dafc0b56b87528efb78ec',1,'chemmisol::Reaction::getIndex() const']]],
-  ['getlogk_3',['getLogK',['../classchemmisol_1_1Reaction.html#adea9f68b19421a2a8cebe2f76c2c714f',1,'chemmisol::Reaction']]],
-  ['getmaxiteration_4',['getMaxIteration',['../classchemmisol_1_1ChemicalSystem.html#a7f99cbc9bb9209ef54b5b28b638106b0',1,'chemmisol::ChemicalSystem']]],
-  ['getname_5',['getName',['../classchemmisol_1_1Component.html#a3e263426c23b62b327f7532cb8292e48',1,'chemmisol::Component::getName()'],['../classchemmisol_1_1Reaction.html#a51068d58d8e7369e4d0f07c027c4b75d',1,'chemmisol::Reaction::getName()']]],
-  ['getreaction_6',['getReaction',['../classchemmisol_1_1ChemicalSystem.html#a90b2d9ce9651e5e944d00c2629bac202',1,'chemmisol::ChemicalSystem']]],
-  ['getreactionmatrix_7',['getReactionMatrix',['../classchemmisol_1_1ChemicalSystem.html#a53be13afdb780f9badd3d68ab652748c',1,'chemmisol::ChemicalSystem']]],
-  ['getreactions_8',['getReactions',['../classchemmisol_1_1ChemicalSystem.html#a93098eb1045579061c5eb443fae19b6d',1,'chemmisol::ChemicalSystem']]],
-  ['getreagents_9',['getReagents',['../classchemmisol_1_1Reaction.html#ab8356902c157c542055bf71c410b3075',1,'chemmisol::Reaction']]]
+  ['f_0',['f',['../classchemmisol_1_1solver_1_1F.html#a1c6bafca69639046fc8d4a417399679d',1,'chemmisol::solver::F']]],
+  ['f_1',['F',['../classchemmisol_1_1solver_1_1F.html#ab104b9158b6acd3715b0f2657de63bd4',1,'chemmisol::solver::F']]],
+  ['fixcomponent_2',['fixComponent',['../classchemmisol_1_1ChemicalSystem.html#a201f64bfd44a426cb3b1acf50efec3c8',1,'chemmisol::ChemicalSystem::fixComponent(const std::string &amp;name, double concentration)'],['../classchemmisol_1_1ChemicalSystem.html#aaa36c3cdf680d4f5f1bae7f1b34eb52e',1,'chemmisol::ChemicalSystem::fixComponent(const std::string &amp;name, Phase phase, double concentration)']]],
+  ['fixedaqueousspecies_3',['FixedAqueousSpecies',['../classchemmisol_1_1FixedAqueousSpecies.html#abccaf4e6a1578a5c091ef45db2b8a799',1,'chemmisol::FixedAqueousSpecies']]],
+  ['fixedchemicalcomponent_4',['FixedChemicalComponent',['../classchemmisol_1_1FixedChemicalComponent.html#a1c8354ee6d6a79a25389f2b881605b1f',1,'chemmisol::FixedChemicalComponent']]],
+  ['fixedchemicalspecies_5',['FixedChemicalSpecies',['../classchemmisol_1_1FixedChemicalSpecies.html#ab4c2c91527e639d32f6d9ddcd2aacb43',1,'chemmisol::FixedChemicalSpecies']]],
+  ['fixedmineralspecies_6',['FixedMineralSpecies',['../classchemmisol_1_1FixedMineralSpecies.html#a237a046da6815f0202cc8c64563d2135',1,'chemmisol::FixedMineralSpecies']]],
+  ['fixph_7',['fixPH',['../classchemmisol_1_1ChemicalSystem.html#ad8f0e5bc375592f1f26a8ccfe15a7249',1,'chemmisol::ChemicalSystem::fixPH(double pH, const std::string &amp;h_component_name)'],['../classchemmisol_1_1ChemicalSystem.html#ae8e8930686e9793753867f6aad1fba54',1,'chemmisol::ChemicalSystem::fixPH(double pH)']]]
 ];

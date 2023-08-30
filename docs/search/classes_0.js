@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['aqueouscomponent_0',['AqueousComponent',['../classchemmisol_1_1AqueousComponent.html',1,'chemmisol']]]
+  ['aqueousspecies_0',['AqueousSpecies',['../classchemmisol_1_1AqueousSpecies.html',1,'chemmisol']]]
 ];

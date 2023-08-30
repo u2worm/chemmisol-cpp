@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.7"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>chemmisol: chemmisol::RegulaFalsi&lt; F &gt; Class Template Reference</title>
+<title>chemmisol: chemmisol::RegulaFalsi&lt; T &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -76,24 +76,150 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classchemmisol_1_1RegulaFalsi-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">chemmisol::RegulaFalsi&lt; F &gt; Class Template Reference</div></div>
+  <div class="headertitle"><div class="title">chemmisol::RegulaFalsi&lt; T &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="regula__falsi_8h_source.html">regula_falsi.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4384f38852d5546308f44b9ebd91a5d0"><td class="memItemLeft" align="right" valign="top"><a id="a4384f38852d5546308f44b9ebd91a5d0" name="a4384f38852d5546308f44b9ebd91a5d0"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>RegulaFalsi</b> (F a, F b, std::function&lt; F(const F &amp;)&gt; f)</td></tr>
-<tr class="separator:a4384f38852d5546308f44b9ebd91a5d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6473841a45964d92e2ca62f07097148"><td class="memItemLeft" align="right" valign="top"><a id="ad6473841a45964d92e2ca62f07097148" name="ad6473841a45964d92e2ca62f07097148"></a>
-F&#160;</td><td class="memItemRight" valign="bottom"><b>solve_iter</b> (std::size_t n) const</td></tr>
-<tr class="separator:ad6473841a45964d92e2ca62f07097148"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27278ab08daf99973eaa71d0fba9dde4"><td class="memItemLeft" align="right" valign="top"><a id="a27278ab08daf99973eaa71d0fba9dde4" name="a27278ab08daf99973eaa71d0fba9dde4"></a>
-F&#160;</td><td class="memItemRight" valign="bottom"><b>solve_eps</b> (F eps) const</td></tr>
-<tr class="separator:a27278ab08daf99973eaa71d0fba9dde4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a898ae8fbb4e37d9f8830949f15e8e632"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1RegulaFalsi.html#a898ae8fbb4e37d9f8830949f15e8e632">RegulaFalsi</a> (T a, T b, std::function&lt; T(const T &amp;)&gt; f)</td></tr>
+<tr class="separator:a898ae8fbb4e37d9f8830949f15e8e632"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cf0df4ed8b28723919eb29ea684473f"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1RegulaFalsi.html#a1cf0df4ed8b28723919eb29ea684473f">solve_iter</a> (std::size_t n) const</td></tr>
+<tr class="separator:a1cf0df4ed8b28723919eb29ea684473f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33554dbbe0b6eba7935508175ff35d31"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1RegulaFalsi.html#a33554dbbe0b6eba7935508175ff35d31">solve_eps</a> (T eps) const</td></tr>
+<tr class="separator:a33554dbbe0b6eba7935508175ff35d31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename T&gt;<br />
+class chemmisol::RegulaFalsi&lt; T &gt;</div><p><a href="https://en.wikipedia.org/wiki/Regula_falsi">Regula falsi</a> solver. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a898ae8fbb4e37d9f8830949f15e8e632" name="a898ae8fbb4e37d9f8830949f15e8e632"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a898ae8fbb4e37d9f8830949f15e8e632">&#9670;&#160;</a></span>RegulaFalsi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classchemmisol_1_1RegulaFalsi.html">chemmisol::RegulaFalsi</a>&lt; T &gt;::RegulaFalsi </td>
+          <td>(</td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; T(const T &amp;)&gt;&#160;</td>
+          <td class="paramname"><em>f</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Defines a <a class="el" href="classchemmisol_1_1RegulaFalsi.html">RegulaFalsi</a> solver, that aims at finding x such that <code>f(x)=0</code>.</p>
+<p>Tor the solver to work, f(a) and f(b) should be of opposite signs.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>Initial left bound of the bracketing interval. </td></tr>
+    <tr><td class="paramname">b</td><td>Initial right bound of the bracketing interval. </td></tr>
+    <tr><td class="paramname">f</td><td>Tunction to solve. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a1cf0df4ed8b28723919eb29ea684473f" name="a1cf0df4ed8b28723919eb29ea684473f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cf0df4ed8b28723919eb29ea684473f">&#9670;&#160;</a></span>solve_iter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T <a class="el" href="classchemmisol_1_1RegulaFalsi.html">chemmisol::RegulaFalsi</a>&lt; T &gt;::solve_iter </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Runs the solver for n iterations and returns the found value of x such that <code>f(x)=0</code>.</p>
+<dl class="section warning"><dt>Warning</dt><dd>The algorithm is not guaranteed to converge.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">n</td><td>Count of iterations.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::logic_error</td><td>If f(a) and f(b) are not of opposite signs. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a33554dbbe0b6eba7935508175ff35d31" name="a33554dbbe0b6eba7935508175ff35d31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33554dbbe0b6eba7935508175ff35d31">&#9670;&#160;</a></span>solve_eps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T <a class="el" href="classchemmisol_1_1RegulaFalsi.html">chemmisol::RegulaFalsi</a>&lt; T &gt;::solve_eps </td>
+          <td>(</td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>eps</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Runs the solver until <code>f(x) &lt; eps</code> for n iterations and returns the found value of x such that <code>f(x) &lt; eps</code>.</p>
+<dl class="section warning"><dt>Warning</dt><dd>The algorithm is not guaranteed to converge.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">eps</td><td>Required precision.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::logic_error</td><td>If f(a) and f(b) are not of opposite signs. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/chemmisol/<a class="el" href="regula__falsi_8h_source.html">regula_falsi.h</a></li>
+<li>include/chemmisol/math/<a class="el" href="regula__falsi_8h_source.html">regula_falsi.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

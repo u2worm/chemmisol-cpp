@@ -1,4 +1,9 @@
 var searchData=
 [
-  ['mineralcomponent_0',['MineralComponent',['../classchemmisol_1_1MineralComponent.html#ab304ef14e7dc890f8465ce43ad16240a',1,'chemmisol::MineralComponent']]]
+  ['identity_0',['identity',['../newton_8h.html#a58278e8a4b48320c010aa57695ff8c0e',1,'chemmisol']]],
+  ['incrementconcentration_1',['incrementConcentration',['../classchemmisol_1_1ChemicalSpecies.html#a4821b41c20051b481376168a44734223',1,'chemmisol::ChemicalSpecies::incrementConcentration()'],['../classchemmisol_1_1FixedChemicalSpecies.html#ad2ea48e3bf35e9b77b9ba748b782a775',1,'chemmisol::FixedChemicalSpecies::incrementConcentration()'],['../classchemmisol_1_1AqueousSpecies.html#a94ba60d89fc77d03413cf6d926d9f209',1,'chemmisol::AqueousSpecies::incrementConcentration()'],['../classchemmisol_1_1MineralSpecies.html#a01a2645b054745cd513146987fbd9520',1,'chemmisol::MineralSpecies::incrementConcentration()']]],
+  ['initph_2',['initPH',['../classchemmisol_1_1ChemicalSystem.html#a8dfa55cc06acd347e941361e40f238b0',1,'chemmisol::ChemicalSystem::initPH(double pH, const std::string &amp;h_component_name)'],['../classchemmisol_1_1ChemicalSystem.html#a4c4ed3274fa42003de15285cbc3cc91a',1,'chemmisol::ChemicalSystem::initPH(double pH)']]],
+  ['invalidreaction_3',['InvalidReaction',['../classchemmisol_1_1InvalidReaction.html#aaa68fab0bbb876613ade7529f597bb92',1,'chemmisol::InvalidReaction']]],
+  ['iscomponent_4',['isComponent',['../classchemmisol_1_1ChemicalSystem.html#aa85f7554bfb92088f2b9ef591a2754fc',1,'chemmisol::ChemicalSystem::isComponent(const std::string &amp;species_name) const'],['../classchemmisol_1_1ChemicalSystem.html#a5d6ff1bf3daa659100346649f9111c24',1,'chemmisol::ChemicalSystem::isComponent(const ChemicalSpecies &amp;species) const']]],
+  ['isfixed_5',['isFixed',['../classchemmisol_1_1ChemicalComponent.html#acddf50d3a5dbbc0180b6f6cdea5fc1a7',1,'chemmisol::ChemicalComponent::isFixed()'],['../classchemmisol_1_1FixedChemicalComponent.html#adccd70b8e348facd880ea9d5d2fecba9',1,'chemmisol::FixedChemicalComponent::isFixed()']]]
 ];

@@ -3,6 +3,12 @@
 
 #include "reaction.h"
 
+/**
+ * @file chemmisol/chemical/solver.h
+ *
+ * Implements chemical equilibrium solver features.
+ */
+
 namespace chemmisol {
 	class ChemicalSystem;
 
@@ -27,19 +33,23 @@ namespace chemmisol {
 		typedef std::vector<std::vector<double>> M;
 
 		/**
-		 * Function considered by the Newton method to find the
-		 * equilibrium state of the ChemicalSystem. See the definition of f()
-		 * for detailed explanation on the solved equation system.
+		 * Function used in the Newton method to find the equilibrium state of
+		 * the ChemicalSystem. See the definition of f() for detailed
+		 * explanation on the solved equation system.
 		 */
 		class F {
-			private:
+			public:
+				/**
+				 * Special index value used to specify that no entry exist for
+				 * some species.
+				 */
 				static const std::size_t INVALID_INDEX;
+			private:
 				const ChemicalSystem& system;
 				std::size_t x_size;
 				std::size_t f_x_size;
 				std::size_t reaction_offset;
 				std::vector<std::size_t> components_indexes;
-				std::vector<std::size_t> species_offsets;
 				std::vector<std::size_t> species_indexes;
 				std::vector<std::size_t> revert_species_indexes;
 				std::vector<double> fixed_activities;
@@ -47,124 +57,161 @@ namespace chemmisol {
 			public:
 
 				/**
-				 * Returns the resulting concentrations in the current chemical
-				 * system that result from the provided extents.
-				 */
-				//X concentrations(const X& extents) const;
-
-				/**
 				 * Initializes a function F to find the equilibrium of the
 				 * provided chemical system.
+				 *
+				 * @param system Chemical system to solve.
 				 */
 				F(const ChemicalSystem& system);
 
+				/**
+				 * Returns the reduced vector of activities.
+				 *
+				 * The reduced vector corresponds to an initial vector A such
+				 * that A[i] equals the activities of species with index i, from
+				 * which all entries that corresponds to species associated to
+				 * fixed components have been removed.
+				 *
+				 * In consequence, it is **not** guaranteed that A[i]
+				 * corresponds to the activity of the species with index i, but
+				 * A[speciesIndexes()[i]] can be used to retrieve the activity
+				 * of species i if it's not associated to a fixed component.
+				 *
+				 * The complete vector of activities can be rebuilt from the
+				 * reduced activities using the completeActivities() method.
+				 *
+				 * @return Vector containing activities of not fixed species in
+				 * the solved system.
+				 */
 				X reducedActivities() const;
+
+				/**
+				 * Rebuilds a complete vector activity from a
+				 * reducedActivities() vector, so that the built vector A is
+				 * such that for any species A[i] equals the activity of species
+				 * with index i.
+				 *
+				 * Activities for species that are not fixed are taken from the
+				 * specified reduced_activities vector, and activities for
+				 * species associated to fixed components are taken from the
+				 * solved chemical system.
+				 *
+				 * @param reduced_activities Reduced vector of activities,
+				 * without entries for species associated to fixed components.
+				 * @return Vector containing activities of all species.
+				 */
 				X completeActivities(const X& reduced_activities) const;
 
+				/**
+				 * Maps the indexes of components to indexes in the f() vector.
+				 *
+				 * If componentsIndexes()[i] is equal to #INVALID_INDEX, no entry
+				 * is available for the component with index i in the f() vector
+				 * (i.e. the component i is fixed).
+				 *
+				 * Else, f(a)[speciesIndexes()[i]] returns the result of the
+				 * \massConservationLaw for the component with index i
+				 * considering the current activities a. 
+				 */
 				const std::vector<std::size_t>& componentsIndexes() const {
 					return components_indexes;
 				}
 
+				/**
+				 * Offset used to retrieve distance to equilibrium of reactions
+				 * in the f() vector, so that f(a)[reactionOffset()+i]
+				 * corresponds to the distance to equilibrium for the reaction
+				 * with index i.
+				 *
+				 * @note
+				 * By construction, the reaction offset is equal to the count of
+				 * law of conservation of mass equations, i.e. the count of not
+				 * fixed components.
+				 */
+				std::size_t reactionOffset() const {
+					return reaction_offset;
+				}
+
+				/**
+				 * Maps the indexes of species to indexes in the
+				 * reducedActivities() vector.
+				 *
+				 * If speciesIndex()[i] is equal to #INVALID_INDEX, no entry is
+				 * available for the species with index i in the reduced vector
+				 * (i.e. the species i is associated to a fixed component).
+				 *
+				 * Else, A[speciesIndexes()[i]] returns the activity of species
+				 * with index i in the reducedActivity() vector A. 
+				 */
 				const std::vector<std::size_t>& speciesIndexes() const {
 					return species_indexes;
 				}
 
 				/**
-				 * Returns the value of f for the provided extents.
+				 * Returns the value of f for the provided reduced activities.
 				 *
-				 * @par Example
+				 * The values of f are of the same size as the vector of reduced
+				 * activities, and as the following form:
 				 *
-				 * Let's consider an example chemical system where two reactions
-				 * occur:
+				 *     m_0
+				 *     ...
+				 *     m_n
+				 *     e_0
+				 *     ...
+				 *     e_p
 				 *
-				 *     H2O       <-> H+ + HO-
-				 *     Na+ + Cl- <-> NaCl
-				 *     Na+ + H2O <-> NaOH + H+
+				 * where:
+				 * - \parblock
+				 *   m_i entries correspond to the law of conservation of mass
+				 *   applied to **not fixed** components. This represents n
+				 *   equations. The result for the component with index i can be
+				 *   retrieved with f(a)[componentsIndexes()[i]].
+				 *   @see \massConservationLaw
+				 *   \endparblock
+				 * - \parblock
+				 *   e_i entries correspond to the distance to equilibrium for
+				 *   each reaction of the system to solve. This represents m
+				 *   equations. The result for the reaction with index i can be
+				 *   retrieved with f(a)[reactionOffset()+i].
+				 *   @see \distanceToEquilibrium
+				 *   \endparblock
 				 *
-				 * The [law of mass
-				 * action](https://en.wikipedia.org/wiki/Law_of_mass_action)
-				 * states that at equilibrium the following relation should
-				 * hold:
 				 *
-				 *     [H+]*[HO-] / [H2O]          = K1
-				 *     [Na+]*[Cl-] / [NaCl]        = K2
-				 *     [Na+]*[H2O] / ([NaOH]*[H+]) = K3
+				 * Considering the definitions of the [law of conservation of
+				 * mass](https://en.wikipedia.org/wiki/Conservation_of_mass) and
+				 * of the [law of mass
+				 * action](https://en.wikipedia.org/wiki/Law_of_mass_action),
+				 * finding the equilibrium state of the chemical system
+				 * corresponds to find activities such that `f(activities)=0`.
 				 *
-				 * where `[H2O]=1` (activity of the solvent) and the brackets
-				 * notation denotes the current activity of each component.
-				 *
-				 * However, when the system is **not** at equilibrium, the
-				 * previous relation does **not** hold. In consequence, the
-				 * purpose of the problem is to find an _extent_ of the 3
-				 * reactions considered (`X=[x1, x2, x3]`) that brings back the
-				 * system to the equilibrium. The extent x2 can for example be
-				 * interpreted as "when the reaction 1 advances of x2 mole, 1
-				 * mole of H2O is consumed to produce 1 mole of H+ and 1 mole of
-				 * HO-". The count of each products and components produced for
-				 * a unitary extent are called "stoichiometric coefficients".
-				 * Notice that extents might be positive or negative.
-				 *
-				 * The problem then consists in finding x1, x2 and x3 such that:
-				 * 
-				 *    [H+ + x1 + x2]*[HO- + x1]                     = K1
-				 *    [Na+ - x2 - x3]*[Cl- - x2]/[NaCl + x2]        = K2
-				 *    [Na+ - x2 - x3]/([NaOH + x3]*[H+ + x1 + x2])  = K3
-				 *
-				 * Considering the fact that activity are usually exponential
-				 * factors with a high amplitude (usually from 10-16 to 10-6),
-				 * and to **highly** simplify the derivative of f() (see df()),
-				 * the final equation actually solved is as follows:
-				 *
-				 * Finding `X=[x1, x2, x3]` such that `f(X) = [0, 0, 0]` where
-				 *
-				 *            log([H+ + x1 + x2]) + log([HO- + x1]) - log(K1)
-				 *     f(X) = log([Na+ - x2 - x3]) + log([Cl- - x2]) - log([NaCl + x2]) - log(K2)
-				 *            log([Na+ - x2 - x3]) - log([NaOH + x3]) - log([H+ + x1 + x2]) - log(K3)
-				 * A few extra information:
-				 * - the new concentration of each component considering each
-				 *   extent (e.g. H+ + x1 + x2) is computed with the
-				 *   concentrations() method, that is itself based on the
-				 *   generic Component::concentration() method.
-				 * - the activity of each component might be computed very
-				 *   differently depending on the type of the component
-				 *   (Solvent, AqueousComponent, MineralComponent...). This is
-				 *   handled by the corresponding Component::activity()
-				 *   implementations.
+				 * @param reduced_activities Current activities for species not
+				 * associated to a fixed component.
+				 * @return Vector value of f, result of the mass conservation
+				 * law applied to not fixed components and distances to
+				 * equilibrium of each reaction.
 				 */
-				X f(const X& extents) const;
+				X f(const X& reduced_activities) const;
 
 				/**
 				 * Computes the [Jacobian
 				 * matrix](https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant)
-				 * of f() at the given extents.
+				 * of f() for the specified reduced_activities.
 				 *
-				 * The computation of each derivative is handled by the
-				 * Component::Dactivity() method. Expect for
-				 * ElectrostaticComponent that is very particular, the
-				 * computation of the matrix is trivial when the system is
-				 * expressed in the log form (see f() documentation) since
-				 * `dlog(f(x))/dx = 1/x * df(x)/dx * 1/ln(10)` where `f(x)` is
-				 * the activity of a given component, that generally corresponds
-				 * to a simple sum.
-				 *
-				 * For example:
-				 *
-				 *     dlog([H+ + x1 + x2])/dx1 = 1/[H+ + x1 + x2] * 1/V * 1/ln(10)
-				 *
-				 * since
-				 *
-				 *     d[H+ + x1 + x2]/dx1 = d ((H+ + x1 + x2)/V)/dx1 = 1/V
-				 *
-				 * where V is the volume of the solution and the activity of an
-				 * aqueous species is defined as its concentration C such that
-				 * `C=n/V` where n is the quantity of the species in mole.
+				 * Since the expressions of both the \massConservationLaw and
+				 * \distanceToEquilibrium are polynomial functions of the
+				 * reduced activities, it is straightforward to compute the
+				 * partial derivatives of f().
 				 */
 				M df(const X& extents) const;
 		};
 
 		/**
-		 * Finds and returns reactions extents that will bring back the system
-		 * to equilibrium, finding the root of F with the Newton method.
+		 * Finds and returns activities that correspond to the system to
+		 * equilibrium, finding the root of F with the AbsoluteNewton method.
+		 *
+		 * @param system Chemical system to solve.
+		 * @return A complete vector of activities A, such that A[i] corresponds
+		 * to the found activity of species with index i.
 		 */
 		X solve(const ChemicalSystem& system);
 	}

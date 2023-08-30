@@ -80,25 +80,27 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="chemical_8h_source.html">chemical.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="reaction_8h_source.html">reaction.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac4954d6449fddef776f6a3b0b332a4d8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1Reaction.html#ac4954d6449fddef776f6a3b0b332a4d8">Reaction</a> (const std::string &amp;name, std::size_t index, double log_K, const std::vector&lt; <a class="el" href="structchemmisol_1_1ReactionComponent.html">ReactionComponent</a> &gt; &amp;reagents)</td></tr>
-<tr class="separator:ac4954d6449fddef776f6a3b0b332a4d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30214f42846ac786b16206dc502fa12b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1Reaction.html#a30214f42846ac786b16206dc502fa12b">Reaction</a> (const std::string &amp;name, std::size_t index, double log_K, const std::vector&lt; <a class="el" href="structchemmisol_1_1Reagent.html">Reagent</a> &gt; &amp;reagents)</td></tr>
+<tr class="separator:a30214f42846ac786b16206dc502fa12b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51068d58d8e7369e4d0f07c027c4b75d"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1Reaction.html#a51068d58d8e7369e4d0f07c027c4b75d">getName</a> () const</td></tr>
 <tr class="separator:a51068d58d8e7369e4d0f07c027c4b75d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b1c3b9a4a3dafc0b56b87528efb78ec"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1Reaction.html#a0b1c3b9a4a3dafc0b56b87528efb78ec">getIndex</a> () const</td></tr>
 <tr class="separator:a0b1c3b9a4a3dafc0b56b87528efb78ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0fa533eab8611cfd6e28cc89e4f3999"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1Reaction.html#ad0fa533eab8611cfd6e28cc89e4f3999">getK</a> () const</td></tr>
+<tr class="separator:ad0fa533eab8611cfd6e28cc89e4f3999"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adea9f68b19421a2a8cebe2f76c2c714f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1Reaction.html#adea9f68b19421a2a8cebe2f76c2c714f">getLogK</a> () const</td></tr>
 <tr class="separator:adea9f68b19421a2a8cebe2f76c2c714f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8356902c157c542055bf71c410b3075"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structchemmisol_1_1ReactionComponent.html">ReactionComponent</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1Reaction.html#ab8356902c157c542055bf71c410b3075">getReagents</a> () const</td></tr>
-<tr class="separator:ab8356902c157c542055bf71c410b3075"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2296a1a9d5887fa18053114d68ae7842"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structchemmisol_1_1Reagent.html">Reagent</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1Reaction.html#a2296a1a9d5887fa18053114d68ae7842">getReagents</a> () const</td></tr>
+<tr class="separator:a2296a1a9d5887fa18053114d68ae7842"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A chemical reaction is a process that transform <em>reactants</em> into <em>products</em>.</p>
 <p>A reaction can be fully described by:</p><ul>
-<li>a list of reactives and products</li>
+<li>a list of reactives and products (reagents)</li>
 <li>stoichiometric coefficients</li>
 <li>a log K value</li>
 </ul>
@@ -109,9 +111,9 @@ Public Member Functions</h2></td></tr>
 <p>The <a href="https://en.wikipedia.org/wiki/Chemical_equilibrium">equilibrium constant</a> K is then defined according to the <a href="https://en.wikipedia.org/wiki/Law_of_mass_action">law of mass action</a> as:</p>
 <p>([C]^k * [D]^l) / ([A]^n * [B]^m) = K</p>
 <p>where the bracket notation denotes the activity of each component <b>at equilibrium</b>. By convention, the products form the numerator.</p>
-<p>This should follow the conventions used by the reference <a href="https://vminteq.com/">VMinteq</a> software, so that values observed in the VMinteq database can be reused as is in Chemmisol.</p>
-<p>Within this same software, the name of each reaction also defines its main product, to which a coefficient of -1 is associated. This convention comes from the idea that a species is actually a compound of base species, that corresponds to the reactants of the reaction that form the main product. For example, in VMinteq, to define the Na+ + Cl- &lt;-&gt; NaCl reaction, you only need to create a reaction called "NaCl" with two components, Na+ and Cl-, both with a coefficient of +1, in the idea that NaCl is compound by the basic Na+ and Cl- ions.</p>
-<p>Such conventions might however seem quite awkward for non experts, and relies on implicit things. That's why in Chemmisol we chose to specify even the product of the reaction as an explicit product, even if we recommend to stick with the VMinteq convention to name reactions.</p>
+<p>This should follow the conventions used by the reference <a href="https://vminteq.com/">VMinteq</a> software, so that values used in the VMinteq database can be reused as is in Chemmisol.</p>
+<p>Within this same software, the name of each reaction also defines its produced species, to which a coefficient of -1 is associated. This convention comes from the idea that a species is actually a compound of base species ("components"), that corresponds to the reactants of the reaction that form the produced species. For example, in VMinteq, to define the Na+ + Cl- &lt;-&gt; NaCl reaction, you only need to create a reaction called "NaCl" with two components, Na+ and Cl-, both with a coefficient of +1, in the idea that NaCl is compound by the basic Na+ and Cl- ions.</p>
+<p>In Chemmisol the produced species must be specified explicitly as a reagent, and the name of each reaction is arbitraty, even if we recommend to stick with the VMinteq convention to name reactions. The name of each reaction must also be unique within a <a class="el" href="classchemmisol_1_1ChemicalSystem.html">ChemicalSystem</a>.</p>
 <dl class="section user"><dt>Examples</dt><dd><pre class="fragment">// H2O &lt;-&gt; OH- + H+
 Reaction oh("OH-",
     -13.997 // log K value, with H+ and OH- as products
@@ -130,9 +132,12 @@ Reaction nacl("NaCl",
         {"Cl-", 1}    // Reactant
     });
 </pre> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classchemmisol_1_1ChemicalSystem.html#a5a34cbd6f1ed0bbe60ced6a54fb4f919">ChemicalSystem::addComponent(const std::string &amp;, Phase, double)</a> </dd>
+<dd>
+ChemicalSystem::addReaction(std::string, double, std::vector&lt; Reagent &gt;) </dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ac4954d6449fddef776f6a3b0b332a4d8" name="ac4954d6449fddef776f6a3b0b332a4d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac4954d6449fddef776f6a3b0b332a4d8">&#9670;&#160;</a></span>Reaction()</h2>
+<a id="a30214f42846ac786b16206dc502fa12b" name="a30214f42846ac786b16206dc502fa12b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30214f42846ac786b16206dc502fa12b">&#9670;&#160;</a></span>Reaction()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -161,7 +166,7 @@ Reaction nacl("NaCl",
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structchemmisol_1_1ReactionComponent.html">ReactionComponent</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structchemmisol_1_1Reagent.html">Reagent</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>reagents</em>&#160;</td>
         </tr>
         <tr>
@@ -180,9 +185,9 @@ Reaction nacl("NaCl",
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">name</td><td>Name of the reaction </td></tr>
-    <tr><td class="paramname">Index</td><td>Index used to retrieve the reaction in data structures used internally by the <a class="el" href="classchemmisol_1_1ChemicalSystem.html">ChemicalSystem</a>. The index can also be used to uniquely identify each reaction of a system. </td></tr>
+    <tr><td class="paramname">index</td><td>Index used to retrieve the reaction in data structures used internally by the <a class="el" href="classchemmisol_1_1ChemicalSystem.html">ChemicalSystem</a>. The index can also be used to uniquely identify each reaction of a system. </td></tr>
     <tr><td class="paramname">log_K</td><td>Base 10 logarithm of the equilibrium constant. By convention, K should correspond to the reaction quotient at equilibrium with products (i.e. species with <b>negative</b> coefficients) at the numerous. For example, using this convention, the <a href="https://en.wikipedia.org/wiki/Self-ionization_of_water">self-ionization of water reaction</a> is described with coefficients of -1 for HO- and H+ species, a coefficient of +1 for H2O, and a log_K value of -14. </td></tr>
-    <tr><td class="paramname">reactives</td><td>Defines reagents of the reaction and associates a stoichiometric coefficient to each, where coefficients of products are negative and coefficient of reactants are positive by convention. Reagents are identified by a component name, that should be a valid argument for the <a class="el" href="classchemmisol_1_1ChemicalSystem.html#a947bbff888b6a6b0d10a0cd6880948a9">ChemicalSystem::getComponent()</a> method. Notice that coefficients for unspecified components are assumed to be null. </td></tr>
+    <tr><td class="paramname">reagents</td><td>Defines reagents of the reaction and associates a stoichiometric coefficient to each, where coefficients of products are negative and coefficient of reactants are positive by convention. Reagents are identified by a component name, that should be a valid argument for the <a class="el" href="classchemmisol_1_1ChemicalSystem.html#a1b109bcde1760e228d1e2de9a219bd36">ChemicalSystem::getComponent()</a> method. </td></tr>
   </table>
   </dd>
 </dl>
@@ -212,7 +217,7 @@ Reaction nacl("NaCl",
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Name of the reaction, usually the name of its main product by convention. </p>
+<p>Name of the reaction, usually the name of its produced species by convention. </p>
 
 </div>
 </div>
@@ -242,6 +247,32 @@ Reaction nacl("NaCl",
 
 </div>
 </div>
+<a id="ad0fa533eab8611cfd6e28cc89e4f3999" name="ad0fa533eab8611cfd6e28cc89e4f3999"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0fa533eab8611cfd6e28cc89e4f3999">&#9670;&#160;</a></span>getK()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double chemmisol::Reaction::getK </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Equilibrium constant of this reaction. </p>
+
+</div>
+</div>
 <a id="adea9f68b19421a2a8cebe2f76c2c714f" name="adea9f68b19421a2a8cebe2f76c2c714f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adea9f68b19421a2a8cebe2f76c2c714f">&#9670;&#160;</a></span>getLogK()</h2>
 
@@ -264,12 +295,12 @@ Reaction nacl("NaCl",
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Base 10 logarithm of the equilibrium constant. </p>
+<p>Base 10 logarithm of the equilibrium constant of this reaction. </p>
 
 </div>
 </div>
-<a id="ab8356902c157c542055bf71c410b3075" name="ab8356902c157c542055bf71c410b3075"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab8356902c157c542055bf71c410b3075">&#9670;&#160;</a></span>getReagents()</h2>
+<a id="a2296a1a9d5887fa18053114d68ae7842" name="a2296a1a9d5887fa18053114d68ae7842"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2296a1a9d5887fa18053114d68ae7842">&#9670;&#160;</a></span>getReagents()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -278,7 +309,7 @@ Reaction nacl("NaCl",
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::vector&lt; <a class="el" href="structchemmisol_1_1ReactionComponent.html">ReactionComponent</a> &gt; chemmisol::Reaction::getReagents </td>
+          <td class="memname">const std::vector&lt; <a class="el" href="structchemmisol_1_1Reagent.html">Reagent</a> &gt; &amp; chemmisol::Reaction::getReagents </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -290,12 +321,12 @@ Reaction nacl("NaCl",
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Reagents of the reaction. </p>
+<p>Returns the reagents of the reaction. </p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/chemmisol/<a class="el" href="chemical_8h_source.html">chemical.h</a></li>
+<li>include/chemmisol/chemical/<a class="el" href="reaction_8h_source.html">reaction.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

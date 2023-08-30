@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['setmaxiteration_0',['setMaxIteration',['../classchemmisol_1_1ChemicalSystem.html#a1d7ff10809efff9add51907cad8edc39',1,'chemmisol::ChemicalSystem']]],
-  ['solve_1',['solve',['../namespacechemmisol_1_1solver.html#aec759877aaecbc411e5e129fed3e0e42',1,'chemmisol::solver']]],
-  ['solveequilibrium_2',['solveEquilibrium',['../classchemmisol_1_1ChemicalSystem.html#a36ceca64f849c2b410657d3c203f0189',1,'chemmisol::ChemicalSystem']]],
-  ['solvent_3',['Solvent',['../classchemmisol_1_1Solvent.html#ad7c95032313eeeee9bbfd19c5abd59ec',1,'chemmisol::Solvent']]]
+  ['newton_0',['Newton',['../classchemmisol_1_1Newton.html#a1c84bd8404441166c3872072e0439c68',1,'chemmisol::Newton']]],
+  ['norm_1',['norm',['../linear_8h.html#a36cb6656fcdc1ef3a354436a20261a0f',1,'chemmisol::norm(const X&lt; T, N &gt; &amp;x)'],['../linear_8h.html#a268936051dc9db4c923863a0f1cae78b',1,'chemmisol::norm(const VecX&lt; T &gt; &amp;x)'],['../linear_8h.html#aa866792f247b131e2c4f0100a0459a6b',1,'chemmisol::norm(const T &amp;x)']]]
 ];

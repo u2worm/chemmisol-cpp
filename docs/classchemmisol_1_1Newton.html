@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.7"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>chemmisol: chemmisol::Newton&lt; X, M &gt; Class Template Reference</title>
+<title>chemmisol: chemmisol::Newton&lt; X, M, G &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -76,24 +76,145 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classchemmisol_1_1Newton-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">chemmisol::Newton&lt; X, M &gt; Class Template Reference</div></div>
+  <div class="headertitle"><div class="title">chemmisol::Newton&lt; X, M, G &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="newton_8h_source.html">newton.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae717c9f75e38fd9e4fac0d53e5b9a6ad"><td class="memItemLeft" align="right" valign="top"><a id="ae717c9f75e38fd9e4fac0d53e5b9a6ad" name="ae717c9f75e38fd9e4fac0d53e5b9a6ad"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Newton</b> (const <a class="el" href="structchemmisol_1_1X.html">X</a> &amp;x0, std::function&lt; <a class="el" href="structchemmisol_1_1X.html">X</a>(const <a class="el" href="structchemmisol_1_1X.html">X</a> &amp;)&gt; f, std::function&lt; <a class="el" href="structchemmisol_1_1M.html">M</a>(const <a class="el" href="structchemmisol_1_1X.html">X</a> &amp;)&gt; df)</td></tr>
-<tr class="separator:ae717c9f75e38fd9e4fac0d53e5b9a6ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a69eb0384c4f11538f621420c8a3d61a5"><td class="memItemLeft" align="right" valign="top"><a id="a69eb0384c4f11538f621420c8a3d61a5" name="a69eb0384c4f11538f621420c8a3d61a5"></a>
-<a class="el" href="structchemmisol_1_1X.html">X</a>&#160;</td><td class="memItemRight" valign="bottom"><b>solve_eps</b> (float epsilon) const</td></tr>
-<tr class="separator:a69eb0384c4f11538f621420c8a3d61a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8f3ddb4b2185b6bd35977b17b79fbf5"><td class="memItemLeft" align="right" valign="top"><a id="ab8f3ddb4b2185b6bd35977b17b79fbf5" name="ab8f3ddb4b2185b6bd35977b17b79fbf5"></a>
-<a class="el" href="structchemmisol_1_1X.html">X</a>&#160;</td><td class="memItemRight" valign="bottom"><b>solve_iter</b> (std::size_t n) const</td></tr>
-<tr class="separator:ab8f3ddb4b2185b6bd35977b17b79fbf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c84bd8404441166c3872072e0439c68"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1Newton.html#a1c84bd8404441166c3872072e0439c68">Newton</a> (const <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &amp;x0, std::function&lt; <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>(const <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &amp;)&gt; f, std::function&lt; <a class="el" href="linear_8h.html#a71d0452842b873eab838a852f24a9730">M</a>(const <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &amp;)&gt; df)</td></tr>
+<tr class="separator:a1c84bd8404441166c3872072e0439c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18cb7d4723d6800e0bee4a1ff6439f66"><td class="memItemLeft" align="right" valign="top"><a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1Newton.html#a18cb7d4723d6800e0bee4a1ff6439f66">solve_eps</a> (float epsilon) const</td></tr>
+<tr class="separator:a18cb7d4723d6800e0bee4a1ff6439f66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7de07d822d4f649774502f27fa607c04"><td class="memItemLeft" align="right" valign="top"><a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1Newton.html#a7de07d822d4f649774502f27fa607c04">solve_iter</a> (std::size_t n) const</td></tr>
+<tr class="separator:a7de07d822d4f649774502f27fa607c04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>, typename <a class="el" href="linear_8h.html#a71d0452842b873eab838a852f24a9730">M</a>, <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>(&amp;)(const <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &amp;) G = identity&gt;<br />
+class chemmisol::Newton&lt; X, M, G &gt;</div><p>Implementation of the <a href="https://en.wikipedia.org/wiki/Newton%27s_method">Newton-Raphson method</a>. The algorithm is generalized to solve systems of equations of <a href="https://en.wikipedia.org/wiki/Newton%27s_method#k_variables,_k_functions">k variables and k functions</a>.</p>
+<p>The algorithm recursively refines the x value using the following formulae: </p><pre class="fragment">x_n+1 = G(x_n - df(x_n)^-1 * f(x_n))
+</pre><p> where <code>f</code> denotes the function to solve so that <code>f(x)=0</code>, <code>df</code> denotes the <a href="https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant">Jacobian matrix</a> of <code>f</code>, and <code>G</code> is a function that takes x as parameter and returns a vector of the same size.</p>
+<p>By default, G is the <a class="el" href="newton_8h.html#a58278e8a4b48320c010aa57695ff8c0e">identity()</a>, what allows to implement the classical Newton-Raphson method.</p>
+<p>When G is set to <a class="el" href="linear_8h.html#a7aefbd4ab87ad345a4e260ef0ee4eb7d">abs()</a>, the so-called <a class="el" href="newton_8h.html#aecbdc2e6464303b96c644d09f49b1b8f">AbsoluteNewton</a> method is implemented.</p>
+<p>The convergence is guaranteed only when the initial value is "close
+enough" to the desired solution.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">X</td><td>Vector type of size n that defines the argument type and return value of the function <code>f</code>. </td></tr>
+    <tr><td class="paramname">M</td><td>Matrix type of size n*n used to represent the Jacobian matrix of <code>f</code>, as returned by <code>df</code>. </td></tr>
+    <tr><td class="paramname">G</td><td>Function applied to current x at the end of each iteration of the algorithm. </td></tr>
+  </table>
+  </dd>
+</dl>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a1c84bd8404441166c3872072e0439c68" name="a1c84bd8404441166c3872072e0439c68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c84bd8404441166c3872072e0439c68">&#9670;&#160;</a></span>Newton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> , typename <a class="el" href="linear_8h.html#a71d0452842b873eab838a852f24a9730">M</a> , <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>(&amp;)(const <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &amp;) G = identity&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classchemmisol_1_1Newton.html">chemmisol::Newton</a>&lt; <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>, <a class="el" href="linear_8h.html#a71d0452842b873eab838a852f24a9730">M</a>, G &gt;::Newton </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &amp;&#160;</td>
+          <td class="paramname"><em>x0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>(const <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &amp;)&gt;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; <a class="el" href="linear_8h.html#a71d0452842b873eab838a852f24a9730">M</a>(const <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &amp;)&gt;&#160;</td>
+          <td class="paramname"><em>df</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Defines a <a class="el" href="classchemmisol_1_1Newton.html">Newton</a> solver.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x0</td><td>Initial x value, that should be "close enough" to the solution to guarantee convergence. </td></tr>
+    <tr><td class="paramname">f</td><td>Function to solve so that <code>f(x)=0</code>. </td></tr>
+    <tr><td class="paramname">df</td><td>Derivative of f, that returns the values of the Jacobian matrix of f for a specified x. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a18cb7d4723d6800e0bee4a1ff6439f66" name="a18cb7d4723d6800e0bee4a1ff6439f66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18cb7d4723d6800e0bee4a1ff6439f66">&#9670;&#160;</a></span>solve_eps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> , typename <a class="el" href="linear_8h.html#a71d0452842b873eab838a852f24a9730">M</a> , <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>(&amp;)(const <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &amp;) G&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> <a class="el" href="classchemmisol_1_1Newton.html">chemmisol::Newton</a>&lt; <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>, <a class="el" href="linear_8h.html#a71d0452842b873eab838a852f24a9730">M</a>, G &gt;::solve_eps </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>epsilon</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Runs the solver until <code>f(x) &lt; eps</code> for n iterations and returns the found value of x such that <code>f(x) &lt; eps</code>.</p>
+<dl class="section warning"><dt>Warning</dt><dd>The algorithm is not guaranteed to converge if the initial x0 is not close enough to the solution.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">epsilon</td><td>Required precision. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a7de07d822d4f649774502f27fa607c04" name="a7de07d822d4f649774502f27fa607c04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7de07d822d4f649774502f27fa607c04">&#9670;&#160;</a></span>solve_iter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> , typename <a class="el" href="linear_8h.html#a71d0452842b873eab838a852f24a9730">M</a> , <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>(&amp;)(const <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &amp;) G&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> <a class="el" href="classchemmisol_1_1Newton.html">chemmisol::Newton</a>&lt; <a class="el" href="linear_8h.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>, <a class="el" href="linear_8h.html#a71d0452842b873eab838a852f24a9730">M</a>, G &gt;::solve_iter </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Runs the solver for n iterations and returns the found value of x such that <code>f(x)=0</code>.</p>
+<dl class="section warning"><dt>Warning</dt><dd>The algorithm is not guaranteed to converge if the initial x0 is not close enough to the solution. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/chemmisol/<a class="el" href="newton_8h_source.html">newton.h</a></li>
+<li>include/chemmisol/math/<a class="el" href="newton_8h_source.html">newton.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

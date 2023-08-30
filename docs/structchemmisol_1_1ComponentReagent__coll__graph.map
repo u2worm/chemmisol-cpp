@@ -1,0 +1,5 @@
+<map id="chemmisol::ComponentReagent" name="chemmisol::ComponentReagent">
+<area shape="rect" id="Node000001" title=" " alt="" coords="8,96,217,123"/>
+<area shape="rect" id="Node000002" href="$classchemmisol_1_1ChemicalComponent.html" title=" " alt="" coords="5,5,220,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="115,47,115,95,110,95,110,47"/>
+</map>

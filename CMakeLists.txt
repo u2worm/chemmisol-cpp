@@ -119,6 +119,14 @@ if(DOXYGEN_FOUND)
 	set(DOXYGEN_SORT_MEMBER_DOCS "NO")
 	set(DOXYGEN_HAVE_DOT "YES")
 	#set(DOXYGEN_TEMPLATE_RELATIONS "YES")
+	set(DOXYGEN_ALIASES
+		[[addComponent=@ref addComponent(const std::string&,Phase,double) \"addComponent()\"]]
+		[[fixComponent=@ref fixComponent(const std::string&,Phase,double) \"fixComponent()\"]]
+		[[addSolvent=@ref addSolvent(const std::string&) \"addSolvent()\"]]
+		[[addReaction=@ref addReaction(const std::string&, double, const std::vector<Reagent>&) \"addReaction()\"]]
+		[[massConservationLaw=@ref ChemicalSystem::massConservationLaw(const std::vector<double>&, std::vector<double>&) const \"ChemicalSystem::massConservationLaw()\"]]
+		[[distanceToEquilibrium=@ref ChemicalSystem::distanceToEquilibrium(const std::vector<double>&, const Reaction&) const \"ChemicalSystem::distanceToEquilibrium()\"]]
+		)
 	doxygen_add_docs(doc
 		${CMAKE_CURRENT_SOURCE_DIR}/include
 		)

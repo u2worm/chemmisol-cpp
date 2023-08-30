@@ -7,11 +7,11 @@ using namespace testing;
 using namespace chemmisol;
 
 TEST(GaussTest, solve_array) {
-	M<float, 3> m({
-		{2, 1, -1},
-		{-3, -1, 2},
-		{-2, 1, 2}
-	});
+	M<float, 3> m({{
+			{{2, 1, -1}},
+			{{-3, -1, 2}},
+			{{-2, 1, 2}}
+			}});
 	X<float, 3> y = {{
 		8,
 		-11,

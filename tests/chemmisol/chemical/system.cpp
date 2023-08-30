@@ -9,6 +9,12 @@ namespace chemmisol {
 		o << "{i:" << s.getIndex() << ", name:" << s.getName() << ", phase:" << s.getPhase() << "}";
 		return o;
 	}
+
+	bool operator==(const Reagent& c1, const Reagent& c2) {
+		return c1.name == c2.name
+			&& c1.phase == c2.phase
+			&& c1.coefficient == c2.coefficient;
+	}
 }
 
 using namespace testing;
@@ -56,21 +62,24 @@ void print_df(
 class BasicChemicalSystemTest : public Test {
 	protected:
 	ChemicalSystem chemical_system;
+	const Reaction* oh_reaction;
+	const Reaction* nacl_reaction;
+	const Reaction* naoh_reaction;
 
 	void SetUp() override {
-		chemical_system.addReaction("OH-", -13.997, {
+		oh_reaction = &chemical_system.addReaction("OH-", -13.997, {
 				{"OH-", -1},
 				{"H+", -1},
 				{"H2O", 1}
 				});
-		chemical_system.addReaction("NaCl", -0.3, {
+		nacl_reaction = &chemical_system.addReaction("NaCl", -0.3, {
 				{"NaCl", -1},
 				{"Na+", AQUEOUS, 1}, // AQUEOUS specified here only for test
 									 // purpose, since it should be the default
 									 // phase
 				{"Cl-", AQUEOUS, 1}
 				});
-		chemical_system.addReaction("NaOH", -13.897, {
+		naoh_reaction = &chemical_system.addReaction("NaOH", -13.897, {
 				{"NaOH", -1},
 				{"H+", -1},
 				{"Na+", 1},
@@ -83,7 +92,7 @@ class BasicChemicalSystemTest : public Test {
 		chemical_system.addSolvent("H2O");
 
 		// Automatically adds the H+ component
-		chemical_system.fixPH(7);
+		chemical_system.initPH(7);
 
 		chemical_system.setUp();
 	}
@@ -102,6 +111,16 @@ TEST_F(BasicChemicalSystemTest, get_species) {
 
 	for(std::size_t i = 0; i < species.size(); i++)
 		ASSERT_THAT(species[i]->getIndex(), i);
+}
+
+TEST_F(BasicChemicalSystemTest, get_reaction) {
+	auto& reactions = chemical_system.getReactions();
+
+	for(std::size_t i = 0; i < reactions.size(); i++)
+		ASSERT_THAT(reactions[i]->getIndex(), i);
+	ASSERT_THAT(chemical_system.getReaction("OH-"), Ref(*oh_reaction));
+	ASSERT_THAT(chemical_system.getReaction("NaCl"), Ref(*nacl_reaction));
+	ASSERT_THAT(chemical_system.getReaction("NaOH"), Ref(*naoh_reaction));
 }
 
 TEST_F(BasicChemicalSystemTest, get_component_reagent) {
@@ -344,13 +363,6 @@ TEST_F(BasicChemicalSystemTest, mass_conservation_law) {
 	double total_na = chemical_system.getComponent("Na+").getTotalQuantity();
 	double total_cl = chemical_system.getComponent("Cl-").getTotalQuantity();
 
-	ASSERT_FLOAT_EQ(
-			total_components[chemical_system.getComponent("H+").getIndex()], total_h);
-	ASSERT_FLOAT_EQ(
-			total_components[chemical_system.getComponent("Na+").getIndex()], total_na);
-	ASSERT_FLOAT_EQ(
-			total_components[chemical_system.getComponent("Cl-").getIndex()], total_cl);
-
 	const ChemicalSpecies& ho = chemical_system.getSpecies("OH-");
 	const ChemicalSpecies& h = chemical_system.getSpecies("H+");
 	const ChemicalSpecies& na = chemical_system.getSpecies("Na+");
@@ -358,11 +370,24 @@ TEST_F(BasicChemicalSystemTest, mass_conservation_law) {
 	const ChemicalSpecies& nacl = chemical_system.getSpecies("NaCl");
 	const ChemicalSpecies& naoh = chemical_system.getSpecies("NaOH");
 
+	ASSERT_FLOAT_EQ(
+			total_components[chemical_system.getComponent("H+").getIndex()],
+			h.quantity() - ho.quantity() - naoh.quantity() - total_h
+			);
+	ASSERT_FLOAT_EQ(
+			total_components[chemical_system.getComponent("Na+").getIndex()],
+			na.quantity() + nacl.quantity() + naoh.quantity() - total_na
+			);
+	ASSERT_FLOAT_EQ(
+			total_components[chemical_system.getComponent("Cl-").getIndex()],
+			cl.quantity() + nacl.quantity() - total_cl);
+
 	std::minstd_rand rd;
 	// Makes the system evolve randomly for N iterations, and check that the
 	// total quantity of each component is always preserved according to the
 	// massConservationLaw() implementation.
 	for(std::size_t i = 0; i < 100; i++) {
+		std::cout << i << std::endl;
 		{
 			// OH- random extent
 			std::uniform_real_distribution<double> random_extent(
@@ -391,12 +416,19 @@ TEST_F(BasicChemicalSystemTest, mass_conservation_law) {
 					chemical_system.getReaction("NaOH"), random_extent(rd));
 		}
 
+		chemical_system.massConservationLaw(total_components);
+
 		ASSERT_FLOAT_EQ(
-				total_components[chemical_system.getComponent("H+").getIndex()], total_h);
+				total_components[chemical_system.getComponent("H+").getIndex()],
+				h.quantity() - ho.quantity() - naoh.quantity() - total_h
+				);
 		ASSERT_FLOAT_EQ(
-				total_components[chemical_system.getComponent("Na+").getIndex()], total_na);
+				total_components[chemical_system.getComponent("Na+").getIndex()],
+				na.quantity() + nacl.quantity() + naoh.quantity() - total_na
+				);
 		ASSERT_FLOAT_EQ(
-				total_components[chemical_system.getComponent("Cl-").getIndex()], total_cl);
+				total_components[chemical_system.getComponent("Cl-").getIndex()],
+				cl.quantity() + nacl.quantity() - total_cl);
 	}
 }
 
@@ -406,6 +438,13 @@ TEST_F(BasicChemicalSystemTest, mass_conservation_law) {
  */
 class NaClChemicalSystemTest : public BasicChemicalSystemTest {
 	public:
+		void SetUp() override {
+			BasicChemicalSystemTest::SetUp();
+
+			chemical_system.fixPH(7);
+			chemical_system.setUp();
+		}
+
 		std::vector<double> analytical_f(
 				const std::vector<std::size_t>& components_indexes,
 				const std::vector<std::size_t>& species_indexes,
@@ -633,8 +672,8 @@ TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction_f) {
 			CHEM_LOGV(5) << "Checking mass conservation of component: "
 				<< component->getSpecies()->getName();
 			ASSERT_FLOAT_EQ(
-					F[f.speciesIndexes()[component->getSpecies()->getIndex()]],
-					analytical_F[f.speciesIndexes()[component->getSpecies()->getIndex()]]);
+					F[f.componentsIndexes()[component->getIndex()]],
+					analytical_F[f.componentsIndexes()[component->getIndex()]]);
 		}
 	}
 	for (auto& reaction : chemical_system.getReactions()) {
