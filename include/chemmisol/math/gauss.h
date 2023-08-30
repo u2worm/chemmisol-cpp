@@ -2,14 +2,30 @@
 #include <array>
 #include "../logging.h"
 
-namespace chemmisol { namespace gauss {
-	template<typename X, typename A>
-		X solve(const A& a);
+/**
+ * @file chemmisol/math/gauss.h
+ *
+ * Implementations of the [Gaussian elimination
+ * algorithm](https://en.wikipedia.org/wiki/Gaussian_elimination).
+ */
 
+namespace chemmisol { namespace gauss {
+
+	/**
+	 * Solves m*x=y using the [Gaussian elimination
+	 * algorithm](https://en.wikipedia.org/wiki/Gaussian_elimination).
+	 *
+	 * @param m Matrix of size n*n.
+	 * @param y Matrix of size n.
+	 * @return Vector x such that m*x=y.
+	 *
+	 * @tparam M Matrix type.
+	 * @tparam X Vector type.
+	 */
 	template<typename M, typename X>
-		X solve(const M& m, const X& x) {
+		X solve(const M& m, const X& y) {
 			CHEM_LOG(TRACE) << "[GAUSS START]";
-			auto _m = augment(m, x);
+			auto _m = augment(m, y);
 			std::size_t n = _m.size();
 			CHEM_LOG(TRACE) << "Step 0:";
 			for(std::size_t i = 0; i < n; i++) {
@@ -30,23 +46,34 @@ namespace chemmisol { namespace gauss {
 				CHEM_LOG(TRACE) << _m[i];
 			}
 			
-			X _x = x;
-			_x[n-1] = _m[n-1][n]/_m[n-1][n-1];
+			X x = y;
+			x[n-1] = _m[n-1][n]/_m[n-1][n-1];
 
 			for(int i = n-2; i>=0; i--) {
-				_x[i] = _m[i][n];
+				x[i] = _m[i][n];
 				for(std::size_t j = i+1; j < n; j++) {
-					_x[i] = _x[i] - _m[i][j]*_x[j];
+					x[i] = x[i] - _m[i][j]*x[j];
 				}
-				_x[i] = _x[i]/_m[i][i];
+				x[i] = x[i]/_m[i][i];
 			}
 			CHEM_LOG(TRACE) << "Step 2:";
-			for(std::size_t i = 0; i < _x.size(); i++)
-				CHEM_LOG(TRACE) << "x[" << i << "]=" << _x[i];
+			for(std::size_t i = 0; i < x.size(); i++)
+				CHEM_LOG(TRACE) << "x[" << i << "]=" << x[i];
 			CHEM_LOG(TRACE) << "[GAUSS END]";
-			return _x;
+			return x;
 		}
 
+	/**
+	 * Specialisation of the Gaussian elimination for scalar value.
+	 *
+	 * The Gaussiant elimination is useless in this case, but this
+	 * specialisation is necessary for the implementation of the Newton
+	 * solver for scalar values.
+	 *
+	 * @param f Coefficient.
+	 * @param y Value.
+	 * @return Value x such that f*x=y.
+	 */
 	template<>
 		double solve<double, double>(const double& f, const double& y);
 }}

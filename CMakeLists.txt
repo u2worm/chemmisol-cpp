@@ -108,6 +108,7 @@ install(
 	)
 
 add_subdirectory(tests)
+add_subdirectory(examples)
 
 # Doxygen
 find_package(Doxygen)
@@ -127,6 +128,8 @@ if(DOXYGEN_FOUND)
 		[[massConservationLaw=@ref ChemicalSystem::massConservationLaw(const std::vector<double>&, std::vector<double>&) const \"ChemicalSystem::massConservationLaw()\"]]
 		[[distanceToEquilibrium=@ref ChemicalSystem::distanceToEquilibrium(const std::vector<double>&, const Reaction&) const \"ChemicalSystem::distanceToEquilibrium()\"]]
 		)
+	set(DOXYGEN_EXAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/examples)
+	set(DOXYGEN_EXAMPLE_PATTERNS "*.cpp")
 	doxygen_add_docs(doc
 		${CMAKE_CURRENT_SOURCE_DIR}/include
 		)

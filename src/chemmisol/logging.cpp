@@ -5,25 +5,25 @@ INITIALIZE_EASYLOGGINGPP
 namespace chemmisol {
 	void log_file(el::Logger*, const std::string&, bool);
 
-	el::Logger* chemmisol_core_logger = init_logger(CHEM_CORE_LOGID);
+	el::Logger* core_logger = init_logger(CHEM_CORE_LOGID);
 
 	el::Logger* init_logger(const char* logger_id) {
 		el::Logger* logger = el::Loggers::getLogger(logger_id);
 
-		el::Configurations chemmisol_core_logger_configuration;
+		el::Configurations core_logger_configuration;
 		// Global format
-		chemmisol_core_logger_configuration.setGlobally(
+		core_logger_configuration.setGlobally(
 				el::ConfigurationType::Format, "[%logger] %levshort %msg");
 
 		//defaultConf.set(el::Level::Trace, el::ConfigurationType::Enabled, "false");
 
-		el::Loggers::reconfigureLogger(logger, chemmisol_core_logger_configuration);
+		el::Loggers::reconfigureLogger(logger, core_logger_configuration);
 
 		//el::Loggers::setVerboseLevel(2);
    		return logger;
 	}
 
-	void log_file(el::Logger* logger, const std::string& _log_file, bool terminal_logging) {
+	void log_to_file(el::Logger* logger, const std::string& _log_file, bool terminal_logging) {
 		el::Configurations chemmisol_core_logger_configuration;
 		chemmisol_core_logger_configuration.setGlobally(
 				el::ConfigurationType::ToFile, "true");
@@ -36,10 +36,5 @@ namespace chemmisol {
 
 		el::Loggers::reconfigureLogger(
 				logger, chemmisol_core_logger_configuration);
-	}
-
-
-	void log_file(const std::string& _log_file, bool disable_terminal_logging) {
-		log_file(chemmisol_core_logger, _log_file, disable_terminal_logging);
 	}
 }

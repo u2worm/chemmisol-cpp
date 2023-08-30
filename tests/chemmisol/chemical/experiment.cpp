@@ -34,13 +34,13 @@ class TestExperiment : public Test {
 
 		el::Configurations conf;
 		conf.set(el::Level::Info, el::ConfigurationType::Enabled, "false");
-		el::Loggers::reconfigureLogger(chemmisol_core_logger, conf);
+		el::Loggers::reconfigureLogger(core_logger, conf);
 	}
 
 	void TearDown() override {
 		el::Configurations conf;
 		conf.set(el::Level::Info, el::ConfigurationType::Enabled, "true");
-		el::Loggers::reconfigureLogger(chemmisol_core_logger, conf);
+		el::Loggers::reconfigureLogger(core_logger, conf);
 	}
 };
 

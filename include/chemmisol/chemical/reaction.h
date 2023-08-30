@@ -4,6 +4,12 @@
 #include "species.h"
 #include <cmath>
 
+/**
+ * @file chemmisol/chemical/reaction.h
+ *
+ * Chemical reactions related features.
+ */
+
 namespace chemmisol {
 
 	/**

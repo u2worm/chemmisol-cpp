@@ -4,6 +4,12 @@
 #include <vector>
 #include "../units.h"
 
+/**
+ * @file chemmisol/chemical/species.h
+ *
+ * Chemical species and components related features.
+ */
+
 namespace chemmisol {
 	/**
 	 * Possible phases of a chemical species.

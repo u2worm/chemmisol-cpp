@@ -10,6 +10,12 @@
  * Defines chemical system features.
  */
 
+/**
+ * @example basic_chemical_system/main.cpp
+ *
+ * Basic chemical system definition and equilibrium solver usage example.
+ */
+
 namespace chemmisol {
 	/**
 	 * Compiled reagent corresponding to a ChemicalComponent.
@@ -272,6 +278,9 @@ namespace chemmisol {
 			 * @param log_K Equilibrium constant.
 			 * @param reagents Reagents of the reaction.
 			 * @return Reference to the new Reaction.
+			 *
+			 * @par Examples
+			 * \ref basic_chemical_system/main.cpp
 			 */
 			const Reaction& addReaction(
 					const std::string& name,
@@ -285,6 +294,9 @@ namespace chemmisol {
 			 *
 			 * @param name Name of the component.
 			 * @param concentration Initial concentration.
+			 *
+			 * @par Examples
+			 * \ref basic_chemical_system/main.cpp
 			 */
 			void addComponent(
 					const std::string& name,
@@ -301,6 +313,9 @@ namespace chemmisol {
 			 * @param phase Chemical phase of the component.
 			 * @param concentration Initial concentration for AQUEOUS species,
 			 * initial molar fraction for MINERAL species.
+			 *
+			 * @par Examples
+			 * \ref basic_chemical_system/main.cpp
 			 */
 			void addComponent(
 					const std::string& name,

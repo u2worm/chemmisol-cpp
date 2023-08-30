@@ -1,6 +1,21 @@
+#ifndef CHEMMISOL_UNIT_H
+#define CHEMMISOL_UNIT_H
+
+/**
+ * @file chemmisol/units.h
+ *
+ * Defines units related features.
+ *
+ * @par Examples
+ * \ref basic_chemical_system/main.cpp
+ */
+
 #include <unordered_map>
 #include <string>
 
+/**
+ * Defines available units.
+ */
 #define UNITS(F)\
 	F(m, 1, LENGTH)\
 	F(cm, 1e-2*m, LENGTH)\
@@ -18,13 +33,30 @@
 	F(entities, 1/NA, QUANTITY)\
 	F(u, 1.66053906660e-27*kg, MASS)
 
-#define UNIT_DEF(NAME, VALUE, CATEGORY) static const double NAME = VALUE;
+/**
+ * Defines an unit.
+ */
+#define UNIT_DEF(NAME, VALUE, CATEGORY) extern const double NAME;
+
+/**
+ * Defines the value of an unit.
+ */
+#define UNIT_VALUE(NAME, VALUE, CATEGORY) const double NAME = VALUE;
+
+/**
+ * Defines the caterory of an unit.
+ */
 #define UNIT_NAME_TO_CATEGORY(NAME, VALUE, CATEGORY) {#NAME, Category::CATEGORY},
-#define UNIT_NAME_TO_VAL(NAME, VALUE, CATEGORY) {#NAME, NAME},
 
 namespace chemmisol {
-	static const double NA = 6.02214076e23;
+	/**
+	 * The [Avogadro constant](https://en.wikipedia.org/wiki/Avogadro_constant).
+	 */
+	extern const double NA;
 
+	/**
+	 * Describes the category of each unit.
+	 */
 	enum Category {
 		MASS, LENGTH, VOLUME, SURFACE, QUANTITY
 	};
@@ -33,7 +65,5 @@ namespace chemmisol {
 	static const std::unordered_map<std::string, Category> units_category {
 		UNITS(UNIT_NAME_TO_CATEGORY)
 	};
-	static const std::unordered_map<std::string, double> units_name_to_val {
-		UNITS(UNIT_NAME_TO_VAL)
-	};
 }
+#endif

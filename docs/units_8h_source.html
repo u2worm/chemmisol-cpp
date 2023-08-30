@@ -76,45 +76,54 @@ $(function() {
   <div class="headertitle"><div class="title">units.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<a href="units_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef CHEMMISOL_UNIT_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define CHEMMISOL_UNIT_H</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#define UNITS(F)\</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">    F(m, 1, LENGTH)\</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">    F(cm, 1e-2*m, LENGTH)\</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">    F(nm, 1e-9*m, LENGTH)\</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">    F(nm2, nm*nm, SURFACE)\</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">    F(m2, m*m, SURFACE)\</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">    F(l, 1, VOLUME)\</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">    F(m3, 1000*l, VOLUME)\</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">    F(cm3, 10e-3*l, VOLUME)\</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">    F(g, 1, MASS)\</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">    F(gram, 1, MASS)\</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">    F(kg, 1e3*gram, MASS)\</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">    F(mg, 1e-3*gram, MASS)\</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">    F(mol, 1, QUANTITY)\</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">    F(entities, 1/NA, QUANTITY)\</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">    F(u, 1.66053906660e-27*kg, MASS)</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#define UNIT_DEF(NAME, VALUE, CATEGORY) static const double NAME = VALUE;</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#define UNIT_NAME_TO_CATEGORY(NAME, VALUE, CATEGORY) {#NAME, Category::CATEGORY},</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#define UNIT_NAME_TO_VAL(NAME, VALUE, CATEGORY) {#NAME, NAME},</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span>chemmisol {</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> NA = 6.02214076e23;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">enum</span> Category {</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        MASS, LENGTH, VOLUME, SURFACE, QUANTITY</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    };</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    UNITS(UNIT_DEF)</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">static</span> <span class="keyword">const</span> std::unordered_map&lt;std::string, Category&gt; units_category {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        UNITS(UNIT_NAME_TO_CATEGORY)</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    };</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">static</span> <span class="keyword">const</span> std::unordered_map&lt;std::string, double&gt; units_name_to_val {</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        UNITS(UNIT_NAME_TO_VAL)</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    };</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="units_8h.html#aa27f20bce1edce5189882bc9f5f8b4f3">   19</a></span><span class="preprocessor">#define UNITS(F)\</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">    F(m, 1, LENGTH)\</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">    F(cm, 1e-2*m, LENGTH)\</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">    F(nm, 1e-9*m, LENGTH)\</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">    F(nm2, nm*nm, SURFACE)\</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">    F(m2, m*m, SURFACE)\</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">    F(l, 1, VOLUME)\</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">    F(m3, 1000*l, VOLUME)\</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">    F(cm3, 10e-3*l, VOLUME)\</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">    F(g, 1, MASS)\</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">    F(gram, 1, MASS)\</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">    F(kg, 1e3*gram, MASS)\</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">    F(mg, 1e-3*gram, MASS)\</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">    F(mol, 1, QUANTITY)\</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">    F(entities, 1/NA, QUANTITY)\</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">    F(u, 1.66053906660e-27*kg, MASS)</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="units_8h.html#a0c8d06190cfe1698993702360bdc9960">   39</a></span><span class="preprocessor">#define UNIT_DEF(NAME, VALUE, CATEGORY) extern const double NAME;</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="units_8h.html#a9c24aed4719a97187de30109761d9909">   44</a></span><span class="preprocessor">#define UNIT_VALUE(NAME, VALUE, CATEGORY) const double NAME = VALUE;</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="units_8h.html#a3c89d6b70f172980c302eeb66a27aa79">   49</a></span><span class="preprocessor">#define UNIT_NAME_TO_CATEGORY(NAME, VALUE, CATEGORY) {#NAME, Category::CATEGORY},</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacechemmisol.html">chemmisol</a> {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">extern</span> <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="namespacechemmisol.html#a4da07635404c25c6a8efc5fa13b15fe0">NA</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="namespacechemmisol.html#a0dd7f04d9cabc6be0f399c4d093a7adf">   60</a></span>    <span class="keyword">enum</span> <a class="code hl_enumeration" href="namespacechemmisol.html#a0dd7f04d9cabc6be0f399c4d093a7adf">Category</a> {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        MASS, LENGTH, VOLUME, SURFACE, QUANTITY</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    };</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_define" href="units_8h.html#aa27f20bce1edce5189882bc9f5f8b4f3">UNITS</a>(<a class="code hl_define" href="units_8h.html#a0c8d06190cfe1698993702360bdc9960">UNIT_DEF</a>)</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">static</span> <span class="keyword">const</span> std::unordered_map&lt;std::string, Category&gt; units_category {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <a class="code hl_define" href="units_8h.html#aa27f20bce1edce5189882bc9f5f8b4f3">UNITS</a>(<a class="code hl_define" href="units_8h.html#a3c89d6b70f172980c302eeb66a27aa79">UNIT_NAME_TO_CATEGORY</a>)</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    };</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="anamespacechemmisol_html"><div class="ttname"><a href="namespacechemmisol.html">chemmisol</a></div><div class="ttdef"><b>Definition</b> chemmisol.h:12</div></div>
+<div class="ttc" id="anamespacechemmisol_html_a0dd7f04d9cabc6be0f399c4d093a7adf"><div class="ttname"><a href="namespacechemmisol.html#a0dd7f04d9cabc6be0f399c4d093a7adf">chemmisol::Category</a></div><div class="ttdeci">Category</div><div class="ttdef"><b>Definition</b> units.h:60</div></div>
+<div class="ttc" id="anamespacechemmisol_html_a4da07635404c25c6a8efc5fa13b15fe0"><div class="ttname"><a href="namespacechemmisol.html#a4da07635404c25c6a8efc5fa13b15fe0">chemmisol::NA</a></div><div class="ttdeci">const double NA</div></div>
+<div class="ttc" id="aunits_8h_html_a0c8d06190cfe1698993702360bdc9960"><div class="ttname"><a href="units_8h.html#a0c8d06190cfe1698993702360bdc9960">UNIT_DEF</a></div><div class="ttdeci">#define UNIT_DEF(NAME, VALUE, CATEGORY)</div><div class="ttdef"><b>Definition</b> units.h:39</div></div>
+<div class="ttc" id="aunits_8h_html_a3c89d6b70f172980c302eeb66a27aa79"><div class="ttname"><a href="units_8h.html#a3c89d6b70f172980c302eeb66a27aa79">UNIT_NAME_TO_CATEGORY</a></div><div class="ttdeci">#define UNIT_NAME_TO_CATEGORY(NAME, VALUE, CATEGORY)</div><div class="ttdef"><b>Definition</b> units.h:49</div></div>
+<div class="ttc" id="aunits_8h_html_aa27f20bce1edce5189882bc9f5f8b4f3"><div class="ttname"><a href="units_8h.html#aa27f20bce1edce5189882bc9f5f8b4f3">UNITS</a></div><div class="ttdeci">#define UNITS(F)</div><div class="ttdef"><b>Definition</b> units.h:19</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
