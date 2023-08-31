@@ -32,5 +32,4 @@ int main(int, char *[])
 	chemical_system.fixPH(7);
 
 	chemical_system.solveEquilibrium();
-	return 0;
 }

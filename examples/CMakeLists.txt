@@ -1,1 +1,2 @@
 add_subdirectory(basic_chemical_system)
+add_subdirectory(dynamic_equilibrium)
