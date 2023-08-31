@@ -333,3 +333,8 @@ cd build
 ./examples/dynamic_equilibrium/dynamic_equilibrium_example
 ```
 
+The output data should look as follows:
+
+| Reactants output | Products output (log scale) |
+|------------------|-----------------------------|
+| ![Na Cl output](https://github.com/u2worm/chemmisol-cpp/blob/main/examples/dynamic_equilibrium/na_cl_output.png) | ![NaCl NaOH output](https://github.com/u2worm/chemmisol-cpp/blob/main/examples/dynamic_equilibrium/nacl_naoh_output.png) |
