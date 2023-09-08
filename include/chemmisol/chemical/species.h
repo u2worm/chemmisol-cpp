@@ -28,6 +28,12 @@ namespace chemmisol {
 	 * is assigned to each chemical species in a system, typically in mole, and
 	 * a concentration() and an activity() corresponding to this quantity is
 	 * also defined, depending on the phase and type of the chemical species.
+	 *
+	 * The methods [activity(concentration)](@ref activity(double) const) ->
+	 * [quantity(activity)](@ref quantity(double) const) ->
+	 * [concentration(quantity)](@ref concentration(double) const) form a
+	 * triangle that allows to convert between concentrations, activities and
+	 * quantities of species of any phase.
 	 */
 	class ChemicalSpecies {
 		private:
@@ -93,6 +99,19 @@ namespace chemmisol {
 			virtual double concentration() const = 0;
 
 			/**
+			 * Computes the concentration of the current component corresponding to
+			 * the specified `quantity`.
+			 *
+			 * Notice that `quantity` might be different from quantity(), and
+			 * that this call does **not** modify the concentration of the
+			 * current component.
+			 *
+			 * @param quantity Quantity of the component
+			 * @return Computed concentration of the component
+			 */
+			virtual double concentration(double quantity) const = 0;
+
+			/**
 			 * Returns the current activity of the component.
 			 *
 			 * The theoretical definition of the activity might vary depending
@@ -137,21 +156,21 @@ namespace chemmisol {
 			 * @return Quantity of the chemical species in the chemical system
 			 */
 			double quantity() const {
-				return quantity(concentration());
+				return quantity(activity());
 			}
 
 			/**
 			 * Computes the quantity of the current component corresponding to
 			 * the specified `concentration`.
 			 *
-			 * Notice that `concentration` might be different from
-			 * concentration(), and that this call does **not** modify the
-			 * quantity of the current component.
+			 * Notice that `activity` might be different from activity(), and
+			 * that this call does **not** modify the quantity of the current
+			 * component.
 			 *
-			 * @param concentration Concentration of the component
+			 * @param activity Activity of the component
 			 * @return Computed quantity of the component
 			 */
-			virtual double quantity(double concentration) const = 0;
+			virtual double quantity(double activity) const = 0;
 
 			/**
 			 * Sets the activity of the chemical species. The quantity() and
@@ -227,10 +246,18 @@ namespace chemmisol {
 			}
 
 			/**
-			 * Returns the fixed quantity of this chemical species, ignoring the
-			 * provided concentration.
+			 * Returns the fixed concentration of this chemical species,
+			 * ignoring the provided quantity.
 			 */
-			double quantity(double /*concentration*/) const override {
+			double concentration(double /*quantity*/) const override {
+				return C;
+			}
+
+			/**
+			 * Returns the fixed quantity of this chemical species, ignoring the
+			 * provided activity.
+			 */
+			double quantity(double /*activity*/) const override {
 				return Q;
 			}
 
@@ -308,8 +335,12 @@ namespace chemmisol {
 				return C;
 			}
 
-			double quantity(double concentration) const override {
-				return concentration*V;
+			double concentration(double quantity) const override {
+				return quantity/V;
+			}
+
+			double quantity(double activity) const override {
+				return activity*V*(1*mol/l);
 			}
 
 			double activity(double concentration) const override {
@@ -495,12 +526,16 @@ namespace chemmisol {
 				return fraction;
 			}
 
-			double quantity(double fraction) const override {
-				return fraction * N;
+			double concentration(double quantity) const override {
+				return quantity/N;
 			}
 
-			double activity(double current_concentration) const override {
-				return current_concentration;
+			double quantity(double activity) const override {
+				return activity * N;
+			}
+
+			double activity(double concentration) const override {
+				return concentration;
 			}
 
 			void setActivity(double activity) override {
@@ -708,7 +743,7 @@ namespace chemmisol {
 			 * @see setTotalQuantity()
 			 */
 			void setTotalConcentration(double concentration) {
-				setTotalQuantity(species->quantity(concentration));
+				setTotalQuantity(species->quantity(species->activity(concentration)));
 			}
 
 			virtual ~ChemicalComponent() {

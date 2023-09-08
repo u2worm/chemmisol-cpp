@@ -115,14 +115,16 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4821b41c20051b481376168a44734223"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c559d5d10a3dbd8d62384abc80406d8"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a6c559d5d10a3dbd8d62384abc80406d8">concentration</a> () const =0</td></tr>
 <tr class="separator:a6c559d5d10a3dbd8d62384abc80406d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa46a0d2f9dd6f0200a720a438c7b4351"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1ChemicalSpecies.html#aa46a0d2f9dd6f0200a720a438c7b4351">concentration</a> (double <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a2c4d6aa257b530b6275c47539dc0d448">quantity</a>) const =0</td></tr>
+<tr class="separator:aa46a0d2f9dd6f0200a720a438c7b4351"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7228c8ef90006244112b8c7c1a2d3023"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a7228c8ef90006244112b8c7c1a2d3023">activity</a> () const</td></tr>
 <tr class="separator:a7228c8ef90006244112b8c7c1a2d3023"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebe577ab9055b9a2015c4599c16fd804"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1ChemicalSpecies.html#aebe577ab9055b9a2015c4599c16fd804">activity</a> (double <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a6c559d5d10a3dbd8d62384abc80406d8">concentration</a>) const =0</td></tr>
 <tr class="separator:aebe577ab9055b9a2015c4599c16fd804"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c4d6aa257b530b6275c47539dc0d448"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a2c4d6aa257b530b6275c47539dc0d448">quantity</a> () const</td></tr>
 <tr class="separator:a2c4d6aa257b530b6275c47539dc0d448"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1987de80805ff83b833c66ef71d054e"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1ChemicalSpecies.html#aa1987de80805ff83b833c66ef71d054e">quantity</a> (double <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a6c559d5d10a3dbd8d62384abc80406d8">concentration</a>) const =0</td></tr>
-<tr class="separator:aa1987de80805ff83b833c66ef71d054e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8adaa8dbaa1d32446465b591cc8de34f"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a8adaa8dbaa1d32446465b591cc8de34f">quantity</a> (double <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a7228c8ef90006244112b8c7c1a2d3023">activity</a>) const =0</td></tr>
+<tr class="separator:a8adaa8dbaa1d32446465b591cc8de34f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad604a230a6e85e6a9da76bf03700b673"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1ChemicalSpecies.html#ad604a230a6e85e6a9da76bf03700b673">setActivity</a> (double <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a7228c8ef90006244112b8c7c1a2d3023">activity</a>)=0</td></tr>
 <tr class="separator:ad604a230a6e85e6a9da76bf03700b673"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -132,7 +134,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a7307757c0bd432c7d5ef1e375d17604f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Describes a chemical species contained in a chemical system. A <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a2c4d6aa257b530b6275c47539dc0d448">quantity()</a> is assigned to each chemical species in a system, typically in mole, and a <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a6c559d5d10a3dbd8d62384abc80406d8">concentration()</a> and an <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a7228c8ef90006244112b8c7c1a2d3023">activity()</a> corresponding to this quantity is also defined, depending on the phase and type of the chemical species. </p>
+<div class="textblock"><p>Describes a chemical species contained in a chemical system. A <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a2c4d6aa257b530b6275c47539dc0d448">quantity()</a> is assigned to each chemical species in a system, typically in mole, and a <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a6c559d5d10a3dbd8d62384abc80406d8">concentration()</a> and an <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a7228c8ef90006244112b8c7c1a2d3023">activity()</a> corresponding to this quantity is also defined, depending on the phase and type of the chemical species.</p>
+<p>The methods <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#aebe577ab9055b9a2015c4599c16fd804">activity(concentration)</a> -&gt; <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a8adaa8dbaa1d32446465b591cc8de34f">quantity(activity)</a> -&gt; <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#aa46a0d2f9dd6f0200a720a438c7b4351">concentration(quantity)</a> form a triangle that allows to convert between concentrations, activities and quantities for each species of any phase. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a7307757c0bd432c7d5ef1e375d17604f" name="a7307757c0bd432c7d5ef1e375d17604f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7307757c0bd432c7d5ef1e375d17604f">&#9670;&#160;</a></span>ChemicalSpecies()</h2>
@@ -296,7 +299,7 @@ Protected Member Functions</h2></td></tr>
 </div>
 </div>
 <a id="a6c559d5d10a3dbd8d62384abc80406d8" name="a6c559d5d10a3dbd8d62384abc80406d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6c559d5d10a3dbd8d62384abc80406d8">&#9670;&#160;</a></span>concentration()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c559d5d10a3dbd8d62384abc80406d8">&#9670;&#160;</a></span>concentration() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -322,6 +325,43 @@ Protected Member Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Current concentration of the component </dd></dl>
 
 <p>Implemented in <a class="el" href="classchemmisol_1_1FixedChemicalSpecies.html#a9befe6c9da5f22ed8426b5eacad4a1e8">chemmisol::FixedChemicalSpecies</a>, <a class="el" href="classchemmisol_1_1AqueousSpecies.html#ab5a329627a1e49dee534b544b1358833">chemmisol::AqueousSpecies</a>, and <a class="el" href="classchemmisol_1_1MineralSpecies.html#a3fe63b7a0b5913b83bc915a2f3c945f8">chemmisol::MineralSpecies</a>.</p>
+
+</div>
+</div>
+<a id="aa46a0d2f9dd6f0200a720a438c7b4351" name="aa46a0d2f9dd6f0200a720a438c7b4351"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa46a0d2f9dd6f0200a720a438c7b4351">&#9670;&#160;</a></span>concentration() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual double chemmisol::ChemicalSpecies::concentration </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>quantity</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Computes the concentration of the current component corresponding to the specified <code>quantity</code>.</p>
+<p>Notice that <code>quantity</code> might be different from <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a2c4d6aa257b530b6275c47539dc0d448">quantity()</a>, and that this call does <b>not</b> modify the concentration of the current component.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">quantity</td><td>Quantity of the component </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Computed concentration of the component </dd></dl>
+
+<p>Implemented in <a class="el" href="classchemmisol_1_1AqueousSpecies.html#a2543e0c8d28ce0abdc7013d129141374">chemmisol::AqueousSpecies</a>, <a class="el" href="classchemmisol_1_1MineralSpecies.html#aa678ac72d58914d74c095d80bece29b7">chemmisol::MineralSpecies</a>, and <a class="el" href="classchemmisol_1_1FixedChemicalSpecies.html#aa87592c219de395cf88a2b08b33546a9">chemmisol::FixedChemicalSpecies</a>.</p>
 
 </div>
 </div>
@@ -387,7 +427,7 @@ Protected Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Computed activity of the component </dd></dl>
 
-<p>Implemented in <a class="el" href="classchemmisol_1_1AqueousSpecies.html#a24711046d1663c2cce05aef495458c78">chemmisol::AqueousSpecies</a>, <a class="el" href="classchemmisol_1_1MineralSpecies.html#aa836c2bacaca1d1dccc41e41b339979f">chemmisol::MineralSpecies</a>, and <a class="el" href="classchemmisol_1_1FixedChemicalSpecies.html#a6fa1fcd708ddb641c53066f9fc7ff99d">chemmisol::FixedChemicalSpecies</a>.</p>
+<p>Implemented in <a class="el" href="classchemmisol_1_1AqueousSpecies.html#a24711046d1663c2cce05aef495458c78">chemmisol::AqueousSpecies</a>, <a class="el" href="classchemmisol_1_1MineralSpecies.html#ad9d5c674118afb2a80db9a00ee1684af">chemmisol::MineralSpecies</a>, and <a class="el" href="classchemmisol_1_1FixedChemicalSpecies.html#a6fa1fcd708ddb641c53066f9fc7ff99d">chemmisol::FixedChemicalSpecies</a>.</p>
 
 </div>
 </div>
@@ -420,8 +460,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aa1987de80805ff83b833c66ef71d054e" name="aa1987de80805ff83b833c66ef71d054e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa1987de80805ff83b833c66ef71d054e">&#9670;&#160;</a></span>quantity() <span class="overload">[2/2]</span></h2>
+<a id="a8adaa8dbaa1d32446465b591cc8de34f" name="a8adaa8dbaa1d32446465b591cc8de34f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8adaa8dbaa1d32446465b591cc8de34f">&#9670;&#160;</a></span>quantity() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -433,7 +473,7 @@ Protected Member Functions</h2></td></tr>
           <td class="memname">virtual double chemmisol::ChemicalSpecies::quantity </td>
           <td>(</td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>concentration</em></td><td>)</td>
+          <td class="paramname"><em>activity</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -444,16 +484,16 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Computes the quantity of the current component corresponding to the specified <code>concentration</code>.</p>
-<p>Notice that <code>concentration</code> might be different from <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a6c559d5d10a3dbd8d62384abc80406d8">concentration()</a>, and that this call does <b>not</b> modify the quantity of the current component.</p>
+<p>Notice that <code>activity</code> might be different from <a class="el" href="classchemmisol_1_1ChemicalSpecies.html#a7228c8ef90006244112b8c7c1a2d3023">activity()</a>, and that this call does <b>not</b> modify the quantity of the current component.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">concentration</td><td>Concentration of the component </td></tr>
+    <tr><td class="paramname">activity</td><td>Activity of the component </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Computed quantity of the component </dd></dl>
 
-<p>Implemented in <a class="el" href="classchemmisol_1_1AqueousSpecies.html#a8e9b7b43e336124d689070c0ae037a64">chemmisol::AqueousSpecies</a>, <a class="el" href="classchemmisol_1_1MineralSpecies.html#a0aec9e4de5af78cc45d5682079f6541f">chemmisol::MineralSpecies</a>, and <a class="el" href="classchemmisol_1_1FixedChemicalSpecies.html#af271654bfc6c3f36589d9ae93abb723e">chemmisol::FixedChemicalSpecies</a>.</p>
+<p>Implemented in <a class="el" href="classchemmisol_1_1AqueousSpecies.html#a8379c9de29057de842d256218b34ae2e">chemmisol::AqueousSpecies</a>, <a class="el" href="classchemmisol_1_1MineralSpecies.html#a0fa9d23e8365f166722ed106459a7089">chemmisol::MineralSpecies</a>, and <a class="el" href="classchemmisol_1_1FixedChemicalSpecies.html#af271654bfc6c3f36589d9ae93abb723e">chemmisol::FixedChemicalSpecies</a>.</p>
 
 </div>
 </div>

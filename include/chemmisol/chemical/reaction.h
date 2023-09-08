@@ -206,7 +206,7 @@ namespace chemmisol {
 	};
 
 	/**
-	 * A chemical reaction is a process that transform _reactants_ into
+	 * A chemical reaction is a process that transforms _reactants_ into
 	 * _products_.
 	 *
 	 * A reaction can be fully described by:
@@ -233,12 +233,12 @@ namespace chemmisol {
 	 * defined according to the [law of mass
 	 * action](https://en.wikipedia.org/wiki/Law_of_mass_action) as:
 	 *
-	 *    ([C]^k * [D]^l) / ([A]^n * [B]^m) = K
+	 *     ([C]^k * [D]^l) / ([A]^n * [B]^m) = K
 	 *
 	 * where the bracket notation denotes the activity of each component **at
 	 * equilibrium**. By convention, the products form the numerator.
 	 *
-	 * This should follow the conventions used by the reference
+	 * This is compliant with the conventions used by the reference
 	 * [VMinteq](https://vminteq.com/) software, so that values used in the
 	 * VMinteq database can be reused as is in Chemmisol.
 	 *
@@ -256,6 +256,12 @@ namespace chemmisol {
 	 * reagent, and the name of each reaction is arbitraty, even if we recommend
 	 * to stick with the VMinteq convention to name reactions. The name of each
 	 * reaction must also be unique within a ChemicalSystem.
+	 *
+	 * Reactions must be specified so that all reagents are defined in the
+	 * chemical system as **components**, except **one reagent**, that
+	 * represents the **produced species** of the reaction. If those conditions
+	 * are not met, InvalidReaction exceptions might be thrown by the
+	 * ChemicalSystem.
 	 *
 	 * @par Examples
 	 *
@@ -278,7 +284,7 @@ namespace chemmisol {
 	 *         });
 	 *
 	 * @see ChemicalSystem::addComponent(const std::string &, Phase, double)
-	 * @see ChemicalSystem::addReaction(std::string, double, std::vector< Reagent >)
+	 * @see ChemicalSystem::addReaction(const std::string&, double, std::vector< Reagent >)
 	 */
 	class Reaction {
 		private:
@@ -307,9 +313,7 @@ namespace chemmisol {
 			 * @param reagents Defines reagents of the reaction and associates
 			 * a stoichiometric coefficient to each, where coefficients of
 			 * products are negative and coefficient of reactants are positive
-			 * by convention. Reagents are identified by a component name, that
-			 * should be a valid argument for the ChemicalSystem::getComponent()
-			 * method.
+			 * by convention. Reagents name should correspond to species name.
 			 */
 			Reaction(
 					const std::string& name, std::size_t index, double log_K,

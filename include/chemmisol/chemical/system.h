@@ -293,14 +293,14 @@ namespace chemmisol {
 			 * the Component is AQUEOUS by default.
 			 *
 			 * @param name Name of the component.
-			 * @param concentration Initial concentration.
+			 * @param total_concentration Initial total concentration.
 			 *
 			 * @par Examples
 			 * \ref basic_chemical_system/main.cpp
 			 */
 			void addComponent(
 					const std::string& name,
-					double concentration
+					double total_concentration
 					);
 
 			/**
@@ -311,8 +311,9 @@ namespace chemmisol {
 			 *
 			 * @param name Name of the component.
 			 * @param phase Chemical phase of the component.
-			 * @param concentration Initial concentration for AQUEOUS species,
-			 * initial molar fraction for MINERAL species.
+			 * @param total_concentration Initial total concentration for
+			 * AQUEOUS species, initial total molar fraction for MINERAL
+			 * species.
 			 *
 			 * @par Examples
 			 * \ref basic_chemical_system/main.cpp
@@ -320,7 +321,7 @@ namespace chemmisol {
 			void addComponent(
 					const std::string& name,
 					Phase phase,
-					double concentration
+					double total_concentration
 					);
 			/**
 			 * Adds a new AqueousComponent to the chemical system, assuming that
@@ -328,11 +329,11 @@ namespace chemmisol {
 			 * specified concentration.
 			 *
 			 * @param name Name of the component.
-			 * @param concentration Fixed concentration.
+			 * @param total_concentration Fixed total concentration.
 			 */
 			void fixComponent(
 					const std::string& name,
-					double concentration
+					double total_concentration
 					);
 
 			/**
@@ -345,13 +346,13 @@ namespace chemmisol {
 			 *
 			 * @param name Name of the component.
 			 * @param phase Chemical phase of the component.
-			 * @param concentration Fixed concentration for AQUEOUS species,
+			 * @param total_concentration Fixed concentration for AQUEOUS species,
 			 * fixed molar fraction for MINERAL species.
 			 */
 			void fixComponent(
 					const std::string& name,
 					Phase phase,
-					double concentration
+					double total_concentration
 					);
 
 			/**

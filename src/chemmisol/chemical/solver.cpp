@@ -22,6 +22,7 @@ namespace chemmisol {
 
 				std::vector<std::size_t> species_offsets(system.getSpecies().size());
 				for(const auto& component : system.getComponents()) {
+					CHEM_LOGV(6) << "C:" << component->getSpecies()->getName();
 					if(component->isFixed()) {
 						fixed_activities[component->getIndex()]
 							= component->getSpecies()->activity();

@@ -229,12 +229,12 @@ namespace chemmisol {
 	}
 
 	void ChemicalSystem::addComponent(
-			const std::string& name, Phase phase, double concentration) {
-		addComponent(name, phase, concentration, species_index++, component_index++);
+			const std::string& name, Phase phase, double total_concentration) {
+		addComponent(name, phase, total_concentration, species_index++, component_index++);
 		}
 
 	void ChemicalSystem::addComponent(
-			const std::string& name, Phase phase, double concentration,
+			const std::string& name, Phase phase, double total_concentration,
 			std::size_t species_index, std::size_t component_index) {
 		switch(phase) {
 			case AQUEOUS:
@@ -243,13 +243,13 @@ namespace chemmisol {
 					ChemicalSpecies* species = nullptr;
 					switch(phase) {
 						case AQUEOUS:
-							species = new AqueousSpecies(name, species_index, concentration);
+							species = new AqueousSpecies(name, species_index, total_concentration);
 							break;
 						case MINERAL:
 							species = new MineralSpecies(
 									name, species_index,
 									solid_concentration, specific_surface_area, site_concentration,
-									concentration);
+									total_concentration);
 							break;
 						default:
 							// Cannot occur
@@ -552,25 +552,32 @@ namespace chemmisol {
 			const std::vector<double>& activities,
 			std::vector<double>& result) const {
 		for(auto& component : getComponents()) {
-			if(component->isFixed())
+			if(component->isFixed()) {
 				result[component->getIndex()] = 0.0;
-			else
+			} else {
 				result[component->getIndex()]
-					= activities[component->getSpecies()->getIndex()];
+					= component->getSpecies()->quantity(
+							activities[component->getSpecies()->getIndex()]
+							);
+			}
 		}
 		for(auto& reaction : compiled_reactions) {
 			for(const ComponentReagent& reagent
 					: reaction.components) {
-				if(!reagent.component->isFixed())
+				if(!reagent.component->isFixed()) {
 					result[reagent.component->getIndex()] +=
 						reagent.coefficient / (-reaction.produced_species.coefficient)
-						* activities[reaction.produced_species.species->getIndex()];
+						* reaction.produced_species.species->quantity(
+								activities[reaction.produced_species.species->getIndex()]
+								);
+				}
 			}
 		}
 		for(auto& component : getComponents()) {
-			if(!component->isFixed())
+			if(!component->isFixed()) {
 				result[component->getIndex()]
 					-= component->getTotalQuantity();
+			}
 		}
 	}
 
