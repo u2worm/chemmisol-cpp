@@ -185,6 +185,7 @@ Public Member Functions</h2></td></tr>
 <div class="textblock"><p>A <a class="el" href="classchemmisol_1_1ChemicalSystem.html">ChemicalSystem</a> is defined as a set of Components that interact according to Reactions in order to produce <a class="el" href="classchemmisol_1_1ChemicalSpecies.html">ChemicalSpecies</a>.</p>
 <p>A <a class="el" href="classchemmisol_1_1ChemicalSystem.html">ChemicalSystem</a> can be used to define both a pure solution system (where all species are aqueous) as well as a mineral adsorption model.</p>
 <p>Once components and reactions are specified, the <a class="el" href="classchemmisol_1_1ChemicalSystem.html#a36ceca64f849c2b410657d3c203f0189">solveEquilibrium()</a> method can be used to run a solver and set the activities of all chemical species so that the <a href="https://en.wikipedia.org/wiki/Conservation_of_mass">law of conservation of mass</a> and <a href="https://en.wikipedia.org/wiki/Chemical_equilibrium">chemical equilibriums</a> are satisfied.</p>
+<p>All quantities must be specified using the chemmisol unit system, or directly in core units. See <a class="el" href="units_8h.html#aa27f20bce1edce5189882bc9f5f8b4f3" title="Defines available units.">UNITS()</a>.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classchemmisol_1_1ChemicalComponent.html">ChemicalComponent</a> </dd>
 <dd>
 <a class="el" href="classchemmisol_1_1ChemicalSpecies.html">ChemicalSpecies</a> </dd>
@@ -282,7 +283,7 @@ Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">solid_concentration</td><td>Quantity of mineral in suspension in the solution, usually expressed in g/l. </td></tr>
     <tr><td class="paramname">specific_surface_area</td><td>Surface of the solid in contact with the solution per unit of mass, usually expressed in m2/g. </td></tr>
-    <tr><td class="paramname">site_concentration</td><td>Quantity of sites per unit of surface in contact with the solution, usually expressed as sites/nm2. </td></tr>
+    <tr><td class="paramname">site_concentration</td><td>Quantity of sites per unit of surface in contact with the solution, usually expressed as entities/nm2. </td></tr>
     <tr><td class="paramname">surface_complex</td><td>Name of the free site surface complex (usually =SOH). </td></tr>
   </table>
   </dd>

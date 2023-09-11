@@ -182,6 +182,9 @@ namespace chemmisol {
 	 * equilibriums](https://en.wikipedia.org/wiki/Chemical_equilibrium) are
 	 * satisfied.
 	 *
+	 * All quantities must be specified using the chemmisol unit system, or
+	 * directly in core units. See #UNITS().
+	 *
 	 * @see ChemicalComponent
 	 * @see ChemicalSpecies
 	 * @see Reaction
@@ -324,7 +327,7 @@ namespace chemmisol {
 			 * @param specific_surface_area Surface of the solid in contact with
 			 * the solution per unit of mass, usually expressed in m2/g.
 			 * @param site_concentration Quantity of sites per unit of surface
-			 * in contact with the solution, usually expressed as sites/nm2.
+			 * in contact with the solution, usually expressed as entities/nm2.
 			 * @param surface_complex Name of the free site surface complex
 			 * (usually =SOH).
 			 */

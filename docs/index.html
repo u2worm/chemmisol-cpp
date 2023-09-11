@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>chemmisol: Main Page</title>
+<title>chemmisol: Chemmisol library</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -68,10 +68,56 @@ $(function() {
 </div>
 </div>
 
-<div class="header">
-  <div class="headertitle"><div class="title">chemmisol Documentation</div></div>
+<div><div class="header">
+  <div class="headertitle"><div class="title">Chemmisol library </div></div>
 </div><!--header-->
 <div class="contents">
+<div class="textblock"><h1><a class="anchor" id="Introduction"></a>
+Introduction</h1>
+<p>The purpose of the chemmisol library is to provide a performant and portable chemical equilibrium solver.</p>
+<p>It is widely inspired from <a href="https://vminteq.lwr.kth.se/">VMinteq</a>. Chemmisol adds a strong focus on dynamic equilibrium solving, that allows to define a system, solve its equilibrium, modify concentrations of species from the current equilibrium, solve the equilibrium again and so on.</p>
+<h1><a class="anchor" id="autotoc_md0"></a>
+About units</h1>
+<p>Chemmisol defines a unit system inspired from <a href="https://gama-platform.org/wiki/next/UnitsAndConstants">GAMA units</a>.</p>
+<p>However, even if very useful when directly using the library, the unit system might be problematic when attempting to embed the library in other systems or languages.</p>
+<p>In order to solve those issues, it is necessary to enforce the specification of the unit system used by chemmisol.</p>
+<p>Any quantity specified with <a class="el" href="units_8h.html#aa27f20bce1edce5189882bc9f5f8b4f3">units</a> is converted internally to a value that corresponds to the same value expressed in the <em>core unit</em> of the same category.</p>
+<p>In consequence, it is safe to use raw values without units in chemmisol, as long as it can be ensure that it's value corresponds to a value expressed in a core unit.</p>
+<p>Internally, core units corresponds to <a class="el" href="units_8h.html#aa27f20bce1edce5189882bc9f5f8b4f3" title="Defines available units.">UNITS()</a> with a value of 1.</p>
+<p>For example, the core unit for volumes is the liter <code>l</code>. This means that the value <code>1.5*l</code> is represented internally by <code>1.5f</code>, while <code>1.2*cm3</code> is represented as <code>1.2 * 10-3 = 1.2e-3f</code>. The interest of this system is that unit conversion is automatically performed by the library. For example, it is perfectly possible to write <code>double distance = 1*km + 15*m</code> without bothering about unit conversion (in this example, <code>distance</code> is automatically converted to the core unit <code>m</code> with a value of <code>1015.0</code>). Considering the definition of core units, specifying directly <code>double distance = 1015.0</code> is equivalent in chemmisol.</p>
+<p>A value defined with a chemmisol unit can still be expressed in an other unit, dividing the value by the desired unit. For example: </p><div class="fragment"><div class="line"><span class="keywordtype">double</span> distance = 1*km + 15*m;</div>
+<div class="line">std::cout &lt;&lt; <span class="stringliteral">&quot;Distance in km: &quot;</span> &lt;&lt; distance/km &lt;&lt; std::endl;</div>
+</div><!-- fragment --><p>The following table sums up all the core units used by chemmisol:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Use case   </th><th class="markdownTableHeadNone">Unit    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Distance   </td><td class="markdownTableBodyNone">m    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Surface   </td><td class="markdownTableBodyNone">m2    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Volume   </td><td class="markdownTableBodyNone">l    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Mass   </td><td class="markdownTableBodyNone">g    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Quantity   </td><td class="markdownTableBodyNone">mol   </td></tr>
+</table>
+<p>The core unit of derived units can be obtained with the same expression as the derived unit expressed in core units. For example, the core unit for molar concentrations is <code>mol/l</code>.</p>
+<dl class="section user"><dt>Example</dt><dd></dd></dl>
+<div class="fragment"><div class="line">ChemicalSystem chemical_system {</div>
+<div class="line">  2.5 * g/l,</div>
+<div class="line">  24.2 * m2/g,</div>
+<div class="line">  0.8 * entities/nm2,</div>
+<div class="line">  <span class="stringliteral">&quot;=SOH&quot;</span></div>
+<div class="line">};</div>
+</div><!-- fragment --><p> is equivalent to </p><div class="fragment"><div class="line">*ChemicalSystem chemical_system {</div>
+<div class="line">    2.5,</div>
+<div class="line">    24.2,</div>
+<div class="line">    0.8 / 6.02214076e23 * 1e9, <span class="comment">// Manual conversion from entities/nm2 to mol/m2</span></div>
+<div class="line">    <span class="stringliteral">&quot;=SOH&quot;</span></div>
+<div class="line">  };</div>
+</div><!-- fragment --><dl class="section warning"><dt>Warning</dt><dd>Even if the unit system is inspired from <a href="https://gama-platform.org/wiki/next/UnitsAndConstants">GAMA units</a>, it is not guaranteed that the same core units are used. In consequence, a GAMA raw value cannot be used directly in chemmisol, and must be converted to chemmisol core units using the unit system of GAMA.   </dd></dl>
+</div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

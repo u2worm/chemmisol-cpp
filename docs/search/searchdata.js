@@ -8,7 +8,8 @@ var indexSectionsWithContent =
   5: "cinpsv",
   6: "amvx",
   7: "cp",
-  8: "cu"
+  8: "cu",
+  9: "cl"
 };
 
 var indexSectionNames =
@@ -21,7 +22,8 @@ var indexSectionNames =
   5: "variables",
   6: "typedefs",
   7: "enums",
-  8: "defines"
+  8: "defines",
+  9: "pages"
 };
 
 var indexSectionLabels =
@@ -34,6 +36,7 @@ var indexSectionLabels =
   5: "Variables",
   6: "Typedefs",
   7: "Enumerations",
-  8: "Macros"
+  8: "Macros",
+  9: "Pages"
 };
 
