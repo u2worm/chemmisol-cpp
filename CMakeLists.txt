@@ -84,6 +84,7 @@ export(EXPORT ChemmisolTargets
 	FILE "${CMAKE_CURRENT_BINARY_DIR}/ChemmisolTargets.cmake"
 	NAMESPACE chemmisol::
 	)
+add_library(chemmisol::chemmisol ALIAS chemmisol)
 configure_file(cmake/ChemmisolConfig.cmake
 	"${CMAKE_CURRENT_BINARY_DIR}/ChemmisolConfig.cmake"
 	COPYONLY
