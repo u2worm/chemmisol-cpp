@@ -291,7 +291,6 @@ TEST_F(BasicAqueousChemicalSystemTest, mass_conservation_law) {
 	// total quantity of each component is always preserved according to the
 	// massConservationLaw() implementation.
 	for(std::size_t i = 0; i < 100; i++) {
-		std::cout << i << std::endl;
 		{
 			// OH- random extent
 			std::uniform_real_distribution<double> random_extent(
