@@ -8,16 +8,29 @@
 
 namespace chemmisol {
 
+	InvalidMineralSpeciesWithUndefinedSitesCount::
+		InvalidMineralSpeciesWithUndefinedSitesCount(
+					const ChemicalSystem* chemical_system,
+					const std::string& name
+					)
+		: InvalidSpecies(chemical_system, name, MINERAL) {
+			message += "Impossible to add the mineral species " + name + " to the "
+				+ "current chemical system with a sites quantity of 0. Make sure to "
+				+ "properly configure the ChemicalSystem with the appropriate "
+				+ "constructor.";
+		}
+
 	ChemicalSystem::ChemicalSystem(
 					double solid_concentration,
 					double specific_surface_area,
 					double site_concentration,
-					const std::string& surface_component
+					const std::string& surface_complex
 					) :
 		solid_concentration(solid_concentration),
 		specific_surface_area(specific_surface_area),
-		site_concentration(site_concentration) {
-			addComponent(surface_component, MINERAL, 1);
+		site_concentration(site_concentration),
+		surface_complex(surface_complex) {
+			addComponent(surface_complex, MINERAL, 1);
 		}
 
 	ChemicalSystem::ChemicalSystem(const ChemicalSystem& other) :
@@ -31,7 +44,8 @@ namespace chemmisol {
 				max_iteration(other.max_iteration),
 				solid_concentration(other.solid_concentration),
 				specific_surface_area(other.specific_surface_area),
-				site_concentration(other.site_concentration) {
+				site_concentration(other.site_concentration),
+				surface_complex(other.surface_complex){
 					for(const auto& component : other.getComponents()) {
 						if(component->isFixed()) {
 							this->fixComponent(
@@ -176,6 +190,8 @@ namespace chemmisol {
 						);
 				break;
 			case MINERAL:
+				if(sitesQuantity() == 0.0)
+					throw InvalidMineralSpeciesWithUndefinedSitesCount(this, name);
 				fixed_species = new FixedMineralSpecies(
 						name, species_index,
 						solid_concentration, specific_surface_area,
@@ -246,6 +262,8 @@ namespace chemmisol {
 							species = new AqueousSpecies(name, species_index, total_concentration);
 							break;
 						case MINERAL:
+							if(sitesQuantity() == 0.0)
+								throw InvalidMineralSpeciesWithUndefinedSitesCount(this, name);
 							species = new MineralSpecies(
 									name, species_index,
 									solid_concentration, specific_surface_area, site_concentration,
@@ -286,6 +304,8 @@ namespace chemmisol {
 				species = new AqueousSpecies(name, species_index, concentration);
 				break;
 			case MINERAL:
+				if(sitesQuantity() == 0.0)
+					throw InvalidMineralSpeciesWithUndefinedSitesCount(this, name);
 				species = new MineralSpecies(
 						name, species_index,
 						solid_concentration, specific_surface_area, site_concentration,

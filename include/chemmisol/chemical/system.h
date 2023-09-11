@@ -78,6 +78,97 @@ namespace chemmisol {
 	};
 
 	/**
+	 * Exception thrown when an invalid species is added to a chemical system.
+	 */
+	class InvalidSpecies : public std::exception {
+		private:
+			/**
+			 * Reference to system to which an invalid species was added.
+			 */
+			const ChemicalSystem* chemical_system;
+			/**
+			 * Name of the invalid species.
+			 */
+			const std::string& name;
+			/**
+			 * Phase of the invalid species.
+			 */
+			Phase phase;
+			
+		protected:
+			/**
+			 * Defines an InvalidSpecies exception.
+			 *
+			 * @param chemical_system Chemical system to which an invalid
+			 * species was added.
+			 * @param name Name of the invalid species.
+			 * @param phase Phase of the invalid species.
+			 */
+			InvalidSpecies(
+					const ChemicalSystem* chemical_system,
+					const std::string& name,
+					Phase phase) :
+				chemical_system(chemical_system),
+				name(name), phase(phase) {
+				}
+
+		public:
+			/**
+			 * Returns a reference to the system to which an invalid component
+			 * was added.
+			 */
+			const ChemicalSystem& getChemicalSystem() const {
+				return *chemical_system;
+			}
+
+			/**
+			 * Name of the invalid species.
+			 */
+			const std::string& getName() const {
+				return name;
+			}
+
+			/**
+			 * Phase of the invalid species.
+			 */
+			Phase getPhase() const {
+				return phase;
+			}
+	};
+
+	/**
+	 * Exception thrown when trying to add a mineral species to a chemical
+	 * system where the mineral sites count is not properly defined.
+	 */
+	class InvalidMineralSpeciesWithUndefinedSitesCount : public InvalidSpecies {
+		private:
+			std::string message;
+
+		public:
+			/**
+			 * Defines an InvalidMineralSpeciesWithUndefinedSitesCount
+			 * exception.
+			 *
+			 * @param chemical_system chemical system with an invalid sites
+			 * count.
+			 * @param name Name of the mineral species that cannot be added to
+			 * the system.
+			 */
+			InvalidMineralSpeciesWithUndefinedSitesCount(
+					const ChemicalSystem* chemical_system,
+					const std::string& name
+					);
+
+			/**
+			 * Returns a message that contains suggestions about how to solve
+			 * the issue.
+			 */
+			const char* what() const noexcept override {
+				return message.c_str();
+			}
+	};
+
+	/**
 	 * A ChemicalSystem is defined as a set of Components that interact
 	 * according to Reactions in order to produce ChemicalSpecies.
 	 *
@@ -149,6 +240,7 @@ namespace chemmisol {
 			double solid_concentration;
 			double specific_surface_area;
 			double site_concentration;
+			std::string surface_complex;
 
 			void addComponent(
 					const std::string& name,
@@ -223,12 +315,9 @@ namespace chemmisol {
 			 * MINERAL species. See MineralComponent for more detailed
 			 * information about how mineral parameters are defined and used.
 			 *
-			 * The surface component corresponds to the "free sites" species. It
-			 * is automatically added as MineralComponent with a molar fraction
-			 * of 1, so that all sites are free at the initial state.
-			 *
-			 * Chemmisol currently does not support the initialization of
-			 * surface components with a non null initial molar fraction.
+			 * The surface complex corresponds to the "free sites" species. It
+			 * is automatically added as MineralComponent with a total molar
+			 * fraction of 1.
 			 *
 			 * @param solid_concentration Quantity of mineral in suspension in
 			 * the solution, usually expressed in g/l.
@@ -236,7 +325,7 @@ namespace chemmisol {
 			 * the solution per unit of mass, usually expressed in m2/g.
 			 * @param site_concentration Quantity of sites per unit of surface
 			 * in contact with the solution, usually expressed as sites/nm2.
-			 * @param surface_component Name of the free site surface component
+			 * @param surface_complex Name of the free site surface complex
 			 * (usually =SOH).
 			 */
 			// TODO: possibility to initialize surface components with a non
@@ -245,7 +334,7 @@ namespace chemmisol {
 					double solid_concentration,
 					double specific_surface_area,
 					double site_concentration,
-					const std::string& surface_component
+					const std::string& surface_complex
 					);
 
 			/**
@@ -317,6 +406,11 @@ namespace chemmisol {
 			 *
 			 * @par Examples
 			 * \ref basic_chemical_system/main.cpp
+			 *
+			 * @throws InvalidMineralSpeciesWithUndefinedSitesCount if the phase
+			 * is MINERAL but the sites quantity of the system is null. See the
+			 * ChemicalSystem(double, double, double, const std::string&) to
+			 * ensure the sites quantity is properly defined.
 			 */
 			void addComponent(
 					const std::string& name,
@@ -348,6 +442,11 @@ namespace chemmisol {
 			 * @param phase Chemical phase of the component.
 			 * @param total_concentration Fixed concentration for AQUEOUS species,
 			 * fixed molar fraction for MINERAL species.
+			 *
+			 * @throws InvalidMineralSpeciesWithUndefinedSitesCount if the phase
+			 * is MINERAL but the sites quantity of the system is null. See the
+			 * ChemicalSystem(double, double, double, const std::string&) to
+			 * ensure the sites quantity is properly defined.
 			 */
 			void fixComponent(
 					const std::string& name,
@@ -417,6 +516,32 @@ namespace chemmisol {
 			 */
 			double getPH() const {
 				return getPH("H+");
+			}
+
+			/**
+			 * Returns the quantity of mineral sites currently defined in the
+			 * system. Might be null if the system is aqueous.
+			 *
+			 * @returns quantity of sites in mol
+			 */
+			double sitesQuantity() const {
+				return MineralSpecies::sites_quantity(
+						solid_concentration, specific_surface_area, site_concentration
+						);
+			}
+
+			/**
+			 * Returns the name of the main surface complex defined if the
+			 * system was configured to be a mineral system with the constructor
+			 * ChemicalSystem(double, double, double, const std::string&).
+			 *
+			 * In this case, the mineral component can be retrieved using
+			 * getComponent() and getSpecies().
+			 *
+			 * Otherwise, this method returns an empty string.
+			 */
+			const std::string& getSurfaceComplex() const {
+				return surface_complex;
 			}
 
 			/**

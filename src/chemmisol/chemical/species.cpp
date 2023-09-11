@@ -18,7 +18,7 @@ namespace chemmisol {
 
 	const double AqueousSpecies::V = 1*l;
 
-	double MineralSpecies::sites_count(
+	double MineralSpecies::sites_quantity(
 			double solid_concentration,
 			double specific_surface_area,
 			double site_concentration) {

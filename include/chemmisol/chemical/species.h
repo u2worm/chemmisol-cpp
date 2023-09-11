@@ -447,8 +447,20 @@ namespace chemmisol {
 
 		public:
 			/**
-			 * Computes the total sites count that corresponds to the provided
-			 * parameters.
+			 * Computes the total quantity of mineral sites that corresponds to
+			 * the provided parameters.
+			 *
+			 * The chemmisol unit system should be used to ensure unit
+			 * consistency.
+			 *
+			 * @par Example
+			 * ```cpp
+			 * double quantity = MineralSpecies::sites_quantity(
+			 * 	2.5 * g/l,
+			 * 	24.2 * m2/g,
+			 * 	0.8 * entities/nm2,
+			 * );
+			 * ```
 			 *
 			 * @param solid_concentration Quantity of mineral in suspension in
 			 * the solution, usually expressed in g/l.
@@ -456,8 +468,9 @@ namespace chemmisol {
 			 * the solution per unit of mass, usually expressed in m2/g.
 			 * @param site_concentration Quantity of sites per unit of surface
 			 * in contact with the solution, usually expressed as sites/nm2.
+			 * @return quantity of sites (mol)
 			 */
-			static double sites_count(
+			static double sites_quantity(
 					double solid_concentration,
 					double specific_surface_area,
 					double site_concentration);
@@ -511,7 +524,7 @@ namespace chemmisol {
 					double site_concentration,
 					double fraction)
 				: ChemicalSpecies(name, index), fraction(fraction),
-				N(sites_count(solid_concentration, specific_surface_area, site_concentration)) {
+				N(sites_quantity(solid_concentration, specific_surface_area, site_concentration)) {
 				}
 			
 			Phase getPhase() const override {
@@ -573,7 +586,7 @@ namespace chemmisol {
 					double F
 					)
 				: FixedChemicalSpecies(name, index, F, F,
-						MineralSpecies::sites_count(
+						MineralSpecies::sites_quantity(
 							solid_concentration, specific_surface_area,
 							site_concentration
 							)*F) {

@@ -1,6 +1,7 @@
 #include "chemmisol/tests/chemical/system/basic.h"
 #include "chemmisol/tests/chemical/system/utils.h"
 #include <random>
+#include <regex>
 
 TEST_F(BasicAqueousChemicalSystemTest, get_components) {
 	auto& components = chemical_system.getComponents();
@@ -332,6 +333,173 @@ TEST_F(BasicAqueousChemicalSystemTest, mass_conservation_law) {
 		ASSERT_FLOAT_EQ(
 				total_components[chemical_system.getComponent("Cl-").getIndex()],
 				cl.quantity() + nacl.quantity() - total_cl);
+	}
+}
+
+TEST_F(BasicMineralChemicalSystemTest, aqueous_and_mineral_species) {
+	const std::regex surface_complex_regex("=S.*");
+
+	ASSERT_EQ(chemical_system.getSurfaceComplex(), "=SOH");
+	ASSERT_THAT(chemical_system.getComponents(), UnorderedElementsAre(
+				Pointee(Property(&ChemicalComponent::getSpecies,
+						Pointee(Property(&ChemicalSpecies::getName, "H+"))
+						)),
+				Pointee(Property(&ChemicalComponent::getSpecies,
+						Pointee(Property(&ChemicalSpecies::getName, "H2O"))
+						)),
+				Pointee(Property(&ChemicalComponent::getSpecies,
+						Pointee(Property(&ChemicalSpecies::getName, "=SOH"))
+						))
+				));
+	// Test fixed components handling
+	for(auto& component : chemical_system.getComponents()) {
+		if(component->isFixed()) {
+			if (std::regex_match(component->getSpecies()->getName(), surface_complex_regex)) {
+				ASSERT_THAT(
+						component->getSpecies(),
+						WhenDynamicCastTo<MineralSpecies*>(Not(IsNull())));
+			} else {
+				ASSERT_THAT(
+						component.get()->getSpecies(),
+						WhenDynamicCastTo<FixedAqueousSpecies*>(Not(IsNull()))
+						);
+			}
+		} else {
+			if (std::regex_match(component->getSpecies()->getName(), surface_complex_regex)) {
+				ASSERT_THAT(
+						component.get()->getSpecies(),
+						WhenDynamicCastTo<MineralSpecies*>(Not(IsNull()))
+						);
+			} else {
+				ASSERT_THAT(
+						component.get()->getSpecies(),
+						WhenDynamicCastTo<AqueousSpecies*>(Not(IsNull()))
+						);
+			}
+		}
+	}
+
+	ASSERT_THAT(chemical_system.getSpecies(), UnorderedElementsAre(
+				Pointee(Property(&ChemicalSpecies::getName, "H2O")),
+				Pointee(Property(&ChemicalSpecies::getName, "H+")),
+				Pointee(Property(&ChemicalSpecies::getName, "OH-")),
+				Pointee(Property(&ChemicalSpecies::getName, "=SOH")),
+				Pointee(Property(&ChemicalSpecies::getName, "=SOH2"))
+				));
+	for(auto& species : chemical_system.getSpecies()) {
+		if(species->getName() == "H2O") {
+			ASSERT_THAT(species.get(), WhenDynamicCastTo<Solvent*>(Not(IsNull())));
+		} else if (std::regex_match(species->getName(), surface_complex_regex)) {
+			ASSERT_THAT(species.get(), AnyOf(
+						WhenDynamicCastTo<MineralSpecies*>(Not(IsNull())),
+						WhenDynamicCastTo<FixedMineralSpecies*>(Not(IsNull()))
+						));
+		} else {
+			ASSERT_THAT(species.get(), AnyOf(
+					WhenDynamicCastTo<AqueousSpecies*>(Not(IsNull())),
+					WhenDynamicCastTo<FixedAqueousSpecies*>(Not(IsNull()))
+					));
+		}
+	}
+}
+
+TEST_F(BasicMineralChemicalSystemTest, initial_mineral_concentrations) {
+	ASSERT_FLOAT_EQ(
+			chemical_system.sitesQuantity(), 
+			2.5 * g/l * 24.2 * m2/g * 0.8 * entities/nm2
+			);
+	ASSERT_FLOAT_EQ(chemical_system.getSpecies("=SOH2").concentration(), 0);
+
+	ASSERT_FLOAT_EQ(chemical_system.getSpecies("=SOH").concentration(), 1.0);
+	ASSERT_FLOAT_EQ(chemical_system.getSpecies("=SOH").activity(), 1.0);
+	ASSERT_FLOAT_EQ(
+			chemical_system.getSpecies("=SOH").quantity(),
+			chemical_system.sitesQuantity()	
+			);
+}
+
+TEST_F(BasicMineralChemicalSystemTest, proceed_mineral_reaction) {
+	const double init_quantity = chemical_system.getSpecies("=SOH").quantity();
+
+	chemical_system.proceed(chemical_system.getReaction("=SOH2"), -1e-6);
+
+	ASSERT_FLOAT_EQ(
+			chemical_system.getSpecies("=SOH").quantity(),
+			init_quantity - 1e-6
+			);
+	ASSERT_FLOAT_EQ(
+			chemical_system.getSpecies("=SOH").concentration(),
+			(init_quantity - 1e-6) / init_quantity
+			);
+	ASSERT_FLOAT_EQ(
+			chemical_system.getSpecies("=SOH").activity(),
+			chemical_system.getSpecies("=SOH").concentration()
+			);
+
+	ASSERT_FLOAT_EQ(
+			chemical_system.getSpecies("=SOH2").quantity(),
+			1e-6
+			);
+	ASSERT_FLOAT_EQ(
+			chemical_system.getSpecies("=SOH2").concentration(),
+			1e-6 / init_quantity
+			);
+	ASSERT_FLOAT_EQ(
+			chemical_system.getSpecies("=SOH2").activity(),
+			chemical_system.getSpecies("=SOH2").concentration()
+			);
+}
+
+class BadMineralChemicalSystemTest : public Test {
+	protected:
+		ChemicalSystem chemical_system;
+
+		void SetUp() override {
+			chemical_system.addReaction("OH-", -13.997, {
+					{"OH-", -1},
+					{"H+", -1},
+					{"H2O", 1}
+					});
+			chemical_system.addSolvent("H2O");
+			chemical_system.fixPH(7);
+
+			chemical_system.addReaction("=SOH2", 3.46, {
+					{"=SOH2", MINERAL, -1},
+					{"=SOH", MINERAL, 1}, // AQUEOUS specified here only for test
+										  // purpose, since it should be the default
+										  // phase
+					{"H+", AQUEOUS, 1}
+					});
+		}
+};
+
+TEST_F(BadMineralChemicalSystemTest, add_component) {
+	EXPECT_THROW(
+			chemical_system.addComponent("=SOH", MINERAL, 1.0),
+			InvalidMineralSpeciesWithUndefinedSitesCount
+			);
+	try {
+			chemical_system.addComponent("=SOH", MINERAL, 1.0);
+	} catch(const InvalidMineralSpeciesWithUndefinedSitesCount& e) {
+		CHEM_LOGV(6) << "Exception: " << e.what();
+		ASSERT_THAT(e.getChemicalSystem(), Ref(chemical_system));
+		ASSERT_EQ(e.getName(), "=SOH");
+		ASSERT_EQ(e.getPhase(), MINERAL);
+	}
+}
+
+TEST_F(BadMineralChemicalSystemTest, fix_component) {
+	EXPECT_THROW(
+			chemical_system.fixComponent("=SOH", MINERAL, 1.0),
+			InvalidMineralSpeciesWithUndefinedSitesCount
+			);
+	try {
+			chemical_system.fixComponent("=SOH", MINERAL, 1.0);
+	} catch(const InvalidMineralSpeciesWithUndefinedSitesCount& e) {
+		CHEM_LOGV(6) << "Exception: " << e.what();
+		ASSERT_THAT(e.getChemicalSystem(), Ref(chemical_system));
+		ASSERT_EQ(e.getName(), "=SOH");
+		ASSERT_EQ(e.getPhase(), MINERAL);
 	}
 }
 
