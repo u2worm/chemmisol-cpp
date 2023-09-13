@@ -338,7 +338,6 @@ TEST_F(BasicAqueousChemicalSystemTest, mass_conservation_law) {
 TEST_F(BasicMineralChemicalSystemTest, aqueous_and_mineral_species) {
 	const std::regex surface_complex_regex("=S.*");
 
-	ASSERT_EQ(chemical_system.getSurfaceComplex(), "=SOH");
 	ASSERT_THAT(chemical_system.getComponents(), UnorderedElementsAre(
 				Pointee(Property(&ChemicalComponent::getSpecies,
 						Pointee(Property(&ChemicalSpecies::getName, "H+"))

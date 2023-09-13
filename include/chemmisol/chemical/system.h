@@ -240,10 +240,9 @@ namespace chemmisol {
 			std::size_t max_iteration = 200;
 
 			// Adsorption model parameters
-			double solid_concentration;
-			double specific_surface_area;
-			double site_concentration;
-			std::string surface_complex;
+			double solid_concentration = 0;
+			double specific_surface_area = 0;
+			double site_concentration = 0;
 
 			void addComponent(
 					const std::string& name,
@@ -328,16 +327,13 @@ namespace chemmisol {
 			 * the solution per unit of mass, usually expressed in m2/g.
 			 * @param site_concentration Quantity of sites per unit of surface
 			 * in contact with the solution, usually expressed as entities/nm2.
-			 * @param surface_complex Name of the free site surface complex
-			 * (usually =SOH).
 			 */
 			// TODO: possibility to initialize surface components with a non
 			// null initial molar fraction.
 			ChemicalSystem(
 					double solid_concentration,
 					double specific_surface_area,
-					double site_concentration,
-					const std::string& surface_complex
+					double site_concentration
 					);
 
 			/**
@@ -531,20 +527,6 @@ namespace chemmisol {
 				return MineralSpecies::sites_quantity(
 						solid_concentration, specific_surface_area, site_concentration
 						);
-			}
-
-			/**
-			 * Returns the name of the main surface complex defined if the
-			 * system was configured to be a mineral system with the constructor
-			 * ChemicalSystem(double, double, double, const std::string&).
-			 *
-			 * In this case, the mineral component can be retrieved using
-			 * getComponent() and getSpecies().
-			 *
-			 * Otherwise, this method returns an empty string.
-			 */
-			const std::string& getSurfaceComplex() const {
-				return surface_complex;
 			}
 
 			/**

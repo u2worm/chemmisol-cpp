@@ -54,8 +54,7 @@ class BasicMineralChemicalSystemTest : public Test {
 		ChemicalSystem chemical_system {
 			2.5 * g/l,
 			24.2 * m2/g,
-			0.8 * entities/nm2,
-			"=SOH"
+			0.8 * entities/nm2
 		};
 
 		void SetUp() override {
@@ -71,6 +70,7 @@ class BasicMineralChemicalSystemTest : public Test {
 										  // phase
 					{"H+", AQUEOUS, 1}
 					});
+			chemical_system.addComponent("=SOH", MINERAL, 1.0);
 			chemical_system.addSolvent("H2O");
 
 			chemical_system.fixPH(7);

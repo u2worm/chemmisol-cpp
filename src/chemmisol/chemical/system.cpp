@@ -23,14 +23,11 @@ namespace chemmisol {
 	ChemicalSystem::ChemicalSystem(
 					double solid_concentration,
 					double specific_surface_area,
-					double site_concentration,
-					const std::string& surface_complex
+					double site_concentration
 					) :
 		solid_concentration(solid_concentration),
 		specific_surface_area(specific_surface_area),
-		site_concentration(site_concentration),
-		surface_complex(surface_complex) {
-			addComponent(surface_complex, MINERAL, 1);
+		site_concentration(site_concentration) {
 		}
 
 	ChemicalSystem::ChemicalSystem(const ChemicalSystem& other) :
@@ -44,8 +41,7 @@ namespace chemmisol {
 				max_iteration(other.max_iteration),
 				solid_concentration(other.solid_concentration),
 				specific_surface_area(other.specific_surface_area),
-				site_concentration(other.site_concentration),
-				surface_complex(other.surface_complex){
+				site_concentration(other.site_concentration) {
 					for(const auto& component : other.getComponents()) {
 						if(component->isFixed()) {
 							this->fixComponent(
