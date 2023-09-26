@@ -82,7 +82,7 @@
  *ChemicalSystem chemical_system {
  * 	2.5,
  * 	24.2,
- * 	0.8 / 6.02214076e23 * 1e9, // Manual conversion from entities/nm2 to mol/m2
+ * 	0.8 / 6.02214076e23 * 1e18, // Manual conversion from entities/nm2 to mol/m2
  * 	"=SOH"
  * };
  * ```
