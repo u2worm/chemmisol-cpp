@@ -6,6 +6,7 @@
 #include <initializer_list>
 #include <iostream>
 #include <cmath>
+#include <complex>
 #include "../logging.h"
 
 /**
@@ -113,10 +114,19 @@ namespace chemmisol {
 	 * Computes the euclidean norm of the vector.
 	 */
 	template<typename T, std::size_t N>
-		T norm(const X<T, N>& x) {
+		double norm(const X<T, N>& x) {
 			T a = 0;
 			for(auto& v : x) {
-				a+=std::pow(v, T(2));
+				a+=std::pow(v, 2);
+			}
+			return std::sqrt(a);
+		}
+
+	template<typename T, std::size_t N>
+		double norm(const X<std::complex<T>, N>& x) {
+			T a = 0;
+			for(auto& v : x) {
+				a+=std::pow(std::norm(v), 2);
 			}
 			return std::sqrt(a);
 		}
@@ -131,7 +141,6 @@ namespace chemmisol {
 				abs_x[i] = std::abs(x[i]);
 			return abs_x;
 		}
-
 
 	/**
 	 * Implements the augment operation used by the [Gaussian elimination

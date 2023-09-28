@@ -62,8 +62,10 @@ namespace chemmisol {
 			std::function<X(const X&)> f;
 			std::function<M(const X&)> df;
 
-			X solve_eps(const X& x, const X& f_x, float epsilon) const;
-			X solve_iter(const X& x, const X& f_x, std::size_t n) const;
+			X solve_eps(const X& x, const X& f_x, float epsilon,
+					X x_min, X f_x_min, double n_f_x_min) const;
+			X solve_iter(const X& x, const X& f_x, std::size_t n,
+					X x_min, X f_x_min, double n_f_x_min) const;
 
 			public:
 			/**
@@ -107,17 +109,20 @@ namespace chemmisol {
 
 	template<typename X, typename M, X (&G)(const X&)>
 		X Newton<X, M, G>::solve_eps(float epsilon) const {
-			return solve_eps(x0, f(x0), epsilon);
+			auto f_x0 = f(x0);
+			return solve_eps(x0, f(x0), epsilon, x0, f_x0, norm(f_x0));
 		}
 
 	template<typename X, typename M, X (&G)(const X&)>
 		X Newton<X, M, G>::solve_iter(std::size_t n) const {
-			return solve_iter(x0, f(x0), n);
+			auto f_x0 = f(x0);
+			return solve_iter(x0, f_x0, n, x0, f_x0, norm(f_x0));
 		}
 
 
 	template<typename X, typename M, X (&G)(const X&)>
-		X Newton<X, M, G>::solve_eps(const X& x, const X& f_x, float epsilon) const {
+		X Newton<X, M, G>::solve_eps(const X& x, const X& f_x, float epsilon,
+				X x_min, X f_x_min, double n_f_x_min) const {
 			CHEM_LOG(TRACE) << "[NEWTON] Current X: " << x;
 			CHEM_LOG(TRACE) << "[NEWTON] Current F(X): " << f_x;
 			CHEM_LOG(TRACE) << "[NEWTON] (e=" << epsilon << ") Epsilon: " << norm(f_x);
@@ -125,11 +130,25 @@ namespace chemmisol {
 				return x;
 			X _x = gauss::solve(df(x), -f_x);
 			X x1 = G(_x + x);
-			return solve_eps(x1, f(x1), epsilon);
+			auto n_f_x = norm(f_x);
+			if (n_f_x < n_f_x_min)
+				return solve_eps(x1, f(x1), epsilon, x1, f_x, n_f_x);
+			if (n_f_x == n_f_x_min) {
+				// Maybe we are in a cycle
+				if(x_min == x1) {
+					// We are in a cycle, break the algorithm
+					CHEM_LOG(TRACE) << "[NEWTON] Cycle detected, returns current optimum (X: " << x_min
+						<< ", f(X): " << f_x_min << ".";
+					return x_min;
+				}
+			}
+			return solve_eps(x1, f(x1), epsilon, x_min, f_x_min, n_f_x_min);
 		}
 
 	template<typename X, typename M, X (&G)(const X&)>
-		X Newton<X, M, G>::solve_iter(const X& x, const X& f_x, std::size_t n) const {
+		X Newton<X, M, G>::solve_iter(
+				const X& x, const X& f_x, std::size_t n,
+				X x_min, X f_x_min, double n_f_x_min) const {
 			CHEM_LOG(TRACE) << "[NEWTON] Current X: " << x;
 			CHEM_LOG(TRACE) << "[NEWTON] Current F(X): " << f_x;
 			CHEM_LOG(TRACE) << "[NEWTON] (n=" << n << ") Epsilon: " << norm(f_x);
@@ -137,7 +156,20 @@ namespace chemmisol {
 				return x;
 			X _x = gauss::solve(df(x), -f_x);
 			X x1 = G(_x + x);
-			return solve_iter(x1, f(x1), n-1);
+			auto n_f_x = norm(f_x);
+			if (n_f_x < n_f_x_min)
+				return solve_iter(x1, f(x1), n-1, x1, f_x, n_f_x);
+			if (n_f_x == n_f_x_min) {
+				// Maybe we are in a cycle
+				if(x_min == x1) {
+					// We are in a cycle, break the algorithm
+					CHEM_LOG(TRACE) << "[NEWTON] Cycle detected at n=" << n
+						<< ", returns current optimum (X: " << x_min
+						<< ", f(X): " << f_x_min << ".";
+					return x_min;
+				}
+			}
+			return solve_iter(x1, f(x1), n-1, x_min, f_x_min, n_f_x_min);
 		}
 
 	/**

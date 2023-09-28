@@ -48,7 +48,7 @@ const std::complex<double> HomotopyTest::b = random_complex();
 TEST_F(HomotopyTest, test) {
 	Homotopy<X, M> homotopy(roots(), f, df, g, dg);
 
-	std::list<std::complex<double>> x = homotopy.solve_iter(50);
+	std::list<std::complex<double>> x = homotopy.solve_iter(1000);
 
 	for(auto v : x) {
 		CHEM_LOGV(6) << "v: " << v << ", f(v): " << f(v);
@@ -139,7 +139,7 @@ TEST_F(Homotopy2Test, roots) {
 TEST_F(Homotopy2Test, test) {
 	Homotopy<X, M> homotopy(roots(), f, df, g, dg);
 
-	std::list<X> x = homotopy.solve_iter(50);
+	std::list<X> x = homotopy.solve_iter(1000);
 
 	for(auto v : x) {
 		CHEM_LOGV(6) << "v: " << v << ", f(v): " << f(v);
