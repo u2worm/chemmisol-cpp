@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['na_0',['NA',['../namespacechemmisol.html#a4da07635404c25c6a8efc5fa13b15fe0',1,'chemmisol']]],
-  ['name_1',['name',['../structchemmisol_1_1Reagent.html#a7f1653e6c76fe1426e7cb23d2842ec28',1,'chemmisol::Reagent']]]
+  ['invalid_5findex_0',['INVALID_INDEX',['../classchemmisol_1_1solver_1_1F.html#ac956e58eba4ec57b91b142ca7b1178e8',1,'chemmisol::solver::F']]],
+  ['invalid_5freaction_1',['invalid_reaction',['../classchemmisol_1_1InvalidReaction.html#a885d6a494d4c3b32ce3125b4f4387f3a',1,'chemmisol::InvalidReaction']]]
 ];

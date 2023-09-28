@@ -3,6 +3,8 @@
 
 namespace chemmisol {
 	namespace solver {
+		AbsoluteNewton default_solver;
+
 		const std::size_t F::INVALID_INDEX = -1;
 
 		F::F(const ChemicalSystem& system) :
@@ -235,11 +237,11 @@ namespace chemmisol {
 			return jacobian;
 		}
 
-		X solve(const ChemicalSystem& system) {
+		X AbsoluteNewton::solve(const ChemicalSystem& system) const {
 			F f(system);
 			// Initial activities in the system
 			X reduced_activities = f.reducedActivities();
-			reduced_activities = AbsoluteNewton<X, M>(
+			reduced_activities = chemmisol::AbsoluteNewton<X, M>(
 					reduced_activities,
 					[&f] (const X& x) {return f.f(x);},
 					[&f] (const X& x) {return f.df(x);}

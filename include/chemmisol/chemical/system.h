@@ -788,8 +788,8 @@ namespace chemmisol {
 			double distanceToEquilibrium(const Reaction& reaction) const;
 
 			/**
-			 * Solves the equilibrium of the system using the absolute Newton
-			 * method (see solver::solve() and solver::F()).
+			 * Solves the equilibrium of the system using the
+			 * [default_solver](@ref solver::default_solver).
 			 *
 			 * Concentrations of all components are updated accordingly upon
 			 * return.
@@ -803,6 +803,22 @@ namespace chemmisol {
 			 * be identified.
 			 */
 			void solveEquilibrium();
+
+			/**
+			 * Solves the equilibrium of the system using the provided solver.
+			 *
+			 * Concentrations of all components are updated accordingly upon
+			 * return.
+			 *
+			 * @throws EmptyReagents if a reaction with an empty reagents list
+			 * is processed.
+			 * @throws MissingProducedSpeciesInReaction if a reaction is missing
+			 * a produced species.
+			 * @throws TooManyProducedSpeciesInReaction if several produced
+			 * species seems to be specified and no unique produced species can
+			 * be identified.
+			 */
+			void solveEquilibrium(const solver::Solver& solver);
 
 			/**
 			 * Computes the reaction quotient of the specified reaction.

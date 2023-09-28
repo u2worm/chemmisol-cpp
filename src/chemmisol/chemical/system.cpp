@@ -496,6 +496,10 @@ namespace chemmisol {
 	}
 
 	void ChemicalSystem::solveEquilibrium() {
+		solveEquilibrium(solver::default_solver);
+	}
+
+	void ChemicalSystem::solveEquilibrium(const solver::Solver& solver) {
 		try {
 			setUp();
 		}
@@ -529,7 +533,7 @@ namespace chemmisol {
 #endif
 
 		using namespace solver;
-		solver::X activities = solve(*this);
+		solver::X activities = solver.solve(*this);
 
 		for(std::size_t index = 0; index < activities.size(); index++) {
 			species[index]->setActivity(activities[index]);

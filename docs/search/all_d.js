@@ -1,11 +1,4 @@
 var searchData=
 [
-  ['reaction_0',['reaction',['../classchemmisol_1_1Reaction.html',1,'chemmisol::Reaction'],['../classchemmisol_1_1Reaction.html#a30214f42846ac786b16206dc502fa12b',1,'chemmisol::Reaction::Reaction()']]],
-  ['reaction_2eh_1',['reaction.h',['../reaction_8h.html',1,'']]],
-  ['reactionoffset_2',['reactionOffset',['../classchemmisol_1_1solver_1_1F.html#a74fb76e35a4483444f942286069df081',1,'chemmisol::solver::F']]],
-  ['reactionquotient_3',['reactionquotient',['../classchemmisol_1_1ChemicalSystem.html#aaab33aa57ccf41beeeeb5b726da13e77',1,'chemmisol::ChemicalSystem::reactionQuotient(const Reaction &amp;reaction) const'],['../classchemmisol_1_1ChemicalSystem.html#afcde99cac7b1de357965cc11484a732d',1,'chemmisol::ChemicalSystem::reactionQuotient(const std::string &amp;name) const']]],
-  ['reagent_4',['reagent',['../structchemmisol_1_1Reagent.html',1,'chemmisol::Reagent'],['../structchemmisol_1_1Reagent.html#a8443d904d62e9d9800c51672a251c5fc',1,'chemmisol::Reagent::Reagent(const std::string &amp;name, Phase phase, double coefficient)'],['../structchemmisol_1_1Reagent.html#a112216b820c8d1079d4e37843068d90f',1,'chemmisol::Reagent::Reagent(const std::string &amp;name, double coefficient)']]],
-  ['reducedactivities_5',['reducedActivities',['../classchemmisol_1_1solver_1_1F.html#a6f7841d175fbcb378998209cc94b50f0',1,'chemmisol::solver::F']]],
-  ['regula_5ffalsi_2eh_6',['regula_falsi.h',['../regula__falsi_8h.html',1,'']]],
-  ['regulafalsi_7',['regulafalsi',['../classchemmisol_1_1RegulaFalsi.html',1,'chemmisol::RegulaFalsi&lt; T &gt;'],['../classchemmisol_1_1RegulaFalsi.html#a898ae8fbb4e37d9f8830949f15e8e632',1,'chemmisol::RegulaFalsi::RegulaFalsi()']]]
+  ['quantity_0',['quantity',['../classchemmisol_1_1ChemicalSpecies.html#a2c4d6aa257b530b6275c47539dc0d448',1,'chemmisol::ChemicalSpecies::quantity() const'],['../classchemmisol_1_1ChemicalSpecies.html#a8adaa8dbaa1d32446465b591cc8de34f',1,'chemmisol::ChemicalSpecies::quantity(double activity) const =0'],['../classchemmisol_1_1FixedChemicalSpecies.html#af271654bfc6c3f36589d9ae93abb723e',1,'chemmisol::FixedChemicalSpecies::quantity()'],['../classchemmisol_1_1AqueousSpecies.html#a8379c9de29057de842d256218b34ae2e',1,'chemmisol::AqueousSpecies::quantity()'],['../classchemmisol_1_1MineralSpecies.html#a0fa9d23e8365f166722ed106459a7089',1,'chemmisol::MineralSpecies::quantity()']]]
 ];

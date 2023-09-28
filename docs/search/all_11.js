@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['v_0',['V',['../classchemmisol_1_1AqueousSpecies.html#aa9a40d382f8ef85a14ab23760d846106',1,'chemmisol::AqueousSpecies']]],
-  ['vecm_1',['VecM',['../namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19',1,'chemmisol']]],
-  ['vecx_2',['VecX',['../namespacechemmisol.html#a3030c15cae168d98291abcfa6cf95140',1,'chemmisol']]]
+  ['unit_5fdef_0',['UNIT_DEF',['../units_8h.html#a0c8d06190cfe1698993702360bdc9960',1,'units.h']]],
+  ['unit_5fname_5fto_5fcategory_1',['UNIT_NAME_TO_CATEGORY',['../units_8h.html#a3c89d6b70f172980c302eeb66a27aa79',1,'units.h']]],
+  ['unit_5fvalue_2',['UNIT_VALUE',['../units_8h.html#a9c24aed4719a97187de30109761d9909',1,'units.h']]],
+  ['units_3',['units',['../index.html#autotoc_md0',1,'About units'],['../units_8h.html#aa27f20bce1edce5189882bc9f5f8b4f3',1,'UNITS:&#160;units.h']]],
+  ['units_2eh_4',['units.h',['../units_8h.html',1,'']]]
 ];

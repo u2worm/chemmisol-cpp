@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['what_0',['what',['../classchemmisol_1_1EmptyReagents.html#a4f83c32f42d334feebae8a9efca2f4fd',1,'chemmisol::EmptyReagents::what()'],['../classchemmisol_1_1MissingProducedSpeciesInReaction.html#af20d58596ec6809643bf57cfc1627a5a',1,'chemmisol::MissingProducedSpeciesInReaction::what()'],['../classchemmisol_1_1TooManyProducedSpeciesInReaction.html#a798ab0ac394ef6166b7ce3cd7efde77c',1,'chemmisol::TooManyProducedSpeciesInReaction::what()'],['../classchemmisol_1_1InvalidMineralSpeciesWithUndefinedSitesCount.html#a64531c349242fde4295fb4965ddc24dc',1,'chemmisol::InvalidMineralSpeciesWithUndefinedSitesCount::what()']]]
+  ['v_0',['V',['../classchemmisol_1_1AqueousSpecies.html#aa9a40d382f8ef85a14ab23760d846106',1,'chemmisol::AqueousSpecies']]],
+  ['vecm_1',['VecM',['../namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19',1,'chemmisol']]],
+  ['vecx_2',['VecX',['../namespacechemmisol.html#a3030c15cae168d98291abcfa6cf95140',1,'chemmisol']]]
 ];

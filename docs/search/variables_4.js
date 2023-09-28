@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['species_0',['species',['../structchemmisol_1_1ChemicalSpeciesReagent.html#aaddce557e39751c85738fe39591aedc7',1,'chemmisol::ChemicalSpeciesReagent']]]
+  ['phase_0',['phase',['../structchemmisol_1_1Reagent.html#aca6fb35f9641207d3e61048bdccb852a',1,'chemmisol::Reagent']]]
 ];

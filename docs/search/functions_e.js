@@ -7,11 +7,11 @@ var searchData=
   ['setup_4',['setUp',['../classchemmisol_1_1ChemicalSystem.html#ad9e33028299d87c93093dad0717bef63',1,'chemmisol::ChemicalSystem']]],
   ['sites_5fquantity_5',['sites_quantity',['../classchemmisol_1_1MineralSpecies.html#a4c08c6e6874c0937a5572ecab757018e',1,'chemmisol::MineralSpecies']]],
   ['sitesquantity_6',['sitesQuantity',['../classchemmisol_1_1ChemicalSystem.html#a1228ef99a67cf12040e58c9cf9caa105',1,'chemmisol::ChemicalSystem']]],
-  ['solve_7',['solve',['../namespacechemmisol_1_1solver.html#aec759877aaecbc411e5e129fed3e0e42',1,'chemmisol::solver::solve()'],['../gauss_8h.html#ab5a119e38b120384aa88944858ce111a',1,'chemmisol::gauss::solve(const M &amp;m, const X &amp;y)']]],
+  ['solve_7',['solve',['../classchemmisol_1_1solver_1_1AbsoluteNewton.html#aa13cd7aa1b4bb803926f136fdf29e41e',1,'chemmisol::solver::AbsoluteNewton::solve()'],['../gauss_8h.html#ab5a119e38b120384aa88944858ce111a',1,'chemmisol::gauss::solve(const M &amp;m, const X &amp;y)']]],
   ['solve_3c_20double_2c_20double_20_3e_8',['solve&lt; double, double &gt;',['../gauss_8h.html#ab724da57cfa6759cbd5fcbddf097e512',1,'chemmisol::gauss']]],
   ['solve_5feps_9',['solve_eps',['../classchemmisol_1_1Newton.html#a18cb7d4723d6800e0bee4a1ff6439f66',1,'chemmisol::Newton::solve_eps()'],['../classchemmisol_1_1RegulaFalsi.html#a33554dbbe0b6eba7935508175ff35d31',1,'chemmisol::RegulaFalsi::solve_eps()']]],
   ['solve_5fiter_10',['solve_iter',['../classchemmisol_1_1Newton.html#a7de07d822d4f649774502f27fa607c04',1,'chemmisol::Newton::solve_iter()'],['../classchemmisol_1_1RegulaFalsi.html#a1cf0df4ed8b28723919eb29ea684473f',1,'chemmisol::RegulaFalsi::solve_iter()']]],
-  ['solveequilibrium_11',['solveEquilibrium',['../classchemmisol_1_1ChemicalSystem.html#a36ceca64f849c2b410657d3c203f0189',1,'chemmisol::ChemicalSystem']]],
+  ['solveequilibrium_11',['solveequilibrium',['../classchemmisol_1_1ChemicalSystem.html#a36ceca64f849c2b410657d3c203f0189',1,'chemmisol::ChemicalSystem::solveEquilibrium()'],['../classchemmisol_1_1ChemicalSystem.html#a8b3e4994458c434e0113a1fddef6e383',1,'chemmisol::ChemicalSystem::solveEquilibrium(const solver::Solver &amp;solver)']]],
   ['solvent_12',['Solvent',['../classchemmisol_1_1Solvent.html#ad7c95032313eeeee9bbfd19c5abd59ec',1,'chemmisol::Solvent']]],
   ['speciesindexes_13',['speciesIndexes',['../classchemmisol_1_1solver_1_1F.html#ae5df00af5ff556dcb09b2b19d86d5e23',1,'chemmisol::solver::F']]]
 ];

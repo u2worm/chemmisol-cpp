@@ -18,6 +18,5 @@ var searchData=
   ['getreagents_15',['getReagents',['../classchemmisol_1_1Reaction.html#a2296a1a9d5887fa18053114d68ae7842',1,'chemmisol::Reaction']]],
   ['getspecies_16',['getspecies',['../classchemmisol_1_1ChemicalComponent.html#a75f280e61a5b69083eff8d9a19abfd8f',1,'chemmisol::ChemicalComponent::getSpecies()'],['../classchemmisol_1_1ChemicalComponent.html#a7a8a27a0173ef0c20dee1b431198ec35',1,'chemmisol::ChemicalComponent::getSpecies() const'],['../classchemmisol_1_1ChemicalSystem.html#a11d06968e596afdb478c51c556fd40e9',1,'chemmisol::ChemicalSystem::getSpecies(const std::string &amp;name) const'],['../classchemmisol_1_1ChemicalSystem.html#a3ea9d65d9a5ddbdc45983187e2e7a769',1,'chemmisol::ChemicalSystem::getSpecies(const std::size_t &amp;index) const'],['../classchemmisol_1_1ChemicalSystem.html#a6515ea4c94211559546dacecbe3f00a9',1,'chemmisol::ChemicalSystem::getSpecies() const']]],
   ['getspeciesreagent_17',['getSpeciesReagent',['../classchemmisol_1_1ChemicalSystem.html#a0a918f40d3c281d38d6aa6d6ffede2e3',1,'chemmisol::ChemicalSystem']]],
-  ['getsurfacecomplex_18',['getSurfaceComplex',['../classchemmisol_1_1ChemicalSystem.html#a83e52198e8a95fe855f8eb1c2338a706',1,'chemmisol::ChemicalSystem']]],
-  ['gettotalquantity_19',['getTotalQuantity',['../classchemmisol_1_1ChemicalComponent.html#a3d2886d04b4813794ff3aee95f4cd392',1,'chemmisol::ChemicalComponent']]]
+  ['gettotalquantity_18',['getTotalQuantity',['../classchemmisol_1_1ChemicalComponent.html#a3d2886d04b4813794ff3aee95f4cd392',1,'chemmisol::ChemicalComponent']]]
 ];

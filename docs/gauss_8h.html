@@ -81,21 +81,24 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;array&gt;</code><br />
+<code>#include &lt;complex&gt;</code><br />
 <code>#include &quot;<a class="el" href="logging_8h_source.html">../logging.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for gauss.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="gauss_8h__incl.png" border="0" usemap="#ainclude_2chemmisol_2math_2gauss_8h" alt=""/></div>
 <map name="ainclude_2chemmisol_2math_2gauss_8h" id="ainclude_2chemmisol_2math_2gauss_8h">
-<area shape="rect" title=" " alt="" coords="45,5,208,48"/>
+<area shape="rect" title=" " alt="" coords="87,5,249,48"/>
 <area shape="rect" title=" " alt="" coords="5,96,77,123"/>
-<area shape="poly" title=" " alt="" coords="106,51,67,88,63,84,103,47"/>
+<area shape="poly" title=" " alt="" coords="136,51,75,90,72,85,134,46"/>
 <area shape="rect" title=" " alt="" coords="101,96,152,123"/>
-<area shape="poly" title=" " alt="" coords="129,49,129,81,124,81,124,49"/>
-<area shape="rect" href="logging_8h.html" title=" " alt="" coords="176,96,261,123"/>
-<area shape="poly" title=" " alt="" coords="152,47,195,84,191,88,148,51"/>
-<area shape="rect" title=" " alt="" coords="160,171,277,197"/>
-<area shape="poly" title=" " alt="" coords="221,123,221,156,216,156,216,123"/>
+<area shape="poly" title=" " alt="" coords="159,50,142,83,137,81,155,47"/>
+<area shape="rect" title=" " alt="" coords="175,96,246,123"/>
+<area shape="poly" title=" " alt="" coords="181,47,199,81,194,83,176,50"/>
+<area shape="rect" href="logging_8h.html" title=" " alt="" coords="269,96,354,123"/>
+<area shape="poly" title=" " alt="" coords="206,46,277,86,275,90,203,51"/>
+<area shape="rect" title=" " alt="" coords="253,171,370,197"/>
+<area shape="poly" title=" " alt="" coords="314,123,314,155,309,155,309,123"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -105,7 +108,9 @@ This graph shows which files directly or indirectly include this file:</div>
 <map name="ainclude_2chemmisol_2math_2gauss_8hdep" id="ainclude_2chemmisol_2math_2gauss_8hdep">
 <area shape="rect" title=" " alt="" coords="5,5,168,48"/>
 <area shape="rect" href="newton_8h.html" title=" " alt="" coords="5,96,168,139"/>
-<area shape="poly" title=" " alt="" coords="89,63,89,96,84,96,84,63"/>
+<area shape="poly" title=" " alt="" coords="89,64,89,96,84,96,84,64"/>
+<area shape="rect" href="homotopy_8h_source.html" title=" " alt="" coords="5,187,168,229"/>
+<area shape="poly" title=" " alt="" coords="89,154,89,186,84,186,84,154"/>
 </map>
 </div>
 </div>
@@ -118,11 +123,11 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ab5a119e38b120384aa88944858ce111a" id="r_ab5a119e38b120384aa88944858ce111a"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">typename</a> <a class="el" href="namespacechemmisol.html#a71d0452842b873eab838a852f24a9730">M</a> , <a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">typename</a> <a class="el" href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &gt; </td></tr>
-<tr class="memitem:ab5a119e38b120384aa88944858ce111a"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="gauss_8h.html#ab5a119e38b120384aa88944858ce111a">chemmisol::gauss::solve</a> (<a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">const</a> <a class="el" href="namespacechemmisol.html#a71d0452842b873eab838a852f24a9730">M</a> &amp;<a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">m</a>, <a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">const</a> <a class="el" href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &amp;<a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">y</a>)</td></tr>
+<tr class="memitem:ab5a119e38b120384aa88944858ce111a" id="r_ab5a119e38b120384aa88944858ce111a"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="namespacechemmisol.html#a71d0452842b873eab838a852f24a9730">M</a> , typename <a class="el" href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &gt; </td></tr>
+<tr class="memitem:ab5a119e38b120384aa88944858ce111a"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="gauss_8h.html#ab5a119e38b120384aa88944858ce111a">chemmisol::gauss::solve</a> (const <a class="el" href="namespacechemmisol.html#a71d0452842b873eab838a852f24a9730">M</a> &amp;m, const <a class="el" href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &amp;y)</td></tr>
 <tr class="separator:ab5a119e38b120384aa88944858ce111a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab724da57cfa6759cbd5fcbddf097e512" id="r_ab724da57cfa6759cbd5fcbddf097e512"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:ab724da57cfa6759cbd5fcbddf097e512"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">double</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="gauss_8h.html#ab724da57cfa6759cbd5fcbddf097e512">chemmisol::gauss::solve&lt; double, double &gt;</a> (<a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">const</a> <a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">double</a> &amp;f, <a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">const</a> <a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">double</a> &amp;<a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">y</a>)</td></tr>
+<tr class="memitem:ab724da57cfa6759cbd5fcbddf097e512"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="gauss_8h.html#ab724da57cfa6759cbd5fcbddf097e512">chemmisol::gauss::solve&lt; double, double &gt;</a> (const double &amp;f, const double &amp;y)</td></tr>
 <tr class="separator:ab724da57cfa6759cbd5fcbddf097e512"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -139,13 +144,13 @@ template&lt;typename M , typename X &gt; </div>
         <tr>
           <td class="memname">X chemmisol::gauss::solve </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">const</a> <a class="el" href="namespacechemmisol.html#a71d0452842b873eab838a852f24a9730">M</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacechemmisol.html#a71d0452842b873eab838a852f24a9730">M</a> &amp;&#160;</td>
           <td class="paramname"><em>m</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">const</a> <a class="el" href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> &amp;&#160;</td>
           <td class="paramname"><em>y</em>&#160;</td>
         </tr>
         <tr>
@@ -185,13 +190,13 @@ template&lt;&gt; </div>
         <tr>
           <td class="memname">double <a class="el" href="gauss_8h.html#ab5a119e38b120384aa88944858ce111a">chemmisol::gauss::solve</a>&lt; double, double &gt; </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">const</a> <a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">double</a> &amp;&#160;</td>
+          <td class="paramtype">const double &amp;&#160;</td>
           <td class="paramname"><em>f</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">const</a> <a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">double</a> &amp;&#160;</td>
+          <td class="paramtype">const double &amp;&#160;</td>
           <td class="paramname"><em>y</em>&#160;</td>
         </tr>
         <tr>

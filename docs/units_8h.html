@@ -148,7 +148,7 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a4da07635404c25c6a8efc5fa13b15fe0" id="r_a4da07635404c25c6a8efc5fa13b15fe0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">const</a> <a class="el" href="namespacechemmisol.html#a6f26cc92a7527734291f26bea31e8c19">double</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechemmisol.html#a4da07635404c25c6a8efc5fa13b15fe0">chemmisol::NA</a></td></tr>
+<tr class="memitem:a4da07635404c25c6a8efc5fa13b15fe0" id="r_a4da07635404c25c6a8efc5fa13b15fe0"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechemmisol.html#a4da07635404c25c6a8efc5fa13b15fe0">chemmisol::NA</a></td></tr>
 <tr class="separator:a4da07635404c25c6a8efc5fa13b15fe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -222,7 +222,7 @@ Variables</h2></td></tr>
 </div><!-- fragment --><p> is equivalent to </p><div class="fragment"><div class="line">*ChemicalSystem chemical_system {</div>
 <div class="line">    2.5,</div>
 <div class="line">    24.2,</div>
-<div class="line">    0.8 / 6.02214076e23 * 1e9, <span class="comment">// Manual conversion from entities/nm2 to mol/m2</span></div>
+<div class="line">    0.8 / 6.02214076e23 * 1e18, <span class="comment">// Manual conversion from entities/nm2 to mol/m2</span></div>
 <div class="line">    <span class="stringliteral">&quot;=SOH&quot;</span></div>
 <div class="line">  };</div>
 </div><!-- fragment --><dl class="section warning"><dt>Warning</dt><dd>Even if the unit system is inspired from <a href="https://gama-platform.org/wiki/next/UnitsAndConstants">GAMA units</a>, it is not guaranteed that the same core units are used. In consequence, a GAMA raw value cannot be used directly in chemmisol, and must be converted to chemmisol core units using the unit system of GAMA. </dd></dl>

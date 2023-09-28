@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['m_0',['m',['../namespacechemmisol_1_1solver.html#a67d06ab5181b27d052332fb0fb2aaa93',1,'chemmisol::solver::M'],['../namespacechemmisol.html#a71d0452842b873eab838a852f24a9730',1,'chemmisol::M']]],
-  ['massconservationlaw_1',['massconservationlaw',['../classchemmisol_1_1ChemicalSystem.html#a60b6400ffee5d28809ab9fa3895587b1',1,'chemmisol::ChemicalSystem::massConservationLaw(const std::vector&lt; double &gt; &amp;activities, std::vector&lt; double &gt; &amp;result) const'],['../classchemmisol_1_1ChemicalSystem.html#ac68e57adac32dda39a96b40a2c9e521e',1,'chemmisol::ChemicalSystem::massConservationLaw(std::vector&lt; double &gt; &amp;result) const']]],
-  ['mineralspecies_2',['mineralspecies',['../classchemmisol_1_1MineralSpecies.html',1,'chemmisol::MineralSpecies'],['../classchemmisol_1_1MineralSpecies.html#a1c9960c5affffa5f32c9c417bbc83c50',1,'chemmisol::MineralSpecies::MineralSpecies()']]],
-  ['missingproducedspeciesinreaction_3',['missingproducedspeciesinreaction',['../classchemmisol_1_1MissingProducedSpeciesInReaction.html',1,'chemmisol::MissingProducedSpeciesInReaction'],['../classchemmisol_1_1MissingProducedSpeciesInReaction.html#a738322e1754d7c8858b0bdb41c1b4d84',1,'chemmisol::MissingProducedSpeciesInReaction::MissingProducedSpeciesInReaction()']]]
+  ['library_0',['Chemmisol library',['../index.html',1,'']]],
+  ['linear_2eh_1',['linear.h',['../linear_8h.html',1,'']]],
+  ['log_5fto_5ffile_2',['log_to_file',['../namespacechemmisol.html#a86cf9d42fdffa0417c30475e13f44936',1,'chemmisol']]],
+  ['logging_2eh_3',['logging.h',['../logging_8h.html',1,'']]]
 ];

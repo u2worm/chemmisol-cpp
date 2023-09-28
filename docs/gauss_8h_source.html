@@ -81,63 +81,74 @@ $(document).ready(function() { init_codefold(0); });
   <div class="headertitle"><div class="title">gauss.h</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="gauss_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;array&gt;</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;../logging.h&quot;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacechemmisol.html">chemmisol</a> { <span class="keyword">namespace </span>gauss {</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> M, <span class="keyword">typename</span> X&gt;</div>
-<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="gauss_8h.html#ab5a119e38b120384aa88944858ce111a">   26</a></span>        <a class="code hl_typedef" href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> solve(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacechemmisol.html#a71d0452842b873eab838a852f24a9730">M</a>&amp; m, <span class="keyword">const</span> <a class="code hl_typedef" href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>&amp; y) {</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; <span class="stringliteral">&quot;[GAUSS START]&quot;</span>;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <span class="keyword">auto</span> _m = <a class="code hl_function" href="namespacechemmisol.html#a5ce9ce7cd7f683f5b3df20b09712e613">augment</a>(m, y);</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            std::size_t n = _m.size();</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; <span class="stringliteral">&quot;Step 0:&quot;</span>;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keywordflow">for</span>(std::size_t i = 0; i &lt; n; i++) {</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; _m[i];</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            }</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<a href="gauss_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef CHEMMISOL_GAUSS_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define CHEMMISOL_GAUSS_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;complex&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;../logging.h&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacechemmisol.html">chemmisol</a> { <span class="keyword">namespace </span>gauss {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> M, <span class="keyword">typename</span> X&gt;</div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="gauss_8h.html#ab5a119e38b120384aa88944858ce111a">   30</a></span>        <a class="code hl_typedef" href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> <a class="code hl_function" href="gauss_8h.html#ab5a119e38b120384aa88944858ce111a">solve</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacechemmisol.html#a71d0452842b873eab838a852f24a9730">M</a>&amp; m, <span class="keyword">const</span> <a class="code hl_typedef" href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a>&amp; y) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; <span class="stringliteral">&quot;[GAUSS START]&quot;</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            <span class="keyword">auto</span> _m = <a class="code hl_function" href="namespacechemmisol.html#a5ce9ce7cd7f683f5b3df20b09712e613">augment</a>(m, y);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            std::size_t n = _m.size();</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; <span class="stringliteral">&quot;Step 0:&quot;</span>;</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <span class="keywordflow">for</span>(std::size_t i = 0; i &lt; n; i++) {</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                <span class="keywordflow">for</span>(std::size_t j = i+1; j &lt; n; j++) {</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                    <span class="keywordtype">double</span> ratio = _m[j][i]/_m[i][i];</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                    <span class="keywordflow">for</span>(std::size_t k = 0; k &lt; _m[i].size(); k++) {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                        _m[j][k] = _m[j][k] - ratio*_m[i][k];</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                    }</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                }</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            }</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; <span class="stringliteral">&quot;Step 1:&quot;</span>;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keywordflow">for</span>(std::size_t i = 0; i &lt; n; i++) {</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; _m[i];</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            }</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <a class="code hl_typedef" href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> x = y;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            x[n-1] = _m[n-1][n]/_m[n-1][n-1];</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = n-2; i&gt;=0; i--) {</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                x[i] = _m[i][n];</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                <span class="keywordflow">for</span>(std::size_t j = i+1; j &lt; n; j++) {</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                    x[i] = x[i] - _m[i][j]*x[j];</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                }</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                x[i] = x[i]/_m[i][i];</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            }</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; <span class="stringliteral">&quot;Step 2:&quot;</span>;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keywordflow">for</span>(std::size_t i = 0; i &lt; x.size(); i++)</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; <span class="stringliteral">&quot;x[&quot;</span> &lt;&lt; i &lt;&lt; <span class="stringliteral">&quot;]=&quot;</span> &lt;&lt; x[i];</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; <span class="stringliteral">&quot;[GAUSS END]&quot;</span>;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="keywordflow">return</span> x;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; _m[i];</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <span class="keywordflow">for</span>(std::size_t i = 0; i &lt; n; i++) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                <span class="keywordflow">for</span>(std::size_t j = i+1; j &lt; n; j++) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                    <span class="keyword">auto</span> ratio = _m[j][i]/_m[i][i];</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                    <span class="keywordflow">for</span>(std::size_t k = 0; k &lt; _m[i].size(); k++) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                        _m[j][k] = _m[j][k] - ratio*_m[i][k];</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                    }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; <span class="stringliteral">&quot;Step 1:&quot;</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <span class="keywordflow">for</span>(std::size_t i = 0; i &lt; n; i++) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; _m[i];</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <a class="code hl_typedef" href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">X</a> x = y;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            x[n-1] = _m[n-1][n]/_m[n-1][n-1];</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = n-2; i&gt;=0; i--) {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                x[i] = _m[i][n];</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                <span class="keywordflow">for</span>(std::size_t j = i+1; j &lt; n; j++) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                    x[i] = x[i] - _m[i][j]*x[j];</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                x[i] = x[i]/_m[i][i];</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; <span class="stringliteral">&quot;Step 2:&quot;</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">for</span>(std::size_t i = 0; i &lt; x.size(); i++)</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; <span class="stringliteral">&quot;x[&quot;</span> &lt;&lt; i &lt;&lt; <span class="stringliteral">&quot;]=&quot;</span> &lt;&lt; x[i];</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            <a class="code hl_define" href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a>(TRACE) &lt;&lt; <span class="stringliteral">&quot;[GAUSS END]&quot;</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">return</span> x;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        }</div>
 </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">template</span>&lt;&gt;</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="gauss_8h.html#ab724da57cfa6759cbd5fcbddf097e512">   78</a></span>        <span class="keywordtype">double</span> solve&lt;double, double&gt;(<span class="keyword">const</span> <span class="keywordtype">double</span>&amp; f, <span class="keyword">const</span> <span class="keywordtype">double</span>&amp; y);</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}}</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">template</span>&lt;&gt;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="gauss_8h.html#ab724da57cfa6759cbd5fcbddf097e512">   82</a></span>        <span class="keywordtype">double</span> solve&lt;double, double&gt;(<span class="keyword">const</span> <span class="keywordtype">double</span>&amp; f, <span class="keyword">const</span> <span class="keywordtype">double</span>&amp; y);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">template</span>&lt;&gt;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        std::complex&lt;double&gt; solve&lt;std::complex&lt;double&gt;, std::complex&lt;double&gt;&gt;(</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                <span class="keyword">const</span> std::complex&lt;double&gt;&amp; f, <span class="keyword">const</span> std::complex&lt;double&gt;&amp; y);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}}</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="agauss_8h_html_ab5a119e38b120384aa88944858ce111a"><div class="ttname"><a href="gauss_8h.html#ab5a119e38b120384aa88944858ce111a">chemmisol::gauss::solve</a></div><div class="ttdeci">X solve(const M &amp;m, const X &amp;y)</div><div class="ttdef"><b>Definition</b> gauss.h:30</div></div>
 <div class="ttc" id="alogging_8h_html_a933cc3a81fcc7b447d787e58967130d2"><div class="ttname"><a href="logging_8h.html#a933cc3a81fcc7b447d787e58967130d2">CHEM_LOG</a></div><div class="ttdeci">#define CHEM_LOG(LEVEL)</div><div class="ttdef"><b>Definition</b> logging.h:21</div></div>
 <div class="ttc" id="anamespacechemmisol_html"><div class="ttname"><a href="namespacechemmisol.html">chemmisol</a></div><div class="ttdef"><b>Definition</b> chemmisol.h:31</div></div>
-<div class="ttc" id="anamespacechemmisol_html_a4449e83c9948b3b7ea3d593eff9f24d6"><div class="ttname"><a href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">chemmisol::X</a></div><div class="ttdeci">std::array&lt; T, N &gt; X</div><div class="ttdef"><b>Definition</b> linear.h:25</div></div>
-<div class="ttc" id="anamespacechemmisol_html_a5ce9ce7cd7f683f5b3df20b09712e613"><div class="ttname"><a href="namespacechemmisol.html#a5ce9ce7cd7f683f5b3df20b09712e613">chemmisol::augment</a></div><div class="ttdeci">M&lt; typename _M::value_type::value_type, std::tuple_size&lt; _M &gt;::value, std::tuple_size&lt; typename _M::value_type &gt;::value+1 &gt; augment(const _M &amp;m, const X&lt; typename _M::value_type::value_type, std::tuple_size&lt; _M &gt;::value &gt; &amp;x)</div><div class="ttdef"><b>Definition</b> linear.h:137</div></div>
-<div class="ttc" id="anamespacechemmisol_html_a71d0452842b873eab838a852f24a9730"><div class="ttname"><a href="namespacechemmisol.html#a71d0452842b873eab838a852f24a9730">chemmisol::M</a></div><div class="ttdeci">std::array&lt; std::array&lt; T, P &gt;, N &gt; M</div><div class="ttdef"><b>Definition</b> linear.h:33</div></div>
+<div class="ttc" id="anamespacechemmisol_html_a4449e83c9948b3b7ea3d593eff9f24d6"><div class="ttname"><a href="namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6">chemmisol::X</a></div><div class="ttdeci">std::array&lt; T, N &gt; X</div><div class="ttdef"><b>Definition</b> linear.h:26</div></div>
+<div class="ttc" id="anamespacechemmisol_html_a5ce9ce7cd7f683f5b3df20b09712e613"><div class="ttname"><a href="namespacechemmisol.html#a5ce9ce7cd7f683f5b3df20b09712e613">chemmisol::augment</a></div><div class="ttdeci">M&lt; typename _M::value_type::value_type, std::tuple_size&lt; _M &gt;::value, std::tuple_size&lt; typename _M::value_type &gt;::value+1 &gt; augment(const _M &amp;m, const X&lt; typename _M::value_type::value_type, std::tuple_size&lt; _M &gt;::value &gt; &amp;x)</div><div class="ttdef"><b>Definition</b> linear.h:164</div></div>
+<div class="ttc" id="anamespacechemmisol_html_a71d0452842b873eab838a852f24a9730"><div class="ttname"><a href="namespacechemmisol.html#a71d0452842b873eab838a852f24a9730">chemmisol::M</a></div><div class="ttdeci">std::array&lt; std::array&lt; T, P &gt;, N &gt; M</div><div class="ttdef"><b>Definition</b> linear.h:34</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

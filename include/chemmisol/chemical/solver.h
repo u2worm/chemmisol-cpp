@@ -205,15 +205,32 @@ namespace chemmisol {
 				M df(const X& extents) const;
 		};
 
+		class Solver {
+			public:
+				virtual X solve(const ChemicalSystem& system) const = 0;
+
+				virtual ~Solver() {
+				}
+		};
+
+		class AbsoluteNewton : public Solver {
+			public:
+				/**
+				 * Finds and returns activities that correspond to the system to
+				 * equilibrium, finding the root of F with the AbsoluteNewton
+				 * method.
+				 *
+				 * @param system Chemical system to solve.
+				 * @return A complete vector of activities A, such that A[i]
+				 * corresponds to the found activity of species with index i.
+				 */
+				X solve(const ChemicalSystem& system) const override;
+		};
+
 		/**
-		 * Finds and returns activities that correspond to the system to
-		 * equilibrium, finding the root of F with the AbsoluteNewton method.
-		 *
-		 * @param system Chemical system to solve.
-		 * @return A complete vector of activities A, such that A[i] corresponds
-		 * to the found activity of species with index i.
+		 * Default equilibrium solver.
 		 */
-		X solve(const ChemicalSystem& system);
+		extern AbsoluteNewton default_solver;
 	}
 }
 #endif /*CHEMMISOL_SOLVER_H*/

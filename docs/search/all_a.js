@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['operator_2a_0',['operator*',['../namespacechemmisol.html#af69b5cac495faf70e9ddee13db031ce9',1,'chemmisol::operator*(const M&lt; T, N, P &gt; &amp;m, const X&lt; T, P &gt; &amp;x)'],['../namespacechemmisol.html#a634fdf32e877fc9515618a1a714545cc',1,'chemmisol::operator*(const VecM&lt; T &gt; &amp;m, const VecX&lt; T &gt; &amp;x)']]],
-  ['operator_2b_1',['operator+',['../namespacechemmisol.html#a0ed0e4fb3d30c51f6e76e3b45ccab1aa',1,'chemmisol::operator+(const X&lt; T, N &gt; &amp;x1, const X&lt; T, N &gt; &amp;x2)'],['../namespacechemmisol.html#af32cc15ab61fa1cbb1962abb40a0888f',1,'chemmisol::operator+(const VecX&lt; T &gt; &amp;x1, const VecX&lt; T &gt; &amp;x2)']]],
-  ['operator_2d_2',['operator-',['../namespacechemmisol.html#a87dc94782a62acd67541deb78757f2db',1,'chemmisol::operator-(const X&lt; T, N &gt; &amp;x)'],['../namespacechemmisol.html#aa40e9de1fb7242f467f8e52dee84a98f',1,'chemmisol::operator-(const VecX&lt; T &gt; &amp;x)']]],
-  ['operator_3c_3c_3',['operator&lt;&lt;',['../namespacechemmisol.html#a493fdb33a37934cf9000c477f522144e',1,'chemmisol::operator&lt;&lt;(std::ostream &amp;o, const Phase &amp;phase)'],['../namespacechemmisol.html#ad3cd5dd26f98ae9a662635eb185e0a3c',1,'chemmisol::operator&lt;&lt;(std::ostream &amp;o, const X&lt; T, N &gt; &amp;x)'],['../namespacechemmisol.html#a4b2c3ef6e4797405db98ac5184bfc78f',1,'chemmisol::operator&lt;&lt;(std::ostream &amp;o, const VecX&lt; T &gt; &amp;x)']]]
+  ['na_0',['NA',['../namespacechemmisol.html#a4da07635404c25c6a8efc5fa13b15fe0',1,'chemmisol']]],
+  ['name_1',['name',['../structchemmisol_1_1Reagent.html#a7f1653e6c76fe1426e7cb23d2842ec28',1,'chemmisol::Reagent']]],
+  ['newton_2',['newton',['../classchemmisol_1_1Newton.html',1,'chemmisol::Newton&lt; X, M, G &gt;'],['../classchemmisol_1_1Newton.html#a1c84bd8404441166c3872072e0439c68',1,'chemmisol::Newton::Newton()']]],
+  ['newton_2eh_3',['newton.h',['../newton_8h.html',1,'']]],
+  ['norm_4',['norm',['../namespacechemmisol.html#a36cb6656fcdc1ef3a354436a20261a0f',1,'chemmisol::norm(const X&lt; T, N &gt; &amp;x)'],['../namespacechemmisol.html#a268936051dc9db4c923863a0f1cae78b',1,'chemmisol::norm(const VecX&lt; T &gt; &amp;x)'],['../namespacechemmisol.html#aa866792f247b131e2c4f0100a0459a6b',1,'chemmisol::norm(const T &amp;x)']]]
 ];

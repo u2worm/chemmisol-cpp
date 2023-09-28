@@ -1,0 +1,15 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,131,109,157"/>
+<area shape="rect" id="Node000001" href="$classchemmisol_1_1InvalidReaction.html" title=" " alt="" coords="157,97,339,124"/>
+<area shape="poly" id="edge9_Node000000_Node000001" title=" " alt="" coords="124,130,167,122,168,127,125,135"/>
+<area shape="rect" id="Node000005" href="$classchemmisol_1_1InvalidSpecies.html" title=" " alt="" coords="159,156,337,183"/>
+<area shape="poly" id="edge13_Node000000_Node000005" title=" " alt="" coords="125,150,159,155,158,160,124,156"/>
+<area shape="rect" id="Node000002" href="$classchemmisol_1_1EmptyReagents.html" title=" " alt="" coords="404,5,590,32"/>
+<area shape="poly" id="edge10_Node000001_Node000002" title=" " alt="" coords="285,87,333,64,386,41,425,30,426,35,388,47,335,69,288,92"/>
+<area shape="rect" id="Node000003" href="$classchemmisol_1_1MissingProducedSpeciesInReaction.html" title=" " alt="" coords="401,56,593,99"/>
+<area shape="poly" id="edge11_Node000001_Node000003" title=" " alt="" coords="354,94,400,88,400,93,355,99"/>
+<area shape="rect" id="Node000004" href="$classchemmisol_1_1TooManyProducedSpeciesInReaction.html" title=" " alt="" coords="397,123,597,165"/>
+<area shape="poly" id="edge12_Node000001_Node000004" title=" " alt="" coords="355,122,396,128,396,133,354,128"/>
+<area shape="rect" id="Node000006" href="$classchemmisol_1_1InvalidMineralSpeciesWithUndefinedSitesCount.html" title=" " alt="" coords="387,189,606,232"/>
+<area shape="poly" id="edge14_Node000005_Node000006" title=" " alt="" coords="348,183,387,190,386,195,347,188"/>
+</map>

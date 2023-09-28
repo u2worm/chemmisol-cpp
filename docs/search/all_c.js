@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['quantity_0',['quantity',['../classchemmisol_1_1ChemicalSpecies.html#a2c4d6aa257b530b6275c47539dc0d448',1,'chemmisol::ChemicalSpecies::quantity() const'],['../classchemmisol_1_1ChemicalSpecies.html#a8adaa8dbaa1d32446465b591cc8de34f',1,'chemmisol::ChemicalSpecies::quantity(double activity) const =0'],['../classchemmisol_1_1FixedChemicalSpecies.html#af271654bfc6c3f36589d9ae93abb723e',1,'chemmisol::FixedChemicalSpecies::quantity()'],['../classchemmisol_1_1AqueousSpecies.html#a8379c9de29057de842d256218b34ae2e',1,'chemmisol::AqueousSpecies::quantity()'],['../classchemmisol_1_1MineralSpecies.html#a0fa9d23e8365f166722ed106459a7089',1,'chemmisol::MineralSpecies::quantity()']]]
+  ['phase_0',['phase',['../structchemmisol_1_1Reagent.html#aca6fb35f9641207d3e61048bdccb852a',1,'chemmisol::Reagent::phase'],['../namespacechemmisol.html#ae1bc9a855ce7feeb9aad96949036937b',1,'chemmisol::Phase']]],
+  ['proceed_1',['proceed',['../classchemmisol_1_1ChemicalSystem.html#a345d8a1fb6408497337badadf1d95eb8',1,'chemmisol::ChemicalSystem']]]
 ];

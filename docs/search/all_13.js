@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['x_0',['x',['../namespacechemmisol_1_1solver.html#acef248f3f6f278c7508316b120550faa',1,'chemmisol::solver::X'],['../namespacechemmisol.html#a4449e83c9948b3b7ea3d593eff9f24d6',1,'chemmisol::X']]]
+  ['what_0',['what',['../classchemmisol_1_1EmptyReagents.html#a4f83c32f42d334feebae8a9efca2f4fd',1,'chemmisol::EmptyReagents::what()'],['../classchemmisol_1_1MissingProducedSpeciesInReaction.html#af20d58596ec6809643bf57cfc1627a5a',1,'chemmisol::MissingProducedSpeciesInReaction::what()'],['../classchemmisol_1_1TooManyProducedSpeciesInReaction.html#a798ab0ac394ef6166b7ce3cd7efde77c',1,'chemmisol::TooManyProducedSpeciesInReaction::what()'],['../classchemmisol_1_1InvalidMineralSpeciesWithUndefinedSitesCount.html#a64531c349242fde4295fb4965ddc24dc',1,'chemmisol::InvalidMineralSpeciesWithUndefinedSitesCount::what()']]]
 ];

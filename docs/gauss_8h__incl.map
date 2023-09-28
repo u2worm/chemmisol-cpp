@@ -1,11 +1,13 @@
 <map id="include/chemmisol/math/gauss.h" name="include/chemmisol/math/gauss.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="45,5,208,48"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="87,5,249,48"/>
 <area shape="rect" id="Node000002" title=" " alt="" coords="5,96,77,123"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="106,51,67,88,63,84,103,47"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="136,51,75,90,72,85,134,46"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="101,96,152,123"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="129,49,129,81,124,81,124,49"/>
-<area shape="rect" id="Node000004" href="$logging_8h.html" title=" " alt="" coords="176,96,261,123"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="152,47,195,84,191,88,148,51"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="160,171,277,197"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="221,123,221,156,216,156,216,123"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="159,50,142,83,137,81,155,47"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="175,96,246,123"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="181,47,199,81,194,83,176,50"/>
+<area shape="rect" id="Node000005" href="$logging_8h.html" title=" " alt="" coords="269,96,354,123"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="206,46,277,86,275,90,203,51"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="253,171,370,197"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="314,123,314,155,309,155,309,123"/>
 </map>
