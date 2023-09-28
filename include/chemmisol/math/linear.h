@@ -91,14 +91,32 @@ namespace chemmisol {
 			return x3;
 		}
 
+	template<typename T, std::size_t N>
+		X<T, N> operator*(const T& a, const X<T, N>& x) {
+			X<T, N> result;
+			for(std::size_t i = 0; i < N; i++)
+				result[i] = a*x[i];
+			return result;
+		}
+
+	template<typename T, std::size_t N, std::size_t P>
+		M<T, N, P> operator*(const T& a, const M<T, N, P>& m) {
+			M<T, N, P> result;
+			for(std::size_t i = 0; i < N; i++) {
+				for(std::size_t j = 0; j < P; j++) {
+					result[i][j] = a * m[i][j];
+				}
+			}
+			return result;
+		}
 	/**
 	 * Computes the euclidean norm of the vector.
 	 */
 	template<typename T, std::size_t N>
-		double norm(const X<T, N>& x) {
-			double a = 0;
+		T norm(const X<T, N>& x) {
+			T a = 0;
 			for(auto& v : x) {
-				a+=std::pow(v, 2);
+				a+=std::pow(v, T(2));
 			}
 			return std::sqrt(a);
 		}

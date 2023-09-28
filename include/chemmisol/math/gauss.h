@@ -1,5 +1,9 @@
+#ifndef CHEMMISOL_GAUSS_H
+#define CHEMMISOL_GAUSS_H
+
 #include <iostream>
 #include <array>
+#include <complex>
 #include "../logging.h"
 
 /**
@@ -34,7 +38,7 @@ namespace chemmisol { namespace gauss {
 
 			for(std::size_t i = 0; i < n; i++) {
 				for(std::size_t j = i+1; j < n; j++) {
-					double ratio = _m[j][i]/_m[i][i];
+					auto ratio = _m[j][i]/_m[i][i];
 					for(std::size_t k = 0; k < _m[i].size(); k++) {
 						_m[j][k] = _m[j][k] - ratio*_m[i][k];
 					}
@@ -76,4 +80,10 @@ namespace chemmisol { namespace gauss {
 	 */
 	template<>
 		double solve<double, double>(const double& f, const double& y);
+
+	template<>
+		std::complex<double> solve<std::complex<double>, std::complex<double>>(
+				const std::complex<double>& f, const std::complex<double>& y);
+
 }}
+#endif

@@ -9,6 +9,8 @@ add_executable(
   chemmisol/tests/math/newton.cpp
   chemmisol/tests/math/gauss.cpp
   chemmisol/tests/math/regula_falsi.cpp
+  chemmisol/tests/math/homotopy.cpp
+  chemmisol/tests/math/arithmetics.cpp
   chemmisol/tests/chemical/system/utils.cpp
   chemmisol/tests/chemical/system/basic.cpp
   chemmisol/tests/chemical/system/nacl_test.cpp

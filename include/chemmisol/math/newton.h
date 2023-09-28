@@ -3,8 +3,8 @@
 
 #include <functional>
 #include <cmath>
-#include "gauss.h"
 #include "linear.h"
+#include "gauss.h"
 
 /**
  * @file chemmisol/math/newton.h
@@ -133,7 +133,7 @@ namespace chemmisol {
 			CHEM_LOG(TRACE) << "[NEWTON] Current X: " << x;
 			CHEM_LOG(TRACE) << "[NEWTON] Current F(X): " << f_x;
 			CHEM_LOG(TRACE) << "[NEWTON] (n=" << n << ") Epsilon: " << norm(f_x);
-			if(n == 0)
+			if(n == 0 || norm(f_x) == typename X::value_type(0))
 				return x;
 			X _x = gauss::solve(df(x), -f_x);
 			X x1 = G(_x + x);
