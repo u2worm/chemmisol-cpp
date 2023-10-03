@@ -93,7 +93,7 @@ namespace chemmisol {
 			/**
 			 * Name of the invalid species.
 			 */
-			const std::string& name;
+			std::string name;
 			/**
 			 * Phase of the invalid species.
 			 */
