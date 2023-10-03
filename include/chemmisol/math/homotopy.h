@@ -54,7 +54,9 @@ namespace chemmisol {
 				std::function<X(const X&)> g; // start system
 				std::function<M(const X&)> dg;
 
-				X solve(const X& x, std::size_t i, std::size_t homotopy_n, std::size_t local_solver_n) const;
+				SolverResult<X> solve(
+						const X& x, std::size_t i,
+						std::size_t homotopy_n, std::size_t local_solver_n) const;
 
 			public:
 				Homotopy(
@@ -67,12 +69,13 @@ namespace chemmisol {
 					x0(x0), f(f), df(df), g(g), dg(dg) {
 					}
 
-				std::list<X> solve(std::size_t homotopy_n, std::size_t local_solver_n) const;
+				std::list<SolverResult<X>> solve(std::size_t homotopy_n, std::size_t local_solver_n) const;
 		};
 
 	template<typename X, typename M>
-		std::list<X> Homotopy<X, M>::solve(std::size_t homotopy_n, std::size_t local_solver_n) const {
-			std::list<X> results;
+		std::list<SolverResult<X>> Homotopy<X, M>::solve(
+				std::size_t homotopy_n, std::size_t local_solver_n) const {
+			std::list<SolverResult<X>> results;
 			CHEM_LOG(INFO) << "[HOMOTOPY] Start exhaustive homotopy from " << x0.size() << " starting points.";
 			std::size_t i = 0;
 			for(const auto& x : x0) {
@@ -85,7 +88,7 @@ namespace chemmisol {
 		}
 
 	template<typename X, typename M>
-		X Homotopy<X, M>::solve(
+		SolverResult<X> Homotopy<X, M>::solve(
 				const X& x, std::size_t i, std::size_t homotopy_n, std::size_t local_solver_n
 				) const {
 			double t = ((double) i+1)/homotopy_n;
@@ -94,13 +97,13 @@ namespace chemmisol {
 					H<X>(t, f, g),
 					dH<X, M>(t, df, dg));
 			
-			X xt = newton.solve_iter(local_solver_n);
-			CHEM_LOG(TRACE) << "[HOMOTOPY] Current X: " << xt << " (t=" << t << ")";
-			if(i == homotopy_n-1) {
-				CHEM_LOG(INFO) << "[HOMOTOPY] Final X: " << xt << " f(X)=" << f(xt);
-				return xt;
+			auto result = newton.solve_iter(local_solver_n);
+			CHEM_LOG(TRACE) << "[HOMOTOPY] Current X: " << result.x << " (t=" << t << ")";
+			if(i == homotopy_n-1 || !result.isFinite()) {
+				CHEM_LOG(INFO) << "[HOMOTOPY] Final X: " << result.x << " f(X)=" << result.f_x;
+				return result;
 			}
-			return solve(xt, i+1, homotopy_n, local_solver_n);
+			return solve(result.x, i+1, homotopy_n, local_solver_n);
 		}
 }
 #endif

@@ -1,5 +1,5 @@
-#ifndef CHEMMISOL_SOLVER_H
-#define CHEMMISOL_SOLVER_H
+#ifndef CHEMMISOL_EQUILIBRIUM_SOLVER_H
+#define CHEMMISOL_EQUILIBRIUM_SOLVER_H
 
 #include "system.h"
 #include "chemmisol/math/homotopy.h"
@@ -594,7 +594,7 @@ namespace chemmisol {
 					[&g] (const CX& x) {return g.g(x);},
 					[&g] (const CX& x) {return g.dg(x);}
 					);
-			std::list<CX> solutions = homotopy.solve(
+			std::list<SolverResult<CX>> solutions = homotopy.solve(
 					homotopy_n, local_solver_n
 					);
 			CX closest_solution(reduced_system.xSize());
@@ -602,9 +602,14 @@ namespace chemmisol {
 			auto sol_it = solutions.begin();
 			while(sol_it != solutions.end()) {
 				CHEM_LOG(TRACE) << "[HOMOTOPY] Possible solution: " << *sol_it;
-				if(norm(*sol_it) < current_minimum) {
-					closest_solution = *sol_it;
-					current_minimum = norm(*sol_it);
+				if(sol_it->isFinite()) {
+					auto image_part = sol_it->x;
+					for(auto& c : image_part)
+						c.real(0.0);
+					if(norm(image_part) < current_minimum) {
+						closest_solution = sol_it->x;
+						current_minimum = norm(image_part);
+					}
 				}
 				++sol_it;
 			}

@@ -48,11 +48,11 @@ const std::complex<double> HomotopyTest::b = random_complex();
 TEST_F(HomotopyTest, test) {
 	Homotopy<X, M> homotopy(roots(), f, df, g, dg);
 
-	std::list<std::complex<double>> x = homotopy.solve(100, 100);
+	std::list<SolverResult<std::complex<double>>> r = homotopy.solve(100, 100);
 
-	for(auto v : x) {
-		CHEM_LOGV(6) << "v: " << v << ", f(v): " << f(v);
-		ASSERT_NEAR(std::abs(f(v)), 0.0, 1e-12);
+	for(auto v : r) {
+		CHEM_LOGV(6) << "v: " << v.x << ", f(v): " << v.f_x;
+		ASSERT_NEAR(std::abs(v.f_x), 0.0, 1e-12);
 	}
 }
 
@@ -139,11 +139,11 @@ TEST_F(Homotopy2Test, roots) {
 TEST_F(Homotopy2Test, test) {
 	Homotopy<X, M> homotopy(roots(), f, df, g, dg);
 
-	std::list<X> x = homotopy.solve(100, 100);
+	std::list<SolverResult<X>> r = homotopy.solve(100, 100);
 
-	for(auto v : x) {
-		CHEM_LOGV(6) << "v: " << v << ", f(v): " << f(v);
-		X fv = f(v);
+	for(auto v : r) {
+		CHEM_LOGV(6) << "v: " << v.x << ", f(v): " << v.f_x;
+		X fv = v.f_x;
 		for(const auto& v : fv) {
 			ASSERT_NEAR(std::abs(v), 0.0, 1e-12);
 		}
