@@ -81,39 +81,54 @@ $(function() {
   <div class="headertitle"><div class="title">solver.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="reaction_8h_source.html">reaction.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="system_8h_source.html">system.h</a>&quot;</code><br />
+<code>#include &lt;list&gt;</code><br />
+<code>#include &lt;random&gt;</code><br />
+<code>#include &lt;complex&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for solver.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="solver_8h__incl.png" border="0" usemap="#ainclude_2chemmisol_2chemical_2solver_8h" alt=""/></div>
 <map name="ainclude_2chemmisol_2chemical_2solver_8h" id="ainclude_2chemmisol_2chemical_2solver_8h">
-<area shape="rect" title=" " alt="" coords="31,5,216,48"/>
-<area shape="rect" href="reaction_8h.html" title=" " alt="" coords="84,96,163,123"/>
-<area shape="poly" title=" " alt="" coords="126,49,126,81,121,81,121,49"/>
-<area shape="rect" href="species_8h.html" title=" " alt="" coords="39,171,117,197"/>
-<area shape="poly" title=" " alt="" coords="118,125,96,160,91,157,113,122"/>
-<area shape="rect" title=" " alt="" coords="141,171,199,197"/>
-<area shape="poly" title=" " alt="" coords="134,122,156,157,152,160,129,125"/>
-<area shape="rect" title=" " alt="" coords="5,245,63,272"/>
-<area shape="poly" title=" " alt="" coords="73,199,51,234,47,231,68,196"/>
-<area shape="rect" href="units_8h.html" title=" " alt="" coords="87,245,160,272"/>
-<area shape="poly" title=" " alt="" coords="88,196,110,231,106,234,84,199"/>
-<area shape="rect" title=" " alt="" coords="15,320,125,347"/>
-<area shape="poly" title=" " alt="" coords="116,274,90,310,86,307,112,271"/>
-<area shape="rect" title=" " alt="" coords="149,320,202,347"/>
-<area shape="poly" title=" " alt="" coords="135,271,160,306,156,309,130,274"/>
-</map>
-</div>
-</div><div class="textblock"><div class="dynheader">
-This graph shows which files directly or indirectly include this file:</div>
-<div class="dyncontent">
-<div class="center"><img src="solver_8h__dep__incl.png" border="0" usemap="#ainclude_2chemmisol_2chemical_2solver_8hdep" alt=""/></div>
-<map name="ainclude_2chemmisol_2chemical_2solver_8hdep" id="ainclude_2chemmisol_2chemical_2solver_8hdep">
-<area shape="rect" title=" " alt="" coords="5,5,191,48"/>
-<area shape="rect" href="system_8h.html" title=" " alt="" coords="5,96,191,139"/>
-<area shape="poly" title=" " alt="" coords="101,63,101,96,95,96,95,63"/>
-<area shape="rect" href="chemmisol_8h.html" title=" " alt="" coords="28,187,168,213"/>
-<area shape="poly" title=" " alt="" coords="101,154,101,186,95,186,95,154"/>
+<area shape="rect" title=" " alt="" coords="708,5,893,48"/>
+<area shape="rect" href="system_8h.html" title=" " alt="" coords="359,96,434,123"/>
+<area shape="poly" title=" " alt="" coords="708,49,450,100,449,95,707,44"/>
+<area shape="rect" title=" " alt="" coords="361,320,432,347"/>
+<area shape="poly" title=" " alt="" coords="802,49,786,169,771,232,761,257,749,274,727,288,695,300,614,317,525,328,447,333,447,327,524,322,613,312,694,295,724,284,745,270,756,254,766,231,781,168,796,48"/>
+<area shape="rect" title=" " alt="" coords="809,96,848,123"/>
+<area shape="poly" title=" " alt="" coords="810,48,822,80,817,82,805,49"/>
+<area shape="rect" title=" " alt="" coords="872,96,937,123"/>
+<area shape="poly" title=" " alt="" coords="829,46,878,84,875,88,826,51"/>
+<area shape="rect" href="linear_8h.html" title=" " alt="" coords="315,171,478,197"/>
+<area shape="poly" title=" " alt="" coords="399,123,399,155,394,155,394,123"/>
+<area shape="rect" href="reaction_8h.html" title=" " alt="" coords="165,171,244,197"/>
+<area shape="poly" title=" " alt="" coords="364,126,253,167,251,162,362,121"/>
+<area shape="rect" title=" " alt="" coords="309,245,359,272"/>
+<area shape="poly" title=" " alt="" coords="388,200,357,235,353,232,384,196"/>
+<area shape="rect" title=" " alt="" coords="208,320,265,347"/>
+<area shape="poly" title=" " alt="" coords="370,200,334,220,298,247,272,277,253,308,248,305,268,274,295,243,331,216,368,196"/>
+<area shape="rect" title=" " alt="" coords="434,245,530,272"/>
+<area shape="poly" title=" " alt="" coords="413,196,458,233,454,237,410,200"/>
+<area shape="rect" title=" " alt="" coords="554,245,626,272"/>
+<area shape="poly" title=" " alt="" coords="431,195,543,237,541,242,429,200"/>
+<area shape="rect" title=" " alt="" coords="176,245,233,272"/>
+<area shape="poly" title=" " alt="" coords="364,200,249,244,247,239,362,195"/>
+<area shape="poly" title=" " alt="" coords="399,198,399,304,394,304,394,198"/>
+<area shape="rect" href="logging_8h.html" title=" " alt="" coords="650,245,735,272"/>
+<area shape="poly" title=" " alt="" coords="449,195,635,241,634,246,448,201"/>
+<area shape="rect" title=" " alt="" coords="634,320,751,347"/>
+<area shape="poly" title=" " alt="" coords="695,273,695,304,690,304,690,273"/>
+<area shape="poly" title=" " alt="" coords="207,198,207,230,202,230,202,198"/>
+<area shape="rect" href="species_8h.html" title=" " alt="" coords="74,245,151,272"/>
+<area shape="poly" title=" " alt="" coords="190,200,142,238,138,234,187,196"/>
+<area shape="poly" title=" " alt="" coords="135,270,203,310,201,314,133,275"/>
+<area shape="poly" title=" " alt="" coords="152,267,347,317,345,322,151,272"/>
+<area shape="rect" href="units_8h.html" title=" " alt="" coords="76,320,149,347"/>
+<area shape="poly" title=" " alt="" coords="115,273,115,304,110,304,110,273"/>
+<area shape="rect" title=" " alt="" coords="5,395,116,421"/>
+<area shape="poly" title=" " alt="" coords="106,349,80,384,76,381,101,346"/>
+<area shape="rect" title=" " alt="" coords="139,395,193,421"/>
+<area shape="poly" title=" " alt="" coords="124,346,150,381,145,384,120,349"/>
 </map>
 </div>
 </div>
@@ -121,11 +136,15 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1solver_1_1F.html">chemmisol::solver::F</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1solver_1_1F.html">chemmisol::solver::F&lt; X, M &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1solver_1_1Solver.html">chemmisol::solver::Solver</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1solver_1_1AbsoluteNewton.html">chemmisol::solver::AbsoluteNewton</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1solver_1_1G.html">chemmisol::solver::G</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classchemmisol_1_1solver_1_1HomotopyContinuation.html">chemmisol::solver::HomotopyContinuation</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -139,8 +158,14 @@ Namespaces</h2></td></tr>
 Typedefs</h2></td></tr>
 <tr class="memitem:acef248f3f6f278c7508316b120550faa" id="r_acef248f3f6f278c7508316b120550faa"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechemmisol_1_1solver.html#acef248f3f6f278c7508316b120550faa">chemmisol::solver::X</a></td></tr>
 <tr class="separator:acef248f3f6f278c7508316b120550faa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3db79edce2ef0d4b6bf34f40cc4e3668" id="r_a3db79edce2ef0d4b6bf34f40cc4e3668"><td class="memItemLeft" align="right" valign="top"><a id="a3db79edce2ef0d4b6bf34f40cc4e3668" name="a3db79edce2ef0d4b6bf34f40cc4e3668"></a>
+typedef std::vector&lt; std::complex&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>chemmisol::solver::CX</b></td></tr>
+<tr class="separator:a3db79edce2ef0d4b6bf34f40cc4e3668"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67d06ab5181b27d052332fb0fb2aaa93" id="r_a67d06ab5181b27d052332fb0fb2aaa93"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechemmisol_1_1solver.html#a67d06ab5181b27d052332fb0fb2aaa93">chemmisol::solver::M</a></td></tr>
 <tr class="separator:a67d06ab5181b27d052332fb0fb2aaa93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ae369678f282e396911cb1781a3a701" id="r_a5ae369678f282e396911cb1781a3a701"><td class="memItemLeft" align="right" valign="top"><a id="a5ae369678f282e396911cb1781a3a701" name="a5ae369678f282e396911cb1781a3a701"></a>
+typedef std::vector&lt; std::vector&lt; std::complex&lt; double &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>chemmisol::solver::CM</b></td></tr>
+<tr class="separator:a5ae369678f282e396911cb1781a3a701"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>

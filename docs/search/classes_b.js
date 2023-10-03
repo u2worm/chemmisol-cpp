@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['toomanyproducedspeciesinreaction_0',['TooManyProducedSpeciesInReaction',['../classchemmisol_1_1TooManyProducedSpeciesInReaction.html',1,'chemmisol']]]
+  ['solvent_0',['Solvent',['../classchemmisol_1_1Solvent.html',1,'chemmisol']]],
+  ['solver_1',['Solver',['../classchemmisol_1_1solver_1_1Solver.html',1,'chemmisol::solver']]]
 ];

@@ -2,6 +2,7 @@
 #define CHEMMISOL_SPECIES_H
 
 #include <vector>
+#include <complex>
 #include "../units.h"
 
 /**
@@ -172,6 +173,8 @@ namespace chemmisol {
 			 */
 			virtual double quantity(double activity) const = 0;
 
+			virtual std::complex<double> quantity(std::complex<double> activity) const = 0;
+
 			/**
 			 * Sets the activity of the chemical species. The quantity() and
 			 * concentration() values are updated accordingly.
@@ -261,6 +264,10 @@ namespace chemmisol {
 				return Q;
 			}
 
+			std::complex<double> quantity(std::complex<double> /*activity*/) const override {
+				return Q;
+			}
+
 			/**
 			 * Returns the fixed activity of this chemical species, ignoring the
 			 * provided concentration.
@@ -340,6 +347,10 @@ namespace chemmisol {
 			}
 
 			double quantity(double activity) const override {
+				return activity*V*(1*mol/l);
+			}
+
+			std::complex<double> quantity(std::complex<double> activity) const override {
 				return activity*V*(1*mol/l);
 			}
 
@@ -544,6 +555,10 @@ namespace chemmisol {
 			}
 
 			double quantity(double activity) const override {
+				return activity * N;
+			}
+
+			std::complex<double> quantity(std::complex<double> activity) const override {
 				return activity * N;
 			}
 

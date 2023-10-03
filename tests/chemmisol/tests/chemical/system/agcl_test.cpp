@@ -14,6 +14,8 @@ using namespace chemmisol;
 class AgClChemicalSystemTest : public Test {
 	protected:
 	ChemicalSystem chemical_system;
+	solver::AbsoluteNewton absolute_newton;
+	static constexpr double default_ph = 7;
 
 	void SetUp() override {
 		chemical_system.addReaction("OH-", -13.997, {
@@ -234,17 +236,20 @@ class AgClChemicalSystemTest : public Test {
 					chemical_system.getReaction("AgCl3-2").getLogK()
 					);
 		}
-		{
-			// Check pH
-			double H = chemical_system.getSpecies("H+").activity();
-			ASSERT_FLOAT_EQ(-std::log10(H), 7);
-		}
+	}
+
+	void checkPh(double ph) {
+		// Check pH
+		double H = chemical_system.getSpecies("H+").activity();
+		ASSERT_FLOAT_EQ(-std::log10(H), ph);
 	}
 };
 
 TEST_F(AgClChemicalSystemTest, complex_AgCl_reaction_f) {
 	using namespace solver;
-	F f(chemical_system);
+	// Real domain F
+	solver::ReducedChemicalSystem<solver::X> reduced_system(chemical_system);
+	F<solver::X, solver::M> f(reduced_system, chemical_system);
 
 	std::vector<double> activities(chemical_system.getSpecies().size()-2);
 	{
@@ -257,7 +262,7 @@ TEST_F(AgClChemicalSystemTest, complex_AgCl_reaction_f) {
 		fake_system.proceed(fake_system.getReaction("AgCl3-2"), -1e-2);
 		for(const auto& species : fake_system.getSpecies()) {
 			if(species->getName() != "H2O" && species->getName() != "H+") {
-				activities[f.speciesIndexes()[species->getIndex()]]
+				activities[reduced_system.speciesIndexes()[species->getIndex()]]
 					= species->activity();
 			}
 		}
@@ -265,8 +270,8 @@ TEST_F(AgClChemicalSystemTest, complex_AgCl_reaction_f) {
 
 	auto F = f.f(activities);
 	auto analytical_F = analytical_f(
-			f.componentsIndexes(),
-			f.speciesIndexes(),
+			reduced_system.componentsIndexes(),
+			reduced_system.speciesIndexes(),
 			activities);
 	CHEM_LOGV(6) << "Computed F: " << F;
 	CHEM_LOGV(6) << "Expected F: " << analytical_F;
@@ -276,8 +281,8 @@ TEST_F(AgClChemicalSystemTest, complex_AgCl_reaction_f) {
 			CHEM_LOGV(5) << "Checking mass conservation of component: "
 				<< component->getSpecies()->getName();
 			ASSERT_FLOAT_EQ(
-					F[f.speciesIndexes()[component->getSpecies()->getIndex()]],
-					analytical_F[f.speciesIndexes()[component->getSpecies()->getIndex()]]);
+					F[reduced_system.speciesIndexes()[component->getSpecies()->getIndex()]],
+					analytical_F[reduced_system.speciesIndexes()[component->getSpecies()->getIndex()]]);
 		}
 	}
 	for (auto& reaction : chemical_system.getReactions()) {
@@ -289,7 +294,9 @@ TEST_F(AgClChemicalSystemTest, complex_AgCl_reaction_f) {
 
 TEST_F(AgClChemicalSystemTest, complex_AgCl_reaction_df) {
 	using namespace solver;
-	F f(chemical_system);
+	// Real domain F
+	solver::ReducedChemicalSystem<solver::X> reduced_system(chemical_system);
+	F<solver::X, solver::M> f(reduced_system, chemical_system);
 
 	std::vector<double> activities(chemical_system.getSpecies().size()-2);
 	{
@@ -302,7 +309,7 @@ TEST_F(AgClChemicalSystemTest, complex_AgCl_reaction_df) {
 		fake_system.proceed(fake_system.getReaction("AgCl3-2"), -1e-2);
 		for(const auto& species : fake_system.getSpecies()) {
 			if(species->getName() != "H2O" && species->getName() != "H+") {
-				activities[f.speciesIndexes()[species->getIndex()]]
+				activities[reduced_system.speciesIndexes()[species->getIndex()]]
 					= species->activity();
 			}
 		}
@@ -310,21 +317,21 @@ TEST_F(AgClChemicalSystemTest, complex_AgCl_reaction_df) {
 
 	for(const auto& species : chemical_system.getSpecies()) {
 		if(species->getName() != "H2O" && species->getName() != "H+") {
-			activities[f.speciesIndexes()[species->getIndex()]] = species->activity();
+			activities[reduced_system.speciesIndexes()[species->getIndex()]] = species->activity();
 		}
 	}
 
 	auto dF = f.df(activities);
 	auto analytical_dF = analytical_df(
-			f.componentsIndexes(),
-			f.speciesIndexes(),
+			reduced_system.componentsIndexes(),
+			reduced_system.speciesIndexes(),
 			activities);
 
 	CHEM_LOGV(5) << "Computed jacobian:";
-	print_df(chemical_system, f, dF, 1);
+	print_df(chemical_system, reduced_system, dF, 1);
 
 	CHEM_LOGV(5) << "Expected jacobian:";
-	print_df(chemical_system, f, analytical_dF, 1);
+	print_df(chemical_system, reduced_system, analytical_dF, 1);
 
 	for(const auto& component : chemical_system.getComponents()) {
 		if(component->getSpecies()->getName() != "H2O"
@@ -337,11 +344,11 @@ TEST_F(AgClChemicalSystemTest, complex_AgCl_reaction_df) {
 					CHEM_LOGV(6) << "  dX: " << species->getName();
 					ASSERT_FLOAT_EQ(
 							dF
-							[f.componentsIndexes()[component->getIndex()]]
-							[f.speciesIndexes()[species->getIndex()]],
+							[reduced_system.componentsIndexes()[component->getIndex()]]
+							[reduced_system.speciesIndexes()[species->getIndex()]],
 							analytical_dF
-							[f.componentsIndexes()[component->getIndex()]]
-							[f.speciesIndexes()[species->getIndex()]]
+							[reduced_system.componentsIndexes()[component->getIndex()]]
+							[reduced_system.speciesIndexes()[species->getIndex()]]
 							);
 				}
 			}
@@ -356,22 +363,53 @@ TEST_F(AgClChemicalSystemTest, complex_AgCl_reaction_df) {
 				ASSERT_FLOAT_EQ(
 						dF
 						[1 + reaction->getIndex()]
-						[f.speciesIndexes()[species->getIndex()]],
+						[reduced_system.speciesIndexes()[species->getIndex()]],
 						analytical_dF
 						[1 + reaction->getIndex()]
-						[f.speciesIndexes()[species->getIndex()]]);
+						[reduced_system.speciesIndexes()[species->getIndex()]]);
 			}
 		}
 	}
 }
 
-TEST_F(AgClChemicalSystemTest, solve_equilibrium) {
+TEST_F(AgClChemicalSystemTest, solve_equilibrium_absolute_newton) {
 	chemical_system.setMaxIteration(10);
-	chemical_system.solveEquilibrium();
+	chemical_system.solveEquilibrium(absolute_newton);
 
 	checkEquilibrium();
+	checkPh(default_ph);
 }
 
+TEST_F(AgClChemicalSystemTest, solve_equilibrium_homotopy) {
+	solver::HomotopyContinuation<std::minstd_rand> homotopy(
+			std::minstd_rand {}, 1000, 100
+			);
+
+	// Run the solver several times to ensure the algorithm converges from any
+	// random a/b selected to build G.
+	for(std::size_t i = 0; i < 10; i++) {
+		chemical_system.solveEquilibrium(homotopy);
+		checkEquilibrium();
+		checkPh(default_ph);
+	}
+}
+
+TEST_F(AgClChemicalSystemTest, solve_equilibrium_brutal_ph_homotopy) {
+	solver::HomotopyContinuation<std::minstd_rand> homotopy(
+			std::minstd_rand {}, 1000, 100
+			);
+
+	chemical_system.setMaxIteration(1000);
+	chemical_system.fixPH(10);
+	chemical_system.solveEquilibrium(homotopy);
+	checkEquilibrium();
+	checkPh(10);
+
+	chemical_system.fixPH(2);
+	chemical_system.solveEquilibrium(homotopy);
+	checkEquilibrium();
+	checkPh(2);
+}
 TEST_F(AgClChemicalSystemTest, set_total_concentration) {
 	chemical_system.setTotalConcentration(
 			chemical_system.getComponent("Ag+"),
@@ -380,7 +418,7 @@ TEST_F(AgClChemicalSystemTest, set_total_concentration) {
 			chemical_system.getComponent("Cl-"),
 			0.8 * mol/l);
 
-	chemical_system.solveEquilibrium();
+	chemical_system.solveEquilibrium(absolute_newton);
 
 	ASSERT_FLOAT_EQ(
 			chemical_system.getComponent("Ag+").getTotalQuantity(),
@@ -390,5 +428,6 @@ TEST_F(AgClChemicalSystemTest, set_total_concentration) {
 			0.8 * mol/l * AqueousSpecies::V);
 
 	checkEquilibrium();
+	checkPh(default_ph);
 }
 

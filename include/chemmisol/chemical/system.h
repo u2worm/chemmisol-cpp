@@ -2,7 +2,7 @@
 #define CHEMMISOL_SYSTEM_H
 
 #include "chemmisol/math/linear.h"
-#include "solver.h"
+#include "reaction.h"
 
 /**
  * @file chemmisol/chemical/system.h
@@ -17,6 +17,10 @@
  */
 
 namespace chemmisol {
+	namespace solver {
+		class Solver;
+	}
+
 	/**
 	 * Compiled reagent corresponding to a ChemicalComponent.
 	 *
@@ -282,6 +286,16 @@ namespace chemmisol {
 			 * by the user.
 			 */
 			void initReactionMatrix();
+
+			template<typename T>
+				void _massConservationLaw(
+						const std::vector<T>& activities,
+						std::vector<T>& result) const;
+
+			template<typename T>
+				T _distanceToEquilibrium(
+						const std::vector<T>& activities,
+						const Reaction& reaction) const;
 
 		public:
 			/**
@@ -761,6 +775,13 @@ namespace chemmisol {
 			 * where a(S) denotes the activity of the species S, with a(S)^n set
 			 * to 0 if a(S)=0.
 			 *
+			 * The distance to the equilibrium thus constitutes a polynomial
+			 * equation where variables represent the activity of each species,
+			 * and the equilibrium of the system constitutes roots of the
+			 * polynom. The total degree of this polynom can be queried with the
+			 * [degree()](@ref degree(const Reaction&) const) method. In this
+			 * case, the total degree would be `max(k+l, n+m)`.
+			 *
 			 * Such distance might be positive or negative, depending on which
 			 * side of the equilibrium the current state is.
 			 *
@@ -775,6 +796,19 @@ namespace chemmisol {
 			double distanceToEquilibrium(
 					const std::vector<double>& activities,
 					const Reaction& reaction) const;
+
+			std::complex<double> distanceToEquilibrium(
+					const std::vector<std::complex<double>>& activities,
+					const Reaction& reaction) const;
+
+			/**
+			 * Returns the total degree of the polynomial equation representing
+			 * the "distance to equilibrium equation".
+			 *
+			 * See [distanceToEquilibrium()](@ref distanceToEquilibrium(const
+			 * std::vector<double>&, const Reaction&) const) for an example.
+			 */
+			double degree(const Reaction& reaction) const;
 
 			/**
 			 * Computes the distance between the current state of the system and
@@ -949,6 +983,10 @@ namespace chemmisol {
 					const std::vector<double>& activities,
 					std::vector<double>& result) const;
 
+			void massConservationLaw(
+					const std::vector<std::complex<double>>& activities,
+					std::vector<std::complex<double>>& result) const;
+
 			/**
 			 * Computes the value of the [law of conservation of
 			 * mass](https://en.wikipedia.org/wiki/Conservation_of_mass) for the
@@ -981,5 +1019,72 @@ namespace chemmisol {
 			}
 	};
 
+	template<typename T>
+		void ChemicalSystem::_massConservationLaw(
+				const std::vector<T>& activities,
+				std::vector<T>& result) const {
+			for(auto& component : getComponents()) {
+				if(component->isFixed()) {
+					result[component->getIndex()] = 0.0;
+				} else {
+					result[component->getIndex()]
+						= component->getSpecies()->quantity(
+								activities[component->getSpecies()->getIndex()]
+								);
+				}
+			}
+			for(auto& reaction : compiled_reactions) {
+				for(const ComponentReagent& reagent
+						: reaction.components) {
+					if(!reagent.component->isFixed()) {
+						result[reagent.component->getIndex()] +=
+							reagent.coefficient / (-reaction.produced_species.coefficient)
+							* reaction.produced_species.species->quantity(
+									activities[reaction.produced_species.species->getIndex()]
+									);
+					}
+				}
+			}
+			for(auto& component : getComponents()) {
+				if(!component->isFixed()) {
+					result[component->getIndex()]
+						-= component->getTotalQuantity();
+				}
+			}
+		}
+
+	template<typename T>
+		T ChemicalSystem::_distanceToEquilibrium(
+				const std::vector<T>& activities,
+				const Reaction& reaction) const {
+			T reactives = {reaction.getK()};
+			T products {1.0};
+			auto& compiled_reaction = compiled_reactions[reaction.getIndex()];
+			for(const auto& reagent : compiled_reaction.components) {
+				T activity = activities[reagent.component->getSpecies()->getIndex()];
+				if(activity != 0.0) {
+					if(reagent.coefficient > 0) {
+						reactives *= std::pow(activity, reagent.coefficient);
+					} else {
+						products *= std::pow(activity, -reagent.coefficient);
+					}
+				} else {
+					if(reagent.coefficient > 0) {
+						reactives = 0.0;
+					} else {
+						products = 0.0;
+					}
+				}
+			}
+			T activity = activities[compiled_reaction.produced_species.species->getIndex()];
+			if(activity != 0.0)
+				// This coefficient is necessarily negative
+				products *= std::pow(
+						activity,
+						-compiled_reaction.produced_species.coefficient);
+			else
+				products = 0.0;
+			return products - reactives;
+		}
 }
 #endif /*CHEMMISOL_SYSTEM_H*/

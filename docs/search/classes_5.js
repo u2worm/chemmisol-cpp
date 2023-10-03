@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['h_0',['H',['../classchemmisol_1_1H.html',1,'chemmisol']]],
-  ['homotopy_1',['Homotopy',['../classchemmisol_1_1Homotopy.html',1,'chemmisol']]]
+  ['g_0',['G',['../classchemmisol_1_1solver_1_1G.html',1,'chemmisol::solver']]]
 ];

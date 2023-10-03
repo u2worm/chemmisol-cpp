@@ -6,11 +6,14 @@
  * coefficients only.
  */
 class NaClChemicalSystemTest : public BasicAqueousChemicalSystemTest {
+	protected:
+		solver::AbsoluteNewton absolute_newton;
 	public:
+		static constexpr double default_ph = 7;
 		void SetUp() override {
 			BasicAqueousChemicalSystemTest::SetUp();
 
-			chemical_system.fixPH(7);
+			chemical_system.fixPH(default_ph);
 			chemical_system.setUp();
 		}
 
@@ -105,8 +108,7 @@ class NaClChemicalSystemTest : public BasicAqueousChemicalSystemTest {
 				df_nacl[species_indexes[chemical_system.getSpecies("Na+").getIndex()]] = -K * cl;
 				df_nacl[species_indexes[chemical_system.getSpecies("Cl-").getIndex()]] = -K * na;
 			}
-
-			// df NaOH
+// df NaOH
 			{
 				double K = chemical_system.getReaction("NaOH").getK();
 				auto& df_naoh = df_x[M+chemical_system.getReaction("NaOH").getIndex()];
@@ -171,16 +173,16 @@ class NaClChemicalSystemTest : public BasicAqueousChemicalSystemTest {
 						chemical_system.getReaction("NaOH").getLogK()
 						);
 			}
-			{
-				// Check pH
-				double H = chemical_system.getSpecies("H+").activity();
-				ASSERT_FLOAT_EQ(-std::log10(H), 7);
-			}
 		}
 
+		void checkPh(double ph) {
+			// Check pH
+			double H = chemical_system.getSpecies("H+").activity();
+			ASSERT_FLOAT_EQ(-std::log10(H), ph);
+		}
 };
 
-TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction_matrix) {
+TEST_F(NaClChemicalSystemTest, NaCl_reaction_matrix) {
 	auto reaction_matrix = chemical_system.getReactionMatrix();
 
 	ASSERT_THAT(reaction_matrix, SizeIs(3));
@@ -211,9 +213,11 @@ TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction_matrix) {
 	}
 }
 
-TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction_f) {
+TEST_F(NaClChemicalSystemTest, NaCl_reaction_f) {
 	using namespace solver;
-	F f(chemical_system);
+	// Real domain F
+	solver::ReducedChemicalSystem<solver::X> reduced_system(chemical_system);
+	F<solver::X, solver::M> f(reduced_system, chemical_system);
 
 	std::vector<double> activities(chemical_system.getSpecies().size()-2);
 	{
@@ -224,7 +228,7 @@ TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction_f) {
 		fake_system.proceed(fake_system.getReaction("NaOH"), -1e-4);
 		for(const auto& species : fake_system.getSpecies()) {
 			if(species->getName() != "H2O" && species->getName() != "H+") {
-				activities[f.speciesIndexes()[species->getIndex()]]
+				activities[reduced_system.speciesIndexes()[species->getIndex()]]
 					= species->activity();
 			}
 		}
@@ -232,8 +236,8 @@ TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction_f) {
 
 	auto F = f.f(activities);
 	auto analytical_F = analytical_f(
-			f.componentsIndexes(),
-			f.speciesIndexes(),
+			reduced_system.componentsIndexes(),
+			reduced_system.speciesIndexes(),
 			activities);
 	for (auto& component : chemical_system.getComponents()) {
 		if(component->getSpecies()->getName() != "H2O"
@@ -241,8 +245,8 @@ TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction_f) {
 			CHEM_LOGV(5) << "Checking mass conservation of component: "
 				<< component->getSpecies()->getName();
 			ASSERT_FLOAT_EQ(
-					F[f.componentsIndexes()[component->getIndex()]],
-					analytical_F[f.componentsIndexes()[component->getIndex()]]);
+					F[reduced_system.componentsIndexes()[component->getIndex()]],
+					analytical_F[reduced_system.componentsIndexes()[component->getIndex()]]);
 		}
 	}
 	for (auto& reaction : chemical_system.getReactions()) {
@@ -252,9 +256,11 @@ TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction_f) {
 	}
 }
 
-TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction_df) {
+TEST_F(NaClChemicalSystemTest, NaCl_reaction_df) {
 	using namespace solver;
-	F f(chemical_system);
+	// Real domain F
+	solver::ReducedChemicalSystem<solver::X> reduced_system(chemical_system);
+	F<solver::X, solver::M> f(reduced_system, chemical_system);
 
 	std::vector<double> activities(chemical_system.getSpecies().size()-2);
 	{
@@ -265,7 +271,7 @@ TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction_df) {
 		fake_system.proceed(fake_system.getReaction("NaOH"), -1e-4);
 		for(const auto& species : fake_system.getSpecies()) {
 			if(species->getName() != "H2O" && species->getName() != "H+") {
-				activities[f.speciesIndexes()[species->getIndex()]]
+				activities[reduced_system.speciesIndexes()[species->getIndex()]]
 					= species->activity();
 			}
 		}
@@ -273,21 +279,21 @@ TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction_df) {
 	
 	for(const auto& species : chemical_system.getSpecies()) {
 		if(species->getName() != "H2O" && species->getName() != "H+") {
-			activities[f.speciesIndexes()[species->getIndex()]] = species->activity();
+			activities[reduced_system.speciesIndexes()[species->getIndex()]] = species->activity();
 		}
 	}
 
 	auto dF = f.df(activities);
 	auto analytical_dF = analytical_df(
-			f.componentsIndexes(),
-			f.speciesIndexes(),
+			reduced_system.componentsIndexes(),
+			reduced_system.speciesIndexes(),
 			activities);
 
 	CHEM_LOGV(5) << "Computed jacobian:";
-	print_df(chemical_system, f, dF, 2);
+	print_df(chemical_system, reduced_system, dF, 2);
 
 	CHEM_LOGV(5) << "Expected jacobian:";
-	print_df(chemical_system, f, analytical_dF, 2);
+	print_df(chemical_system, reduced_system, analytical_dF, 2);
 
 	for(const auto& component : chemical_system.getComponents()) {
 		if(component->getSpecies()->getName() != "H2O"
@@ -300,11 +306,11 @@ TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction_df) {
 					CHEM_LOGV(6) << "  dX: " << species->getName();
 					ASSERT_FLOAT_EQ(
 							dF
-							[f.componentsIndexes()[component->getIndex()]]
-							[f.speciesIndexes()[species->getIndex()]],
+							[reduced_system.componentsIndexes()[component->getIndex()]]
+							[reduced_system.speciesIndexes()[species->getIndex()]],
 							analytical_dF
-							[f.componentsIndexes()[component->getIndex()]]
-							[f.speciesIndexes()[species->getIndex()]]
+							[reduced_system.componentsIndexes()[component->getIndex()]]
+							[reduced_system.speciesIndexes()[species->getIndex()]]
 							);
 				}
 			}
@@ -319,20 +325,77 @@ TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction_df) {
 				ASSERT_FLOAT_EQ(
 						dF
 						[2 + reaction->getIndex()]
-						[f.speciesIndexes()[species->getIndex()]],
+						[reduced_system.speciesIndexes()[species->getIndex()]],
 						analytical_dF
 						[2 + reaction->getIndex()]
-						[f.speciesIndexes()[species->getIndex()]]);
+						[reduced_system.speciesIndexes()[species->getIndex()]]);
 			}
 		}
 	}
 }
 
-TEST_F(NaClChemicalSystemTest, solve_equilibrium) {
+TEST_F(NaClChemicalSystemTest, solve_equilibrium_absolute_newton) {
 	chemical_system.setMaxIteration(10);
-	chemical_system.solveEquilibrium();
+	chemical_system.solveEquilibrium(absolute_newton);
 
 	checkEquilibrium();
+	checkPh(default_ph);
+}
+
+TEST_F(NaClChemicalSystemTest, homotopy_G0) {
+	solver::ReducedChemicalSystem<solver::CX> reduced_system(chemical_system);
+	std::minstd_rand rd;
+	solver::G g(reduced_system, rd);
+
+	// Degrees of the F system:
+	// - deg(F0) = 1 (Na mass conservation law)
+	// - deg(F1) = 1 (Cl mass conservation law)
+	// - def(F2) = 1 ([OH][H+] - [H2O] * K = 0 with [H+] and [H2O] fixed)
+	// - def(F3) = 2 ([NaCl] - [Na][Cl] * K = 0)
+	// - def(F4) = 1 ([NaOH][H+] - [Na][H2O] * K = 0 with [H+] and [H2O] fixed)
+	// So the complete solution set of G(x) = 0 is of size 1*1*1*2*1=2.
+	std::list<solver::CX> G0 = g.initValues();
+	ASSERT_THAT(G0, SizeIs(2));
+	std::size_t i = 0;
+	for(const auto& item : G0) {
+		CHEM_LOGV(6) << "G0, " << i << " = " << item;
+		++i;
+		solver::CX gx = g.g(item);
+		for(const auto& v : gx) {
+			ASSERT_NEAR(v.imag(), 0.0, 1e-12);
+			ASSERT_NEAR(v.real(), 0.0, 1e-12);
+		}
+	}
+}
+
+TEST_F(NaClChemicalSystemTest, solve_equilibrium_homotopy) {
+	solver::HomotopyContinuation<std::minstd_rand> homotopy(
+			std::minstd_rand {}, 100, 100
+			);
+
+	// Run the solver several times to ensure the algorithm converges from any
+	// random a/b selected to build G.
+	for(std::size_t i = 0; i < 10; i++) {
+		chemical_system.solveEquilibrium(homotopy);
+		checkEquilibrium();
+		checkPh(default_ph);
+	}
+}
+
+TEST_F(NaClChemicalSystemTest, solve_equilibrium_brutal_ph_homotopy) {
+	solver::HomotopyContinuation<std::minstd_rand> homotopy(
+			std::minstd_rand {}, 100, 100
+			);
+
+	chemical_system.fixPH(10);
+	chemical_system.solveEquilibrium(homotopy);
+	checkEquilibrium();
+	checkPh(10);
+
+	chemical_system.fixPH(2);
+	chemical_system.solveEquilibrium(homotopy);
+	checkEquilibrium();
+	checkPh(2);
 }
 
 TEST_F(NaClChemicalSystemTest, set_total_quantity) {
@@ -343,7 +406,7 @@ TEST_F(NaClChemicalSystemTest, set_total_quantity) {
 			chemical_system.getComponent("Cl-"),
 			0.02*mol/l*AqueousSpecies::V);
 
-	chemical_system.solveEquilibrium();
+	chemical_system.solveEquilibrium(absolute_newton);
 
 	ASSERT_FLOAT_EQ(
 			chemical_system.getComponent("Na+").getTotalQuantity(),
@@ -363,7 +426,7 @@ TEST_F(NaClChemicalSystemTest, set_total_concentration) {
 			chemical_system.getComponent("Cl-"),
 			0.02*mol/l);
 
-	chemical_system.solveEquilibrium();
+	chemical_system.solveEquilibrium(absolute_newton);
 
 	ASSERT_FLOAT_EQ(
 			chemical_system.getComponent("Na+").getTotalQuantity(),
@@ -378,16 +441,16 @@ TEST_F(NaClChemicalSystemTest, set_total_concentration) {
 TEST_F(NaClChemicalSystemTest, test_pH) {
 	auto reaction_matrix = chemical_system.getReactionMatrix();
 	chemical_system.setMaxIteration(200);
-	chemical_system.solveEquilibrium();
+	chemical_system.solveEquilibrium(absolute_newton);
 
 	// Check pH
 	ASSERT_FLOAT_EQ(chemical_system.getPH(), 7);
 }
 
-TEST_F(NaClChemicalSystemTest, basic_NaCl_reaction_quotient) {
+TEST_F(NaClChemicalSystemTest, NaCl_reaction_quotient) {
 	auto reaction_matrix = chemical_system.getReactionMatrix();
 	chemical_system.setMaxIteration(200);
-	chemical_system.solveEquilibrium();
+	chemical_system.solveEquilibrium(absolute_newton);
 
 	{
 		// Check OH-

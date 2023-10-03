@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['solvent_0',['Solvent',['../classchemmisol_1_1Solvent.html',1,'chemmisol']]],
-  ['solver_1',['Solver',['../classchemmisol_1_1solver_1_1Solver.html',1,'chemmisol::solver']]]
+  ['reaction_0',['Reaction',['../classchemmisol_1_1Reaction.html',1,'chemmisol']]],
+  ['reagent_1',['Reagent',['../structchemmisol_1_1Reagent.html',1,'chemmisol']]],
+  ['regulafalsi_2',['RegulaFalsi',['../classchemmisol_1_1RegulaFalsi.html',1,'chemmisol']]]
 ];

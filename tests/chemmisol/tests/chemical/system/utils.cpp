@@ -14,7 +14,7 @@ namespace chemmisol {
 
 	void print_df(
 			const ChemicalSystem& system,
-			const solver::F& f,
+			const solver::ReducedChemicalSystem<solver::X>& reduced_system,
 			std::vector<std::vector<double>>& df,
 			std::size_t unfixed_components) {
 
@@ -32,7 +32,7 @@ namespace chemmisol {
 			if(component->getSpecies()->getName() != "H2O"
 					&& component->getSpecies()->getName() != "H+") {
 				s << "  " << std::setw(6) << component->getSpecies()->getName();
-				for(const auto& item : df[f.componentsIndexes()[component->getIndex()]])
+				for(const auto& item : df[reduced_system.componentsIndexes()[component->getIndex()]])
 					s << std::setw(16) << std::scientific << item;
 				CHEM_LOGV(5) << s.str();
 			}

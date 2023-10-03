@@ -11,6 +11,8 @@ using namespace chemmisol;
  */
 class SohTest : public BasicMineralChemicalSystemTest {
 	protected:
+		solver::AbsoluteNewton absolute_newton;
+
 		std::vector<double> analytical_f(
 				const std::vector<std::size_t>& components_indexes,
 				const std::vector<std::size_t>& species_indexes,
@@ -149,7 +151,9 @@ class SohTest : public BasicMineralChemicalSystemTest {
 
 TEST_F(SohTest, reaction_f) {
 	using namespace solver;
-	F f(chemical_system);
+	// Real domain F
+	solver::ReducedChemicalSystem<solver::X> reduced_system(chemical_system);
+	F<solver::X, solver::M> f(reduced_system, chemical_system);
 
 	std::vector<double> activities(chemical_system.getSpecies().size()
 			// Two fixed species, H2O and H+, that are removed from the
@@ -163,7 +167,7 @@ TEST_F(SohTest, reaction_f) {
 		fake_system.proceed(fake_system.getReaction("=SOH2"), -1e-6);
 		for(const auto& species : fake_system.getSpecies()) {
 			if(species->getName() != "H2O" && species->getName() != "H+") {
-				activities[f.speciesIndexes()[species->getIndex()]]
+				activities[reduced_system.speciesIndexes()[species->getIndex()]]
 					= species->activity();
 			}
 		}
@@ -171,8 +175,8 @@ TEST_F(SohTest, reaction_f) {
 
 	auto F = f.f(activities);
 	auto analytical_F = analytical_f(
-			f.componentsIndexes(),
-			f.speciesIndexes(),
+			reduced_system.componentsIndexes(),
+			reduced_system.speciesIndexes(),
 			activities);
 	CHEM_LOGV(6) << "Computed F: " << F;
 	CHEM_LOGV(6) << "Expected F: " << analytical_F;
@@ -182,8 +186,8 @@ TEST_F(SohTest, reaction_f) {
 			CHEM_LOGV(5) << "Checking mass conservation of component: "
 				<< component->getSpecies()->getName();
 			ASSERT_FLOAT_EQ(
-					F[f.speciesIndexes()[component->getSpecies()->getIndex()]],
-					analytical_F[f.speciesIndexes()[component->getSpecies()->getIndex()]]);
+					F[reduced_system.speciesIndexes()[component->getSpecies()->getIndex()]],
+					analytical_F[reduced_system.speciesIndexes()[component->getSpecies()->getIndex()]]);
 		}
 	}
 	for (auto& reaction : chemical_system.getReactions()) {
@@ -195,7 +199,9 @@ TEST_F(SohTest, reaction_f) {
 
 TEST_F(SohTest, reaction_df) {
 	using namespace solver;
-	F f(chemical_system);
+	// Real domain F
+	solver::ReducedChemicalSystem<solver::X> reduced_system(chemical_system);
+	F<solver::X, solver::M> f(reduced_system, chemical_system);
 
 	std::vector<double> activities(chemical_system.getSpecies().size()
 			// Two fixed species, H2O and H+, that are removed from the
@@ -209,7 +215,7 @@ TEST_F(SohTest, reaction_df) {
 		fake_system.proceed(fake_system.getReaction("=SOH2"), -1e-6);
 		for(const auto& species : fake_system.getSpecies()) {
 			if(species->getName() != "H2O" && species->getName() != "H+") {
-				activities[f.speciesIndexes()[species->getIndex()]]
+				activities[reduced_system.speciesIndexes()[species->getIndex()]]
 					= species->activity();
 			}
 		}
@@ -217,21 +223,21 @@ TEST_F(SohTest, reaction_df) {
 
 	for(const auto& species : chemical_system.getSpecies()) {
 		if(species->getName() != "H2O" && species->getName() != "H+") {
-			activities[f.speciesIndexes()[species->getIndex()]] = species->activity();
+			activities[reduced_system.speciesIndexes()[species->getIndex()]] = species->activity();
 		}
 	}
 
 	auto dF = f.df(activities);
 	auto analytical_dF = analytical_df(
-			f.componentsIndexes(),
-			f.speciesIndexes(),
+			reduced_system.componentsIndexes(),
+			reduced_system.speciesIndexes(),
 			activities);
 
 	CHEM_LOGV(5) << "Computed jacobian:";
-	print_df(chemical_system, f, dF, 1);
+	print_df(chemical_system, reduced_system, dF, 1);
 
 	CHEM_LOGV(5) << "Expected jacobian:";
-	print_df(chemical_system, f, analytical_dF, 1);
+	print_df(chemical_system, reduced_system, analytical_dF, 1);
 
 	for(const auto& component : chemical_system.getComponents()) {
 		if(component->getSpecies()->getName() != "H2O"
@@ -244,11 +250,11 @@ TEST_F(SohTest, reaction_df) {
 					CHEM_LOGV(6) << "  dX: " << species->getName();
 					ASSERT_FLOAT_EQ(
 							dF
-							[f.componentsIndexes()[component->getIndex()]]
-							[f.speciesIndexes()[species->getIndex()]],
+							[reduced_system.componentsIndexes()[component->getIndex()]]
+							[reduced_system.speciesIndexes()[species->getIndex()]],
 							analytical_dF
-							[f.componentsIndexes()[component->getIndex()]]
-							[f.speciesIndexes()[species->getIndex()]]
+							[reduced_system.componentsIndexes()[component->getIndex()]]
+							[reduced_system.speciesIndexes()[species->getIndex()]]
 							);
 				}
 			}
@@ -263,18 +269,18 @@ TEST_F(SohTest, reaction_df) {
 				ASSERT_FLOAT_EQ(
 						dF
 						[1 + reaction->getIndex()]
-						[f.speciesIndexes()[species->getIndex()]],
+						[reduced_system.speciesIndexes()[species->getIndex()]],
 						analytical_dF
 						[1 + reaction->getIndex()]
-						[f.speciesIndexes()[species->getIndex()]]);
+						[reduced_system.speciesIndexes()[species->getIndex()]]);
 			}
 		}
 	}
 }
 
-TEST_F(SohTest, solve_equilibrium) {
+TEST_F(SohTest, solve_equilibrium_absolute_newton) {
 	chemical_system.setMaxIteration(10);
-	chemical_system.solveEquilibrium();
+	chemical_system.solveEquilibrium(absolute_newton);
 
 	checkEquilibrium();
 }

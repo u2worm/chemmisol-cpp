@@ -1,4 +1,4 @@
-#include "chemmisol/chemical/system.h"
+#include "chemmisol/chemical/solver.h"
 
 /**
  * @file chemmisol.h

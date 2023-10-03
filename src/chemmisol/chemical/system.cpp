@@ -1,4 +1,4 @@
-#include "chemmisol/chemical/system.h"
+#include "chemmisol/chemical/solver.h"
 #include "chemmisol/math/regula_falsi.h"
 
 #include <limits>
@@ -458,34 +458,32 @@ namespace chemmisol {
 	double ChemicalSystem::distanceToEquilibrium(
 			const std::vector<double>& activities,
 			const Reaction& reaction) const {
-		double reactives = reaction.getK();
-		double products = 1.0;
+		return _distanceToEquilibrium(activities, reaction);
+	}
+
+	std::complex<double> ChemicalSystem::distanceToEquilibrium(
+			const std::vector<std::complex<double>>& activities,
+			const Reaction& reaction) const {
+		return _distanceToEquilibrium(activities, reaction);
+	}
+
+	double ChemicalSystem::degree(const Reaction& reaction) const {
+		double reactives_deg = 0.0;
+		double products_deg = 0.0;
 		auto& compiled_reaction = compiled_reactions[reaction.getIndex()];
 		for(const auto& reagent : compiled_reaction.components) {
-			double activity = activities[reagent.component->getSpecies()->getIndex()];
-			if(activity > 0.0) {
+			if(!reagent.component->isFixed()) {
 				if(reagent.coefficient > 0) {
-					reactives *= std::pow(activity, reagent.coefficient);
+					reactives_deg += reagent.coefficient;
 				} else {
-					products *= std::pow(activity, -reagent.coefficient);
-				}
-			} else {
-				if(reagent.coefficient > 0) {
-					reactives = 0.0;
-				} else {
-					products = 0.0;
+					products_deg += -reagent.coefficient;
 				}
 			}
 		}
-		double activity = activities[compiled_reaction.produced_species.species->getIndex()];
-		if(activity > 0.0)
-			// This coefficient is necessarily negative
-			products *= std::pow(
-					activity,
-					-compiled_reaction.produced_species.coefficient);
-		else
-			products = 0.0;
-		return products - reactives;
+		// This coefficient is necessarily negative
+		products_deg += 
+			-compiled_reaction.produced_species.coefficient;
+		return std::max(products_deg, reactives_deg);
 	}
 
 	double ChemicalSystem::distanceToEquilibrium(const Reaction& reaction) const {
@@ -571,34 +569,13 @@ namespace chemmisol {
 	void ChemicalSystem::massConservationLaw(
 			const std::vector<double>& activities,
 			std::vector<double>& result) const {
-		for(auto& component : getComponents()) {
-			if(component->isFixed()) {
-				result[component->getIndex()] = 0.0;
-			} else {
-				result[component->getIndex()]
-					= component->getSpecies()->quantity(
-							activities[component->getSpecies()->getIndex()]
-							);
-			}
-		}
-		for(auto& reaction : compiled_reactions) {
-			for(const ComponentReagent& reagent
-					: reaction.components) {
-				if(!reagent.component->isFixed()) {
-					result[reagent.component->getIndex()] +=
-						reagent.coefficient / (-reaction.produced_species.coefficient)
-						* reaction.produced_species.species->quantity(
-								activities[reaction.produced_species.species->getIndex()]
-								);
-				}
-			}
-		}
-		for(auto& component : getComponents()) {
-			if(!component->isFixed()) {
-				result[component->getIndex()]
-					-= component->getTotalQuantity();
-			}
-		}
+		_massConservationLaw(activities, result);
+	}
+
+	void ChemicalSystem::massConservationLaw(
+			const std::vector<std::complex<double>>& activities,
+			std::vector<std::complex<double>>& result) const {
+		_massConservationLaw(activities, result);
 	}
 
 	void ChemicalSystem::massConservationLaw(std::vector<double>& result) const {

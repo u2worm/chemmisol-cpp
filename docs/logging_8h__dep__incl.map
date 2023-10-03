@@ -8,9 +8,11 @@
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="89,138,89,170,84,170,84,138"/>
 <area shape="rect" id="Node000004" href="$homotopy_8h_source.html" title=" " alt="" coords="5,261,168,304"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="89,229,89,261,84,261,84,229"/>
-<area shape="poly" id="edge7_Node000005_Node000003" title=" " alt="" coords="217,132,131,173,129,168,215,127"/>
+<area shape="poly" id="edge8_Node000005_Node000003" title=" " alt="" coords="217,132,131,173,129,168,215,127"/>
 <area shape="rect" id="Node000006" href="$system_8h.html" title=" " alt="" coords="191,171,377,213"/>
 <area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="280,138,284,170,279,171,275,139"/>
-<area shape="rect" id="Node000007" href="$chemmisol_8h.html" title=" " alt="" coords="214,269,354,296"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="287,229,287,269,281,269,281,229"/>
+<area shape="rect" id="Node000007" href="$chemmisol_8h.html" title=" " alt="" coords="203,269,343,296"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="282,229,277,269,272,269,277,229"/>
+<area shape="rect" id="Node000008" href="$solver_8h.html" title=" " alt="" coords="367,261,553,304"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="340,218,420,258,418,263,337,223"/>
 </map>

@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['mineralspecies_0',['MineralSpecies',['../classchemmisol_1_1MineralSpecies.html',1,'chemmisol']]],
-  ['missingproducedspeciesinreaction_1',['MissingProducedSpeciesInReaction',['../classchemmisol_1_1MissingProducedSpeciesInReaction.html',1,'chemmisol']]]
+  ['invalidmineralspecieswithundefinedsitescount_0',['InvalidMineralSpeciesWithUndefinedSitesCount',['../classchemmisol_1_1InvalidMineralSpeciesWithUndefinedSitesCount.html',1,'chemmisol']]],
+  ['invalidreaction_1',['InvalidReaction',['../classchemmisol_1_1InvalidReaction.html',1,'chemmisol']]],
+  ['invalidspecies_2',['InvalidSpecies',['../classchemmisol_1_1InvalidSpecies.html',1,'chemmisol']]]
 ];

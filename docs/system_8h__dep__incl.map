@@ -1,5 +1,7 @@
 <map id="include/chemmisol/chemical/system.h" name="include/chemmisol/chemical/system.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,191,48"/>
-<area shape="rect" id="Node000002" href="$chemmisol_8h.html" title=" " alt="" coords="28,96,168,123"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,63,101,95,95,95,95,63"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="76,5,262,48"/>
+<area shape="rect" id="Node000002" href="$chemmisol_8h.html" title=" " alt="" coords="5,104,146,131"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="138,61,91,106,87,102,135,57"/>
+<area shape="rect" id="Node000003" href="$solver_8h.html" title=" " alt="" coords="170,96,355,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="203,57,242,94,239,98,200,61"/>
 </map>
