@@ -78,10 +78,17 @@ namespace chemmisol {
 				std::size_t homotopy_n, std::size_t local_solver_n) const {
 			std::vector<SolverResult<X>> results(x0.size());
 			CHEM_LOG(INFO) << "[HOMOTOPY] Start exhaustive homotopy from " << x0.size() << " starting points.";
-			#pragma omp  parallel for shared(results, x0)
+#ifdef CHEMMISOL_OPENMP
+			std::size_t n = 0;
+#endif
+			#pragma omp parallel for shared(results, x0, n)
 			for(std::size_t i = 0; i < x0.size(); i++) {
 #ifdef CHEMMISOL_OPENMP
-				CHEM_LOG(INFO) << "[HOMOTOPY]   i=" << i << " (thread " << omp_get_thread_num() << ")";
+				std::size_t _n;
+				#pragma omp critical
+				_n = ++n;
+
+				CHEM_LOG(INFO) << "[HOMOTOPY]   i=" << i << " (thread " << omp_get_thread_num() << ", " << _n << "/" << x0.size() << ")";
 #else
 				CHEM_LOG(INFO) << "[HOMOTOPY]   i=" << i;
 #endif
