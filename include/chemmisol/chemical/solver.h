@@ -603,12 +603,17 @@ namespace chemmisol {
 			while(sol_it != solutions.end()) {
 				CHEM_LOG(TRACE) << "[HOMOTOPY] Possible solution: " << *sol_it;
 				if(sol_it->isFinite()) {
-					auto image_part = sol_it->x;
-					for(auto& c : image_part)
-						c.real(0.0);
-					if(norm(image_part) < current_minimum) {
+					CX quantity_to_minimize;;
+					for(const auto& c : sol_it->x) {
+						if(c.real() < 0)
+							quantity_to_minimize.push_back(c);
+						else
+							quantity_to_minimize.push_back({0.0, c.imag()});
+					}
+					auto _norm = norm(quantity_to_minimize);
+					if(_norm < current_minimum) {
 						closest_solution = sol_it->x;
-						current_minimum = norm(image_part);
+						current_minimum = _norm;
 					}
 				}
 				++sol_it;
@@ -617,7 +622,7 @@ namespace chemmisol {
 				= reduced_system.completeActivities(closest_solution);
 			X solution(complete_activities.size());
 			for(std::size_t i = 0; i < complete_activities.size(); i++) {
-				solution[i] = complete_activities[i].real();
+				solution[i] = abs(complete_activities[i].real());
 			}
 			return solution;
 		}
