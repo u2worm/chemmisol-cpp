@@ -53,11 +53,11 @@ namespace chemmisol {
 			return dg;
 		}
 
-		std::list<CX> build_roots(
-				const std::list<CX>& current_roots,
+		std::vector<CX> build_roots(
+				const std::vector<CX>& current_roots,
 				const std::vector<std::vector<typename CX::value_type>>& roots,
 				std::size_t i) {
-			std::list<CX> local_roots;
+			std::vector<CX> local_roots;
 			for(const CX& base : current_roots) {
 				for(std::size_t j = 0; j < roots[i].size(); j++) {
 					CX new_root(base);
@@ -70,16 +70,16 @@ namespace chemmisol {
 			return build_roots(local_roots, roots, i+1);
 		}
 
-		std::list<CX> build_roots(
+		std::vector<CX> build_roots(
 				std::size_t n,
 				const std::vector<std::vector<typename CX::value_type>>& roots) {
-			std::list<CX> base;
+			std::vector<CX> base;
 			base.push_back(CX(n));
 			return build_roots(
 					base, roots, 0);
 		}
 
-		std::list<CX> G::initValues() const {
+		std::vector<CX> G::initValues() const {
 			std::vector<std::vector<typename CX::value_type>> _roots(reduced_system.xSize());
 			for(std::size_t i = 0; i < reduced_system.xSize(); i++) {
 				auto roots_list = roots(b[i] / a[i], degrees[i]);

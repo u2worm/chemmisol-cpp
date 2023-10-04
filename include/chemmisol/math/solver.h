@@ -14,6 +14,7 @@ namespace chemmisol {
 				bool is_finite;
 
 			public:
+				SolverResult() = default;
 				SolverResult(const X& result, const X& f_x);
 
 				bool isFinite() const {

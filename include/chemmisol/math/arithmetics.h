@@ -2,7 +2,7 @@
 #define CHEMMISOL_ARITHMETICS_H
 
 #include <complex>
-#include <list>
+#include <vector>
 #include <iostream>
 #include <numbers>
 
@@ -10,8 +10,8 @@ namespace chemmisol {
 	constexpr double pi = 3.141592653589793238462643383279502884;
 
 	template<typename T>
-		std::list<std::complex<T>> unit_roots(int n) {
-			std::list<std::complex<T>> r;
+		std::vector<std::complex<T>> unit_roots(int n) {
+			std::vector<std::complex<T>> r;
 			std::complex<T> single_root = {
 				std::cos(2*pi/n),
 				std::sin(2*pi/n),
@@ -24,8 +24,8 @@ namespace chemmisol {
 		}
 
 	template<typename T>
-		std::list<std::complex<T>> roots(const std::complex<T>& c, int n) {
-			std::list<std::complex<T>> r;
+		std::vector<std::complex<T>> roots(const std::complex<T>& c, int n) {
+			std::vector<std::complex<T>> r;
 			T theta = std::arg(c);
 			std::complex<T> single_root = 
 				std::polar(std::pow(std::abs(c), T(1.0)/n), theta/n);

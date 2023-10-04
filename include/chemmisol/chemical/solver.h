@@ -536,7 +536,7 @@ namespace chemmisol {
 
 				CX g(const CX& reduced_activities) const;
 				CM dg(const CX& reduced_activities) const;
-				std::list<CX> initValues() const;
+				std::vector<CX> initValues() const;
 		};
 
 		template<typename R>
@@ -594,7 +594,7 @@ namespace chemmisol {
 					[&g] (const CX& x) {return g.g(x);},
 					[&g] (const CX& x) {return g.dg(x);}
 					);
-			std::list<SolverResult<CX>> solutions = homotopy.solve(
+			std::vector<SolverResult<CX>> solutions = homotopy.solve(
 					homotopy_n, local_solver_n
 					);
 			CX closest_solution(reduced_system.xSize());

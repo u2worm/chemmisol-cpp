@@ -354,7 +354,7 @@ TEST_F(NaClChemicalSystemTest, homotopy_G0) {
 	// - def(F3) = 2 ([NaCl] - [Na][Cl] * K = 0)
 	// - def(F4) = 1 ([NaOH][H+] - [Na][H2O] * K = 0 with [H+] and [H2O] fixed)
 	// So the complete solution set of G(x) = 0 is of size 1*1*1*2*1=2.
-	std::list<solver::CX> G0 = g.initValues();
+	std::vector<solver::CX> G0 = g.initValues();
 	ASSERT_THAT(G0, SizeIs(2));
 	std::size_t i = 0;
 	for(const auto& item : G0) {

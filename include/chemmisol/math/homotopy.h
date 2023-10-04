@@ -1,6 +1,7 @@
 #ifndef CHEMMISOL_HOMOTOPY_H
 #define CHEMMISOL_HOMOTOPY_H
 
+#include <omp.h>
 #include "newton.h"
 
 namespace chemmisol {
@@ -48,7 +49,7 @@ namespace chemmisol {
 	template<typename X, typename M>
 		class Homotopy {
 			private:
-				std::list<X> x0;
+				std::vector<X> x0;
 				std::function<X(const X&)> f; // target system
 				std::function<M(const X&)> df;
 				std::function<X(const X&)> g; // start system
@@ -60,7 +61,7 @@ namespace chemmisol {
 
 			public:
 				Homotopy(
-						const std::list<X>& x0,
+						const std::vector<X>& x0,
 						std::function<X(const X&)> f,
 						std::function<M(const X&)> df,
 						std::function<X(const X&)> g,
@@ -69,20 +70,25 @@ namespace chemmisol {
 					x0(x0), f(f), df(df), g(g), dg(dg) {
 					}
 
-				std::list<SolverResult<X>> solve(std::size_t homotopy_n, std::size_t local_solver_n) const;
+				std::vector<SolverResult<X>> solve(std::size_t homotopy_n, std::size_t local_solver_n) const;
 		};
 
 	template<typename X, typename M>
-		std::list<SolverResult<X>> Homotopy<X, M>::solve(
+		std::vector<SolverResult<X>> Homotopy<X, M>::solve(
 				std::size_t homotopy_n, std::size_t local_solver_n) const {
-			std::list<SolverResult<X>> results;
+			std::vector<SolverResult<X>> results(x0.size());
 			CHEM_LOG(INFO) << "[HOMOTOPY] Start exhaustive homotopy from " << x0.size() << " starting points.";
-			std::size_t i = 0;
-			for(const auto& x : x0) {
+			#pragma omp  parallel for shared(results, x0)
+			for(std::size_t i = 0; i < x0.size(); i++) {
+#ifdef CHEMMISOL_OPENMP
+				CHEM_LOG(INFO) << "[HOMOTOPY]   i=" << i << " (thread " << omp_get_thread_num() << ")";
+#else
 				CHEM_LOG(INFO) << "[HOMOTOPY]   i=" << i;
-				CHEM_LOG(TRACE) << "[HOMOTOPY] Current X: " << x << " (t=0)";
-				results.push_back(solve(x, 0, homotopy_n, local_solver_n));
-				++i;
+#endif
+				CHEM_LOG(TRACE) << "[HOMOTOPY] Current X: " << x0[i] << " (t=0)";
+
+				auto result =  solve(x0[i], 0, homotopy_n, local_solver_n);
+				results[i] = result;
 			}
 			return results;
 		}

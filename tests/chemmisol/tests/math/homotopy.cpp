@@ -37,7 +37,7 @@ class HomotopyTest : public Test {
 			return 14.0*a*std::pow(x, 13);
 		}
 
-		static std::list<X> roots() {
+		static std::vector<X> roots() {
 			// Returns the roots of g
 			return chemmisol::roots(b/a, 14);
 		}
@@ -48,7 +48,7 @@ const std::complex<double> HomotopyTest::b = random_complex();
 TEST_F(HomotopyTest, test) {
 	Homotopy<X, M> homotopy(roots(), f, df, g, dg);
 
-	std::list<SolverResult<std::complex<double>>> r = homotopy.solve(100, 100);
+	std::vector<SolverResult<std::complex<double>>> r = homotopy.solve(100, 100);
 
 	for(auto v : r) {
 		CHEM_LOGV(6) << "v: " << v.x << ", f(v): " << v.f_x;
@@ -102,23 +102,16 @@ class Homotopy2Test : public Test {
 			}};
 		}
 
-		static std::list<X> roots() {
+		static std::vector<X> roots() {
 			// Returns the roots of g
 			auto g0_roots = chemmisol::roots(b[0]/a[0], 14+3);
 			auto g1_roots = chemmisol::roots(b[1]/a[1], 3+12);
-			auto it0 = g0_roots.begin();
-			auto it1 = g1_roots.begin();
-			std::list<X> roots;
-			roots.push_back(X {*it0, *it1});
-			it0++;
-			roots.push_back(X {*it0, *it1});
-			it0--;
-			it1++;
-			roots.push_back(X {*it0, *it1});
-			it0++;
-			it0++;
-			roots.push_back(X {*it0, *it1});
-			return roots;
+			return {
+				{g0_roots[0], g1_roots[0]},
+				{g0_roots[1], g1_roots[0]},
+				{g0_roots[0], g1_roots[1]},
+				{g0_roots[1], g1_roots[1]}
+			};
 		}
 };
 
@@ -139,7 +132,7 @@ TEST_F(Homotopy2Test, roots) {
 TEST_F(Homotopy2Test, test) {
 	Homotopy<X, M> homotopy(roots(), f, df, g, dg);
 
-	std::list<SolverResult<X>> r = homotopy.solve(100, 100);
+	std::vector<SolverResult<X>> r = homotopy.solve(100, 100);
 
 	for(auto v : r) {
 		CHEM_LOGV(6) << "v: " << v.x << ", f(v): " << v.f_x;

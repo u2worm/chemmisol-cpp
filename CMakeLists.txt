@@ -37,6 +37,8 @@ else()
 		)
 endif()
 
+find_package(OpenMP)
+
 add_library(chemmisol
 	src/chemmisol/units.cpp
 	src/chemmisol/math/gauss.cpp
@@ -47,6 +49,10 @@ add_library(chemmisol
 	src/chemmisol/logging.cpp
 	${EASYLOGGING_SRC_PATH}/easylogging++.cc
 	)
+if(OpenMP_CXX_FOUND)
+	target_compile_definitions(chemmisol PUBLIC CHEMMISOL_OPENMP)
+	target_link_libraries(chemmisol PUBLIC OpenMP::OpenMP_CXX)
+endif()
 
 target_include_directories(chemmisol PUBLIC
 	$<BUILD_INTERFACE:${EASYLOGGING_SRC_PATH}>

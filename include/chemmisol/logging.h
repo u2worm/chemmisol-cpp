@@ -18,7 +18,10 @@
  * [Easylogging++ LOG](https://github.com/abumq/easyloggingpp#logging) to the
  * chemmisol::core_logger.
  */
-#define CHEM_LOG(LEVEL) CLOG(LEVEL, CHEM_CORE_LOGID)
+#define CHEM_LOG(LEVEL) \
+	_Pragma("omp critical") \
+	CLOG(LEVEL, CHEM_CORE_LOGID)
+
 /**
  * [Easylogging++ VLOG](https://github.com/abumq/easyloggingpp#verbose-logging)
  * to the chemmisol::core_logger.
