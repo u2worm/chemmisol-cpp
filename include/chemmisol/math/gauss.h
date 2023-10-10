@@ -33,21 +33,32 @@ namespace chemmisol { namespace gauss {
 			std::size_t n = _m.size();
 			CHEM_LOG(TRACE) << "Step 0:";
 			for(std::size_t i = 0; i < n; i++) {
-				CHEM_LOG(TRACE) << _m[i];
+				CHEM_LOG(TRACE) << i << ": " << _m[i];
 			}
 
 			for(std::size_t i = 0; i < n; i++) {
+				//CHEM_LOGV(9) << "Step 0." << i << "/" << n << ", current echelon:";
+				//for(std::size_t k = 0; k < n; k++)
+					//CHEM_LOGV(9) << k << ": " << _m[k];
 				for(std::size_t j = i+1; j < n; j++) {
-					auto ratio = _m[j][i]/_m[i][i];
-					for(std::size_t k = 0; k < _m[i].size(); k++) {
-						_m[j][k] = _m[j][k] - ratio*_m[i][k];
+					auto m_j_i = _m[j][i];
+					auto m_i_i = _m[i][i];
+					//CHEM_LOGV(9) << "m[" << j << "] = m[" << j << "]-(" << _m[j][i] << "/" << _m[i][i] << ")*m[" << i << "]";
+					// By definition, _m[j][i]-_m[i][i]/_m[i][i]*_m[j][i]=1.0
+					_m[j][i] = 1.0;
+					// Do not need to change coefficients from 0 to i+1.
+					// They should all be 0 to build the echelon, but not used
+					// in solving.
+					for(std::size_t k = i+1; k < _m[i].size(); k++) {
+						_m[j][k] = _m[j][k] - _m[i][k]/m_i_i*m_j_i;
 					}
+					//CHEM_LOGV(9) << j << ": " << _m[j];
 				}
 			}
 
 			CHEM_LOG(TRACE) << "Step 1:";
 			for(std::size_t i = 0; i < n; i++) {
-				CHEM_LOG(TRACE) << _m[i];
+				CHEM_LOG(TRACE) << i << ": " << _m[i];
 			}
 			
 			X x = y;

@@ -26,5 +26,11 @@ namespace chemmisol {
 		SolverResult<X>::SolverResult(const X& x, const X& f_x) :
 			x(x), f_x(f_x), is_finite(norm(x)) {
 			}
+
+	template<typename X>
+		MAKE_LOGGABLE(SolverResult<X>, result, os) {
+			os << "(x=" << result.x << ", f(x)=" << result.f_x << ")";
+			return os;
+	}
 }
 #endif
