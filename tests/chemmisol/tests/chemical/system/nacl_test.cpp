@@ -370,7 +370,7 @@ TEST_F(NaClChemicalSystemTest, homotopy_G0) {
 
 TEST_F(NaClChemicalSystemTest, solve_equilibrium_homotopy) {
 	solver::HomotopyContinuation<std::minstd_rand> homotopy(
-			std::minstd_rand {}, 10, 10
+			std::minstd_rand {}, 100, 100
 			);
 
 	// Run the solver several times to ensure the algorithm converges from any

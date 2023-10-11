@@ -609,7 +609,7 @@ namespace chemmisol {
 			G g(reduced_system, random_gen);
 
 			CHEM_LOG(TRACE) << "[HOMOTOPY] Init values: " << g.initValues();
-			Homotopy<CX, CM, Newton<CX, CM, identity, ChemicalLinearSolver<CM, CX>>> homotopy(
+			Homotopy<CX, CM, Newton<CX, CM, I<CX>, ChemicalLinearSolver<CM, CX>>> homotopy(
 					g.initValues(),
 					[&f] (const CX& x) {return f.f(x);},
 					[&f] (const CX& x) {return f.df(x);},
