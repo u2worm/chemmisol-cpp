@@ -38,6 +38,28 @@ namespace chemmisol {
 		typedef std::vector<std::vector<double>> M;
 		typedef std::vector<std::vector<std::complex<double>>> CM;
 
+		template<typename M, typename X>
+		struct ChemicalLinearSolver {
+			static X solve(const M& df, const X& f) {
+				CHEM_LOGV(9) << "Prepare";
+				M _df = df;
+				for(std::size_t i = 0; i < _df.size(); i++) {
+					CHEM_LOGV(9) << i << ": " << _df[i];
+				}
+
+				std::reverse(_df.begin(), _df.end());
+				for(auto& row : _df) {
+					std::reverse(row.begin(), row.end());
+				}
+				X _f = f;
+				std::reverse(_f.begin(), _f.end());
+
+				X x = gauss::Gauss<M, X>::solve(_df, _f);
+				std::reverse(x.begin(), x.end());
+				return x;
+			}
+		};
+
 		template<typename X>
 		class ReducedChemicalSystem {
 			public:
@@ -587,7 +609,7 @@ namespace chemmisol {
 			G g(reduced_system, random_gen);
 
 			CHEM_LOG(TRACE) << "[HOMOTOPY] Init values: " << g.initValues();
-			Homotopy<CX, CM> homotopy(
+			Homotopy<CX, CM, Newton<CX, CM, identity, ChemicalLinearSolver<CM, CX>>> homotopy(
 					g.initValues(),
 					[&f] (const CX& x) {return f.f(x);},
 					[&f] (const CX& x) {return f.df(x);},

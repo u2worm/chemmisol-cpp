@@ -54,10 +54,12 @@ namespace chemmisol {
 	 * value of the function `f`.
 	 * @tparam M Matrix type of size n*n used to represent the Jacobian matrix
 	 * of `f`, as returned by `df`.
+	 * @tparam L Linear equations solver (typically, Gaussian elimination
+	 * algorithm)
 	 * @tparam G Function applied to current x at the end of each iteration of
 	 * the algorithm.
 	 */
-	template<typename X, typename M, X (&G)(const X&)=identity>
+	template<typename X, typename M, X (&G)(const X&)=identity, typename L = gauss::Gauss<M, X>>
 		class Newton {
 			X x0;
 			std::function<X(const X&)> f;
@@ -108,21 +110,21 @@ namespace chemmisol {
 			SolverResult<X> solve_iter(std::size_t n) const;
 		};
 
-	template<typename X, typename M, X (&G)(const X&)>
-		SolverResult<X> Newton<X, M, G>::solve_eps(float epsilon) const {
+	template<typename X, typename M, X (&G)(const X&), typename L>
+		SolverResult<X> Newton<X, M, G, L>::solve_eps(float epsilon) const {
 			auto f_x0 = f(x0);
 			return solve_eps(x0, f(x0), epsilon, x0, f_x0, norm(f_x0));
 		}
 
-	template<typename X, typename M, X (&G)(const X&)>
-		SolverResult<X> Newton<X, M, G>::solve_iter(std::size_t n) const {
+	template<typename X, typename M, X (&G)(const X&), typename L>
+		SolverResult<X> Newton<X, M, G, L>::solve_iter(std::size_t n) const {
 			auto f_x0 = f(x0);
 			return solve_iter(x0, f_x0, n, x0, f_x0, norm(f_x0));
 		}
 
 
-	template<typename X, typename M, X (&G)(const X&)>
-		SolverResult<X> Newton<X, M, G>::solve_eps(const X& x, const X& f_x, float epsilon,
+	template<typename X, typename M, X (&G)(const X&), typename L>
+		SolverResult<X> Newton<X, M, G, L>::solve_eps(const X& x, const X& f_x, float epsilon,
 				X x_min, X f_x_min, double n_f_x_min) const {
 			CHEM_LOG(TRACE) << "[NEWTON] Current X: " << x;
 			CHEM_LOG(TRACE) << "[NEWTON] Current F(X): " << f_x;
@@ -131,7 +133,7 @@ namespace chemmisol {
 			double _epsilon = norm(f_x);
 			if(!std::isfinite(_epsilon) || _epsilon < epsilon)
 				return {x, f_x};
-			X _x = gauss::solve(df(x), -f_x);
+			X _x = L::solve(df(x), -f_x);
 			X x1 = G(_x + x);
 			auto n_f_x = norm(f_x);
 			if (n_f_x < n_f_x_min)
@@ -148,8 +150,8 @@ namespace chemmisol {
 			return solve_eps(x1, f(x1), epsilon, x_min, f_x_min, n_f_x_min);
 		}
 
-	template<typename X, typename M, X (&G)(const X&)>
-		SolverResult<X> Newton<X, M, G>::solve_iter(
+	template<typename X, typename M, X (&G)(const X&), typename L>
+		SolverResult<X> Newton<X, M, G, L>::solve_iter(
 				const X& x, const X& f_x, std::size_t n,
 				X x_min, X f_x_min, double n_f_x_min) const {
 			CHEM_LOG(TRACE) << "[NEWTON] Current X: " << x;
@@ -157,7 +159,7 @@ namespace chemmisol {
 			CHEM_LOG(TRACE) << "[NEWTON] (n=" << n << ") Epsilon: " << norm(f_x);
 			if(!std::isfinite(norm(f_x)) || n == 0 || norm(f_x) == typename X::value_type(0))
 				return {x, f_x};
-			X _x = gauss::solve(df(x), -f_x);
+			X _x = L::solve(df(x), -f_x);
 			X x1 = G(_x + x);
 			auto n_f_x = norm(f_x);
 			if (n_f_x < n_f_x_min)
@@ -194,7 +196,7 @@ namespace chemmisol {
 	 * [10.1016/0096-3003(87)90076-2](https://doi.org/10.1016/0096-3003(87)90076-2).
 
 	 */
-	template<typename X, typename M>
-		using AbsoluteNewton = Newton<X, M, abs>;
+	template<typename X, typename M, typename L = gauss::Gauss<X, M>>
+		using AbsoluteNewton = Newton<X, M, abs, L>;
 }
 #endif

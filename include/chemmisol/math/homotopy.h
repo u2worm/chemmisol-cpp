@@ -46,7 +46,7 @@ namespace chemmisol {
 			}
 	};
 
-	template<typename X, typename M>
+	template<typename X, typename M, typename L = Newton<X, M>>
 		class Homotopy {
 			private:
 				std::vector<X> x0;
@@ -54,6 +54,7 @@ namespace chemmisol {
 				std::function<M(const X&)> df;
 				std::function<X(const X&)> g; // start system
 				std::function<M(const X&)> dg;
+
 
 				SolverResult<X> solve(
 						const X& x, std::size_t i,
@@ -73,8 +74,8 @@ namespace chemmisol {
 				std::vector<SolverResult<X>> solve(std::size_t homotopy_n, std::size_t local_solver_n) const;
 		};
 
-	template<typename X, typename M>
-		std::vector<SolverResult<X>> Homotopy<X, M>::solve(
+	template<typename X, typename M, typename L>
+		std::vector<SolverResult<X>> Homotopy<X, M, L>::solve(
 				std::size_t homotopy_n, std::size_t local_solver_n) const {
 			std::vector<SolverResult<X>> results(x0.size());
 			CHEM_LOG(INFO) << "[HOMOTOPY] Start exhaustive homotopy from " << x0.size() << " starting points.";
@@ -100,17 +101,17 @@ namespace chemmisol {
 			return results;
 		}
 
-	template<typename X, typename M>
-		SolverResult<X> Homotopy<X, M>::solve(
+	template<typename X, typename M, typename L>
+		SolverResult<X> Homotopy<X, M, L>::solve(
 				const X& x, std::size_t i, std::size_t homotopy_n, std::size_t local_solver_n
 				) const {
 			double t = ((double) i+1)/homotopy_n;
-			Newton<X, M> newton(
+			L local_solver(
 					x,
 					H<X>(t, f, g),
 					dH<X, M>(t, df, dg));
 			
-			auto result = newton.solve_iter(local_solver_n);
+			auto result = local_solver.solve_iter(local_solver_n);
 			CHEM_LOG(TRACE) << "[HOMOTOPY] Current X: " << result.x << " (t=" << t << ")";
 			if(i == homotopy_n-1 || !result.isFinite()) {
 				CHEM_LOG(INFO) << "[HOMOTOPY] Final X: " << result.x << " f(X)=" << result.f_x;

@@ -12,7 +12,7 @@ namespace chemmisol {
 			F<X, M> f(reduced_system, system);
 			// Initial activities in the system
 			X reduced_activities = reduced_system.reducedActivities();
-			auto results = chemmisol::AbsoluteNewton<X, M>(
+			auto results = chemmisol::AbsoluteNewton<X, M, ChemicalLinearSolver<M, X>>(
 					reduced_activities,
 					[&f] (const X& x) {return f.f(x);},
 					[&f] (const X& x) {return f.df(x);}
