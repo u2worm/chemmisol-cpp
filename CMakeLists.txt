@@ -50,7 +50,10 @@ add_library(chemmisol
 	${EASYLOGGING_SRC_PATH}/easylogging++.cc
 	)
 if(OpenMP_CXX_FOUND)
-	target_compile_definitions(chemmisol PUBLIC CHEMMISOL_OPENMP)
+	target_compile_definitions(chemmisol PUBLIC
+		CHEMMISOL_OPENMP
+		ELPP_THREAD_SAFE
+		)
 	target_link_libraries(chemmisol PUBLIC OpenMP::OpenMP_CXX)
 endif()
 

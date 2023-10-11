@@ -19,7 +19,6 @@
  * chemmisol::core_logger.
  */
 #define CHEM_LOG(LEVEL) \
-	_Pragma("omp critical") \
 	CLOG(LEVEL, CHEM_CORE_LOGID)
 
 /**
