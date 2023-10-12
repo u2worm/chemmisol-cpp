@@ -4,6 +4,7 @@
 #include <iostream>
 #include <array>
 #include <complex>
+#include "linear.h"
 #include "../logging.h"
 
 /**
@@ -18,24 +19,26 @@ namespace chemmisol { namespace gauss {
 	template<typename M, typename X>
 	struct Gauss {
 		static X solve(const M& m, const X& y);
+		static X solve(const MView<M>& m, const XView<X>& y);
 	};
 
 	
 	template<typename M, typename X>
 		X Gauss<M, X>::solve(const M& m, const X& y) {
+			return solve(mview(m), xview(y));
+		}
+
+	template<typename M, typename X>
+		X Gauss<M, X>::solve(const MView<M>& m_view, const XView<X>& y_view) {
 			CHEM_LOG(TRACE) << "[GAUSS START]";
-			auto _m = augment(m, y);
-			std::size_t n = _m.size();
-			CHEM_LOG(TRACE) << "Step 0:";
-			for(std::size_t i = 0; i < n; i++) {
-				CHEM_LOG(TRACE) << i << ": " << _m[i];
-			}
+			auto _m = augment(m_view, y_view);
+			CHEM_LOG(TRACE) << "Step 0:"
+				<< mview(_m, m_view.a0, m_view.a1, m_view.b0, m_view.b1);
 		
-			for(std::size_t i = 0; i < n; i++) {
-				CHEM_LOGV(9) << "Step 0." << i << "/" << n << ", current echelon:";
-				for(std::size_t k = 0; k < n; k++)
-					CHEM_LOGV(9) << k << ": " << _m[k];
-				for(std::size_t j = i+1; j < n; j++) {
+			for(std::size_t i = m_view.a0; i < m_view.b0; i++) {
+				CHEM_LOGV(9) << "Step 0." << i << "/" << m_view.b0 - m_view.a0 << ", current echelon:"
+					<< mview(_m, m_view.a0, m_view.a1, m_view.b0, m_view.b1);
+				for(std::size_t j = i+1; j < m_view.b0; j++) {
 					auto m_j_i = _m[j][i];
 					auto m_i_i = _m[i][i];
 					CHEM_LOGV(9) << "m[" << j << "] = m[" << j << "]-(" << _m[j][i] << "/" << _m[i][i] << ")*m[" << i << "]";
@@ -51,17 +54,15 @@ namespace chemmisol { namespace gauss {
 				}
 			}
 
-			CHEM_LOG(TRACE) << "Step 1:";
-			for(std::size_t i = 0; i < n; i++) {
-				CHEM_LOG(TRACE) << i << ": " << _m[i];
-			}
+			CHEM_LOG(TRACE) << "Step 1:"
+				<< mview(_m, m_view.a0, m_view.a1, m_view.b0, m_view.b1);
 			
-			X x = y;
-			x[n-1] = _m[n-1][n]/_m[n-1][n-1];
+			X x = y_view.x;
+			x[y_view.a1-1] = _m[m_view.b0-1][m_view.b1]/_m[m_view.b0-1][m_view.b1-1];
 
-			for(int i = n-2; i>=0; i--) {
-				x[i] = _m[i][n];
-				for(std::size_t j = i+1; j < n; j++) {
+			for(int i = y_view.a1-2; i>=0; i--) {
+				x[i] = _m[i][m_view.b1];
+				for(std::size_t j = i+1; j < m_view.b1; j++) {
 					x[i] = x[i] - _m[i][j]*x[j];
 				}
 				x[i] = x[i]/_m[i][i];

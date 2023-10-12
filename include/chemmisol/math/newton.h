@@ -3,7 +3,6 @@
 
 #include <functional>
 #include <cmath>
-#include "linear.h"
 #include "gauss.h"
 #include "solver.h"
 

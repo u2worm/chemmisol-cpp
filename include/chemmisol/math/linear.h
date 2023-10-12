@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cmath>
 #include <complex>
+#include <iomanip>
 #include "../logging.h"
 
 /**
@@ -103,6 +104,27 @@ namespace chemmisol {
 	template<typename X>
 		XView<X> xview(const X& x) {
 			return {x};
+		}
+
+	template<typename X>
+		inline MAKE_LOGGABLE(XView<X>, x_view, os) {
+			os << "[";
+			if(x_view.a1-x_view.a0 > 0)
+				os << x_view.x[x_view.a0];
+			for(std::size_t i = x_view.a0+1; i < x_view.a1; i++) {
+				os << ", " << x_view.x[i];
+			}
+			os << "]";
+			return os;
+		}
+
+	template<typename M>
+		inline MAKE_LOGGABLE(MView<M>, m_view, os) {
+			for(std::size_t i = m_view.a0; i < m_view.b0; i++) {
+				os << std::endl << std::setw((int) std::log10(m_view.b0)+1) << i << ": " <<
+					xview(m_view.m[i], m_view.a1, m_view.b1);
+			}
+			return os;
 		}
 
 	/**

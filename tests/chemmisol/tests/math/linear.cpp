@@ -121,7 +121,7 @@ TEST(LinearTest, minus_array_view) {
 	// Checks that the redefined constructor does the job
 	X<int, 4> x({3, 7, 12, 14});
 	X<int, 4> min_x = -xview(x, 1, 3);
-	ASSERT_THAT(-x, ElementsAre(_, -7, -12, _));
+	ASSERT_THAT(min_x, ElementsAre(_, -7, -12, _));
 }
 
 TEST(LinearTest, sum_array_view) {
@@ -302,7 +302,7 @@ TEST(LinearTest, minus_vec_view) {
 	// Checks that the redefined constructor does the job
 	VecX<int> x({3, 7, 12, 14});
 	VecX<int> min_x = -xview(x, 1, 3);
-	ASSERT_THAT(-x, ElementsAre(_, -7, -12, _));
+	ASSERT_THAT(min_x, ElementsAre(_, -7, -12, _));
 }
 
 TEST(LinearTest, sum_vec_view) {
