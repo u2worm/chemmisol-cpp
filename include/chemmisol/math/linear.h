@@ -44,23 +44,65 @@ namespace chemmisol {
 	template<typename T>
 		using VecM = std::vector<std::vector<T>>;
 
-	/**
-	 * Computes m*x as a matrix multiplication.
-	 *
-	 * @param m Matrix of size N*P.
-	 * @param x Vector of size P.
-	 * @return Vector of size N.
-	 */
-	template<typename T, std::size_t N, std::size_t P>
-		X<T, N> operator*(const M<T, N, P>& m, const X<T, P>& x) {
-			X<T, N> x1;
-			for(std::size_t i = 0; i < N; i++) {
-				x1[i] = 0;
-				for(std::size_t j = 0; j < P; j++) {
-					x1[i] += m[i][j] * x[j];
+	template<typename M>
+		struct MView {
+			const M& m;
+			const std::size_t a0;
+			const std::size_t a1;
+			const std::size_t b0;
+			const std::size_t b1;
+
+			MView(const M& m,
+					std::size_t a0,
+					std::size_t a1,
+					std::size_t b0,
+					std::size_t b1)
+				: m(m), a0(a0), a1(a1), b0(b0), b1(b1) {
 				}
-			}
-			return x1;
+			MView(const M& m) :
+				MView(m, 0, 0, m.size(), m[m.size()-1].size()) {
+				}
+		};
+
+	template<typename M>
+		MView<M> mview(const M& m, 
+					std::size_t a0,
+					std::size_t a1,
+					std::size_t b0,
+					std::size_t b1) {
+			return {m, a0, a1, b0, b1};
+		}
+
+	template<typename M>
+		MView<M> mview(const M& m) {
+			return {m};
+		}
+
+	template<typename X>
+		struct XView {
+			const X& x;
+			const std::size_t a0;
+			const std::size_t a1;
+
+			XView(const X& x,
+					std::size_t a0,
+					std::size_t a1)
+				: x(x), a0(a0), a1(a1) {
+				}
+			XView(const X& x) :
+				XView(x, 0, x.size()) {
+				}
+		};
+
+	template<typename X>
+		XView<X> xview(const X& x,
+				std::size_t a0,
+				std::size_t a1) {
+			return {x, a0, a1};
+		}
+	template<typename X>
+		XView<X> xview(const X& x) {
+			return {x};
 		}
 
 	/**
@@ -71,9 +113,14 @@ namespace chemmisol {
 	 */
 	template<typename T, std::size_t N>
 		X<T, N> operator-(const X<T, N>& x) {
+			return -xview(x);
+		}
+
+	template<typename T, std::size_t N>
+		X<T, N> operator-(const XView<X<T, N>>& x_view) {
 			X<T, N> x1;
-			for(std::size_t i = 0; i < N; i++)
-				x1[i] = -x[i];
+			for(std::size_t i = x_view.a0; i < x_view.a1; i++)
+				x1[i] = -x_view.x[i];
 			return x1;
 		}
 
@@ -86,10 +133,41 @@ namespace chemmisol {
 	 */
 	template<typename T, std::size_t N>
 		X<T, N> operator+(const X<T, N>& x1, const X<T, N>& x2) {
+			return xview(x1) + xview(x2);
+		}
+
+	template<typename T, std::size_t N>
+		X<T, N> operator+(
+				const XView<X<T, N>>& x_view1, const XView<X<T, N>>& x_view2) {
 			X<T, N> x3;
-			for(std::size_t i = 0; i < N; i++)
-				x3[i] = x1[i]+x2[i];
+			for(std::size_t i = x_view1.a0; i < x_view2.a1; i++)
+				x3[i] = x_view1.x[i]+x_view2.x[i];
 			return x3;
+		}
+
+	/**
+	 * Computes m*x as a matrix product.
+	 *
+	 * @param m Matrix of size N*P.
+	 * @param x Vector of size P.
+	 * @return Vector of size N.
+	 */
+	template<typename T, std::size_t N, std::size_t P>
+		X<T, N> operator*(const M<T, N, P>& m, const X<T, P>& x) {
+			return mview(m) * xview(x);
+		}
+
+	template<typename T, std::size_t N, std::size_t P>
+		X<T, N> operator*(
+				const MView<M<T, N, P>>& m_view, const XView<X<T, P>>& x_view) {
+			X<T, N> x1;
+			for(std::size_t i = x_view.a0; i < x_view.a1; i++) {
+				x1[i] = 0;
+				for(std::size_t j = m_view.a1; j < m_view.b1; j++) {
+					x1[i] += m_view.m[i][j] * x_view.x[j];
+				}
+			}
+			return x1;
 		}
 
 	template<typename T, std::size_t N>
@@ -100,12 +178,30 @@ namespace chemmisol {
 			return result;
 		}
 
+	template<typename T, std::size_t N>
+		X<T, N> operator*(const T& a, const XView<X<T, N>>& x_view) {
+			X<T, N> result;
+			for(std::size_t i = x_view.a0; i < x_view.a1; i++) {
+				result[i] = x_view.x[i]*a;
+			}
+			return result;
+		}
+
 	template<typename T, std::size_t N, std::size_t P>
 		M<T, N, P> operator*(const T& a, const M<T, N, P>& m) {
 			M<T, N, P> result(m);
-			for(auto& row : result) {
-				for(auto& item : row) {
+			for(auto& row : result)
+				for(auto& item : row)
 					item *= a;
+			return result;
+		}
+
+	template<typename T, std::size_t N, std::size_t P>
+		M<T, N, P> operator*(const T& a, const MView<M<T, N, P>>& m_view) {
+			M<T, N, P> result;
+			for(std::size_t i = m_view.a0; i < m_view.b0; i++) {
+				for(std::size_t j = m_view.a1; j < m_view.b1; j++) {
+					result[i][j] = a * m_view.m[i][j];
 				}
 			}
 			return result;
@@ -154,29 +250,25 @@ namespace chemmisol {
 	 * @param m Matrix of size N*P.
 	 * @param x Vector of size N.
 	 * @return Matrix of size N*(P+1).
-	 *
-	 * @tparam _M Fixed size matrix type.
 	 */
-	template<typename _M>
-		M<
-			typename _M::value_type::value_type,
-			std::tuple_size<_M>::value,
-			std::tuple_size<typename _M::value_type>::value+1>
-		augment(
-				const _M& m,
-				const X<typename _M::value_type::value_type, std::tuple_size<_M>::value>& x
-				) {
-			M<
-				typename _M::value_type::value_type,
-				std::tuple_size<_M>::value,
-				std::tuple_size<typename _M::value_type>::value+1> a;
-				for(std::size_t i = 0; i < std::tuple_size<_M>::value; i++) {
-					for(std::size_t j = 0; j < std::tuple_size<typename _M::value_type>::value; j++) {
-						a[i][j] = m[i][j];
-					}
-					a[i][std::tuple_size<_M>::value] = x[i];
+	template<typename T, std::size_t N, std::size_t P>
+		M<T, N, P+1> augment(const M<T, N, P>& m, const X<T, N>& x) {
+			return augment(mview(m), xview(x));
+		};
+
+	template<typename T, std::size_t N, std::size_t P>
+		M<T, N, P+1> augment(
+				const MView<M<T, N, P>>& m_view, const XView<X<T, N>>& x_view) {
+			M<T, N, P+1> a;
+			for(std::size_t i = m_view.a0; i < m_view.b0; i++) {
+				for(std::size_t j = m_view.a1; j < m_view.b1; j++) {
+					a[i][j] = m_view.m[i][j];
 				}
-				return a;
+			}
+			for(std::size_t i = x_view.a0; i < x_view.a1; i++) {
+				a[i][P] = x_view.x[i];
+			}
+			return a;
 		};
 
 	/**
@@ -200,25 +292,6 @@ namespace chemmisol {
 	 */
 
 	/**
-	 * Computes m*x as a matrix multiplication.
-	 *
-	 * @param m Matrix of size N*P.
-	 * @param x Vector of size P.
-	 * @return Vector of size N.
-	 */
-	template<typename T>
-		VecX<T> operator*(const VecM<T>& m, const VecX<T>& x) {
-			VecX<T> x1(x.size());
-			for(std::size_t i = 0; i < x.size(); i++) {
-				x1[i] = 0;
-				for(std::size_t j = 0; j < m[i].size(); j++) {
-					x1[i] += m[i][j] * x[j];
-				}
-			}
-			return x1;
-		}
-
-	/**
 	 * Computes `-x = [-x_0, ..., -x_N-1]`.
 	 *
 	 * @param x Vector of size N.
@@ -226,9 +299,14 @@ namespace chemmisol {
 	 */
 	template<typename T>
 		VecX<T> operator-(const VecX<T>& x) {
-			VecX<T> x1(x.size());
-			for(std::size_t i = 0; i < x.size(); i++)
-				x1[i] = -x[i];
+			return -xview(x);
+		}
+
+	template<typename T>
+		VecX<T> operator-(const XView<VecX<T>>& x_view) {
+			VecX<T> x1(x_view.x.size());
+			for(std::size_t i = x_view.a0; i < x_view.a1; i++)
+				x1[i] = -x_view.x[i];
 			return x1;
 		}
 
@@ -243,10 +321,40 @@ namespace chemmisol {
 	 */
 	template<typename T>
 		VecX<T> operator+(const VecX<T>& x1, const VecX<T>& x2) {
-			VecX<T> x3(x1.size());
-			for(std::size_t i = 0; i < x1.size(); i++)
-				x3[i] = x1[i]+x2[i];
+			return xview(x1)+xview(x2);
+		}
+
+	template<typename T>
+		VecX<T> operator+(
+				const XView<VecX<T>>& x_view1, const XView<VecX<T>>& x_view2) {
+			VecX<T> x3(x_view1.x.size());
+			for(std::size_t i = x_view1.a0; i < x_view1.a1; i++)
+				x3[i] = x_view1.x[i]+x_view2.x[i];
 			return x3;
+		}
+
+	/**
+	 * Computes m*x as a matrix product.
+	 *
+	 * @param m Matrix of size N*P.
+	 * @param x Vector of size P.
+	 * @return Vector of size N.
+	 */
+	template<typename T>
+		VecX<T> operator*(const VecM<T>& m, const VecX<T>& x) {
+			return mview(m) * xview(x);
+		}
+
+	template<typename T>
+		VecX<T> operator*(const MView<VecM<T>>& m_view, const XView<VecX<T>>& x_view) {
+			VecX<T> x1(x_view.x.size());
+			for(std::size_t i = x_view.a0; i < x_view.a1; i++) {
+				x1[i] = 0;
+				for(std::size_t j = m_view.a1; j < m_view.b1; j++) {
+					x1[i] += m_view.m[i][j] * x_view.x[j];
+				}
+			}
+			return x1;
 		}
 
 	template<typename T>
@@ -258,11 +366,32 @@ namespace chemmisol {
 		}
 
 	template<typename T>
+		VecX<T> operator*(const T& a, const XView<VecX<T>>& x_view) {
+			VecX<T> result(x_view.x.size());
+			for(std::size_t i = x_view.a0; i < x_view.a1; i++)
+				result[i] = a * x_view.x[i];
+			return result;
+		}
+
+	template<typename T>
 		VecM<T> operator*(const T& a, const VecM<T>& m) {
 			VecM<T> result(m);
 			for(auto& row : result) {
 				for(auto& item : row) {
 					item *= a;
+				}
+			}
+			return result;
+		}
+
+	template<typename T>
+		VecM<T> operator*(const T& a, const MView<VecM<T>>& m_view) {
+			VecM<T> result(m_view.m.size());
+			for(std::size_t i = 0; i < result.size(); i++)
+				result[i].resize(m_view.m[i].size());
+			for(std::size_t i = m_view.a0; i < m_view.b0; i++) {
+				for(std::size_t j = m_view.a1; j < m_view.b1; j++) {
+					result[i][j] = a * m_view.m[i][j];
 				}
 			}
 			return result;
@@ -318,13 +447,23 @@ namespace chemmisol {
 	template<typename T>
 		VecM<T>
 		augment(const VecM<T>& m, const VecX<T>& x) {
-			VecM<T> a(m.size());
-			for(std::size_t i = 0; i < m.size(); i++) {
-				a[i].resize(m[i].size()+1);
-				for(std::size_t j = 0; j < m[i].size(); j++) {
-					a[i][j] = m[i][j];
+			return augment(mview(m), xview(x));
+		};
+
+	template<typename T> VecM<T>
+		augment(const MView<VecM<T>>& m_view, const XView<VecX<T>>& x_view) {
+			VecM<T> a(m_view.m.size());
+			for(std::size_t i = 0; i < a.size(); i++) {
+				a[i].resize(m_view.m[i].size()+1);
+			}
+
+			for(std::size_t i = m_view.a0; i < m_view.b0; i++) {
+				for(std::size_t j = m_view.a1; j < m_view.b1; j++) {
+					a[i][j] = m_view.m[i][j];
 				}
-				a[i][m[i].size()] = x[i];
+			}
+			for(std::size_t i = x_view.a0; i < x_view.a1; i++) {
+				a[i][m_view.m[i].size()] = x_view.x[i];
 			}
 			return a;
 		};
