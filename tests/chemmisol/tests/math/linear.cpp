@@ -40,27 +40,6 @@ TEST(LinearTest, sum_array) {
 	ASSERT_THAT(x1+x2, ElementsAre(3+8, 7+27, 12-11, 14+9));
 }
 
-TEST(LinearTest, augment_array) {
-	M<double, 3> m1({{
-			{{1, 2, 3}},
-			{{5, 3, 7}},
-			{{3, 0, 2}}
-			}});
-
-	X<double, 3> x = {{
-		4,
-		9,
-		7
-	}};
-
-	auto m2 = augment(m1, x);
-	ASSERT_THAT(m2, ElementsAre(
-				ElementsAre(1, 2, 3, 4),
-				ElementsAre(5, 3, 7, 9),
-				ElementsAre(3, 0, 2, 7)
-				));
-}
-
 TEST(LinearTest, product_array) {
 	M<double, 4> m1({{
 			{{1, 2, 3, 4}},
@@ -85,27 +64,46 @@ TEST(LinearTest, product_array) {
 				));
 }
 
-TEST(LinearTest, minus_vec) {
-	// Checks that the redefined constructor does the job
-	VecX<int> x({3, 7, 12, 14});
-	ASSERT_THAT(-x, ElementsAre(-3, -7, -12, -14));
+TEST(LinearTest, scalar_product_array) {
+	M<double, 4> m({{
+			{{1, 2, 3, 4}},
+			{{5, 3, 7, 9}},
+			{{3, 0, 2, 7}},
+			{{4, 4, 1, 12}}
+	}});
+
+	X<double, 4> x = {{
+		6,
+		3,
+		1.5,
+		1
+	}};
+
+	X<double, 4> x1 = 7.2*x;
+	ASSERT_THAT(x1, ElementsAre(
+				Eq(7.2*x[0]),
+				Eq(7.2*x[1]),
+				Eq(7.2*x[2]),
+				Eq(7.2*x[3])
+				));
+
+	M<double, 4> m1 = 4.3*m;
+	ASSERT_THAT(m1, ElementsAre(
+				ElementsAre(4.3*1, 4.3*2, 4.3*3, 4.3*4),
+				ElementsAre(4.3*5, 4.3*3, 4.3*7, 4.3*9),
+				ElementsAre(4.3*3, 4.3*0, 4.3*2, 4.3*7),
+				ElementsAre(4.3*4, 4.3*4, 4.3*1, 4.3*12)
+				));
 }
 
-TEST(LinearTest, sum_vec) {
-	// Checks that the redefined constructor does the job
-	VecX<int> x1({3, 7, 12, 14});
-	VecX<int> x2({8, 27, -11, 9});
-	ASSERT_THAT(x1+x2, ElementsAre(3+8, 7+27, 12-11, 14+9));
-}
+TEST(LinearTest, augment_array) {
+	M<double, 3> m1({{
+			{{1, 2, 3}},
+			{{5, 3, 7}},
+			{{3, 0, 2}}
+			}});
 
-TEST(LinearTest, augment_vec) {
-	VecM<double> m1({
-		{1, 2, 3},
-		{5, 3, 7},
-		{3, 0, 2}
-	});
-
-	VecX<double> x = {{
+	X<double, 3> x = {{
 		4,
 		9,
 		7
@@ -117,6 +115,19 @@ TEST(LinearTest, augment_vec) {
 				ElementsAre(5, 3, 7, 9),
 				ElementsAre(3, 0, 2, 7)
 				));
+}
+
+TEST(LinearTest, minus_vec) {
+	// Checks that the redefined constructor does the job
+	VecX<int> x({3, 7, 12, 14});
+	ASSERT_THAT(-x, ElementsAre(-3, -7, -12, -14));
+}
+
+TEST(LinearTest, sum_vec) {
+	// Checks that the redefined constructor does the job
+	VecX<int> x1({3, 7, 12, 14});
+	VecX<int> x2({8, 27, -11, 9});
+	ASSERT_THAT(x1+x2, ElementsAre(3+8, 7+27, 12-11, 14+9));
 }
 
 TEST(LinearTest, product_vec) {
@@ -140,6 +151,58 @@ TEST(LinearTest, product_vec) {
 				Eq(5*6 + 3*3 + 7*1.5 + 1*9),
 				Eq(3*6 + 0*3 + 2*1.5 + 7*1),
 				Eq(4*6 + 4*3 + 1*1.5 + 12*1)
+				));
+}
+
+TEST(LinearTest, scalar_product_vec) {
+	VecM<double> m({{
+			{{1, 2, 3, 4}},
+			{{5, 3, 7, 9}},
+			{{3, 0, 2, 7}},
+			{{4, 4, 1, 12}}
+	}});
+
+	VecX<double> x = {{
+		6,
+		3,
+		1.5,
+		1
+	}};
+
+	VecX<double> x1 = 7.2*x;
+	ASSERT_THAT(x1, ElementsAre(
+				Eq(7.2*x[0]),
+				Eq(7.2*x[1]),
+				Eq(7.2*x[2]),
+				Eq(7.2*x[3])
+				));
+
+	VecM<double> m1 = 4.3*m;
+	ASSERT_THAT(m1, ElementsAre(
+				ElementsAre(4.3*1, 4.3*2, 4.3*3, 4.3*4),
+				ElementsAre(4.3*5, 4.3*3, 4.3*7, 4.3*9),
+				ElementsAre(4.3*3, 4.3*0, 4.3*2, 4.3*7),
+				ElementsAre(4.3*4, 4.3*4, 4.3*1, 4.3*12)
+				));
+}
+TEST(LinearTest, augment_vec) {
+	VecM<double> m1({
+		{1, 2, 3},
+		{5, 3, 7},
+		{3, 0, 2}
+	});
+
+	VecX<double> x = {{
+		4,
+		9,
+		7
+	}};
+
+	auto m2 = augment(m1, x);
+	ASSERT_THAT(m2, ElementsAre(
+				ElementsAre(1, 2, 3, 4),
+				ElementsAre(5, 3, 7, 9),
+				ElementsAre(3, 0, 2, 7)
 				));
 }
 
