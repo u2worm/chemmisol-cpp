@@ -392,6 +392,7 @@ namespace chemmisol {
 	template<typename T, std::size_t N, std::size_t P>
 		M<T, N, P+1> augment(
 				const MView<M<T, N, P>>& m_view, const XView<X<T, N>>& x_view) {
+			assert(m_view.a1 - m_view.a0 == x_view.a1 - x_view.a0);
 			M<T, N, P+1> a;
 			for(std::size_t i = m_view.a0; i < m_view.a1; i++) {
 				for(std::size_t j = m_view.b0; j < m_view.b1; j++) {
@@ -689,6 +690,7 @@ namespace chemmisol {
 
 	template<typename T> VecM<T>
 		augment(const MView<VecM<T>>& m_view, const XView<VecX<T>>& x_view) {
+			assert(m_view.a1 - m_view.a0 == x_view.a1 - x_view.a0);
 			VecM<T> a(m_view.m.size());
 			for(std::size_t i = 0; i < a.size(); i++) {
 				a[i].resize(m_view.m[i].size()+1);

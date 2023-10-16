@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"
+#include "gmock/gmock.h"
 #include "chemmisol/math/linear.h"
 #include "chemmisol/math/gauss.h"
 #include <array>
@@ -20,9 +20,30 @@ TEST(GaussTest, solve_array) {
 
 	auto x = gauss::solve(m, y);
 
-	ASSERT_EQ(x[0], 2);
-	ASSERT_EQ(x[1], 3);
-	ASSERT_EQ(x[2], -1);
+	ASSERT_THAT(x, ElementsAre(2, 3, -1));
+}
+
+TEST(GaussTest, solve_array_view) {
+	float x {};
+	M<float, 4, 5> m({{
+		{x, x, 2, 1, -1},
+		{x, x, -3, -1, 2},
+		{x, x, -2, 1, 2},
+		{x, x, x, x, x}
+	}});
+	X<float, 4> y = {{
+		x,
+		8,
+		-11,
+		-3
+	}};
+
+	auto _x = gauss::solve(
+			mview(m, 0, 3, 2, 5),
+			xview(y, 1, 4)
+			);
+
+	ASSERT_THAT(_x, ElementsAre(_, 2, 3, -1));
 }
 
 TEST(GaussTest, solve_vec) {
@@ -39,7 +60,28 @@ TEST(GaussTest, solve_vec) {
 
 	auto x = gauss::solve(m, y);
 
-	ASSERT_EQ(x[0], 2);
-	ASSERT_EQ(x[1], 3);
-	ASSERT_EQ(x[2], -1);
+	ASSERT_THAT(x, ElementsAre(2, 3, -1));
+}
+
+TEST(GaussTest, solve_vec_view) {
+	float x {};
+	VecM<float> m({
+		{x, x, 2, 1, -1},
+		{x, x, -3, -1, 2},
+		{x, x, -2, 1, 2},
+		{x, x, x, x, x}
+	});
+	VecX<float> y = {{
+		x,
+		8,
+		-11,
+		-3
+	}};
+
+	auto _x = gauss::solve(
+			mview(m, 0, 3, 2, 5),
+			xview(y, 1, 4)
+			);
+
+	ASSERT_THAT(_x, ElementsAre(_, 2, 3, -1));
 }

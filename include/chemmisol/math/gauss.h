@@ -16,28 +16,40 @@
 
 namespace chemmisol { namespace gauss {
 
-	template<typename M>
+	template<typename A>
 		struct AView {
-			MView<M> m_view;
+			const A& a;
+			std::size_t ma0;
+			std::size_t ma1;
+			std::size_t mb0;
+			std::size_t mb1;
+			std::size_t ya0;
+			std::size_t ya1;
 
-			AView(const M& m,
-					std::size_t a0, std::size_t a1, std::size_t b0, std::size_t b1)
-				: m_view(mview(m, a0, a1, b0, b1)) {
+			AView(const A& a,
+					std::size_t ma0, std::size_t ma1, std::size_t mb0, std::size_t mb1,
+					std::size_t ya0, std::size_t ya1)
+				: a(a), ma0(ma0), ma1(ma1), mb0(mb0), mb1(mb1), ya0(ya0), ya1(ya1) {
 				}
 		};
-	template<typename M>
-		AView<M> aview(const M& m,
-					std::size_t a0, std::size_t a1, std::size_t b0, std::size_t b1) {
-			return {m, a0, a1, b0, b1};
+
+	template<typename A>
+		AView<A> aview(const A& a,
+					std::size_t ma0, std::size_t ma1, std::size_t mb0, std::size_t mb1,
+					std::size_t ya0, std::size_t ya1) {
+			return {a, ma0, ma1, mb0, mb1, ya0, ya1};
 		}
 
-	template<typename M>
-		inline MAKE_LOGGABLE(AView<M>, a_view, os) {
-			for(std::size_t i = a_view.m_view.a0; i < a_view.m_view.a1; i++) {
-				os << std::endl << std::setw((int) std::log10(a_view.m_view.a1)+1)
+	template<typename A>
+		inline MAKE_LOGGABLE(AView<A>, a_view, os) {
+			for(std::size_t i = a_view.ma0; i < a_view.ma1; i++) {
+				os << std::endl << std::setw((int) std::log10(a_view.ma1)+1)
 					<< i << ": " <<
-					xview(a_view.m_view.m[i], a_view.m_view.b0, a_view.m_view.b1)
-					<< xview(a_view.m_view.m[i], a_view.m_view.m[i].size()-1, a_view.m_view.m[i].size());
+					xview(a_view.a[i], a_view.mb0, a_view.mb1)
+					<< xview(
+							a_view.a[a_view.ya0-a_view.ma0+i],
+							a_view.a[a_view.ya0-a_view.ma0+i].size()-1,
+							a_view.a[a_view.ya0-a_view.ma0+i].size());
 			}
 			return os;
 		}
@@ -45,57 +57,80 @@ namespace chemmisol { namespace gauss {
 
 	template<typename M, typename X>
 	struct Gauss {
+		typedef X result_type;
+
 		static X solve(const M& m, const X& y);
-		static X solve(const MView<M>& m, const XView<X>& y);
 	};
+
+	template<typename M, typename X>
+		struct Gauss<MView<M>, XView<X>> {
+			typedef X result_type;
+
+			static X solve(const MView<M>& m, const XView<X>& y);
+		};
 
 	
 	template<typename M, typename X>
 		X Gauss<M, X>::solve(const M& m, const X& y) {
-			return solve(mview(m), xview(y));
+			return Gauss<MView<M>, XView<X>>::solve(mview(m), xview(y));
 		}
 
 	template<typename M, typename X>
-		X Gauss<M, X>::solve(const MView<M>& m_view, const XView<X>& y_view) {
+		X Gauss<MView<M>, XView<X>>::solve(const MView<M>& m_view, const XView<X>& y_view) {
 			CHEM_LOG(TRACE) << "[GAUSS START]";
 			auto _m = augment(m_view, y_view);
 			CHEM_LOG(TRACE) << "Step 0:"
 				<< aview(
-						_m, m_view.a0, m_view.a1, m_view.b0, m_view.b1
+						_m, m_view.a0, m_view.a1, m_view.b0, m_view.b1,
+						y_view.a0, y_view.a1
 						);
 		
-			for(std::size_t i = m_view.a0; i < m_view.a1; i++) {
-				CHEM_LOGV(9) << "Step 0." << i << "/" << m_view.b0 - m_view.a0 << ", current echelon:"
-					<< aview(_m, m_view.a0, m_view.a1, m_view.b0, m_view.b1);
-				for(std::size_t j = i+1; j < m_view.a1; j++) {
-					auto m_j_i = _m[j][i];
-					auto m_i_i = _m[i][i];
-					CHEM_LOGV(9) << "m[" << j << "] = m[" << j << "]-(" << _m[j][i] << "/" << _m[i][i] << ")*m[" << i << "]";
+			for(std::size_t i = 0; i < m_view.a1-m_view.a0; i++) {
+				CHEM_LOGV(9) << "Step 0." << i << "/" << m_view.a1 - m_view.a0 << ", current echelon:"
+					<< aview(_m, m_view.a0, m_view.a1, m_view.b0, m_view.b1,
+							y_view.a0, y_view.a1);
+				for(std::size_t j = i+1; j < m_view.a1-m_view.a0; j++) {
+					auto m_j_i = _m[m_view.a0+j][m_view.b0+i];
+					auto m_i_i = _m[m_view.a0+i][m_view.b0+i];
+					CHEM_LOGV(9) << "m[" << j << "] = m[" << j << "]-(" << m_j_i << "/" << m_i_i << ")*m[" << i << "]";
 					// By definition, _m[j][i]-_m[i][i]/_m[i][i]*_m[j][i]=1.0
-					_m[j][i] = 1.0;
+					_m[m_view.a0+j][m_view.b0+i] = 1.0;
 					// Do not need to change coefficients from 0 to i+1.
 					// They should all be 0 to build the echelon, but not used
 					// in solving.
-					for(std::size_t k = i+1; k < _m[i].size(); k++) {
-						_m[j][k] = _m[j][k] - _m[i][k]/m_i_i*m_j_i;
+					for(std::size_t k = i+1; k < m_view.b1-m_view.b0; k++) {
+						_m[m_view.a0+j][m_view.b0+k] =
+							_m[m_view.a0+j][m_view.b0+k] -
+							_m[m_view.a0+i][m_view.b0+k]/m_i_i*m_j_i;
+					}
+					{
+						std::size_t _j = y_view.a0+j;
+						std::size_t k = _m[_j].size()-1;
+						_m[_j][k] = _m[_j][k] - _m[y_view.a0+i][k]/m_i_i*m_j_i;
 					}
 					CHEM_LOGV(9) << j << ": " << _m[j];
 				}
 			}
 
 			CHEM_LOG(TRACE) << "Step 1:"
-				<< aview(_m, m_view.a0, m_view.a1, m_view.b0, m_view.b1);
+				<< aview(_m, m_view.a0, m_view.a1, m_view.b0, m_view.b1,
+						y_view.a0, y_view.a1);
 			
 			X x = y_view.x;
-			x[y_view.a1-1] = _m[m_view.a1-1][m_view.b1]/_m[m_view.a1-1][m_view.b1-1];
+			x[y_view.a1-1] = _m[y_view.a1-1][_m[y_view.a1-1].size()-1]
+				/_m[m_view.a1-1][m_view.b1-1];
 
-			for(int i = y_view.a1-2; i>=0; i--) {
-				x[i] = _m[i][m_view.b1];
-				for(std::size_t j = i+1; j < m_view.b1; j++) {
-					x[i] = x[i] - _m[i][j]*x[j];
+			CHEM_LOGV(9) << "x[" << y_view.a1-1 << "] = " << x[y_view.a1-1];
+			for(std::size_t i = 1; i < y_view.a1-y_view.a0; i++) {
+				x[y_view.a1-1-i] = _m[y_view.a1-1-i][_m[y_view.a1-1-i].size()-1];
+				CHEM_LOGV(9) << "x[" << y_view.a1-1-i << "] = " << x[y_view.a1-1-i];
+				for(std::size_t j = 1; j <= i; j++) {
+					x[y_view.a1-1-i] -= _m[m_view.a1-1-i][m_view.b1-1-i+j] *
+						x[y_view.a1-1-i+j];
 				}
-				x[i] = x[i]/_m[i][i];
+				x[y_view.a1-1-i] /= _m[m_view.a1-1-i][m_view.b1-1-i];
 			}
+			
 			CHEM_LOG(TRACE) << "Step 2:";
 			for(std::size_t i = 0; i < x.size(); i++)
 				CHEM_LOG(TRACE) << "x[" << i << "]=" << x[i];
@@ -115,7 +150,7 @@ namespace chemmisol { namespace gauss {
 	 * @tparam X Vector type.
 	 */
 	template<typename M, typename X>
-		X solve(const M& m, const X& y) {
+		typename Gauss<M, X>::result_type solve(const M& m, const X& y) {
 			return Gauss<M, X>::solve(m, y);
 		}
 
