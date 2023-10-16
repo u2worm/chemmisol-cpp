@@ -74,9 +74,9 @@ namespace chemmisol {
 			std::function<M(const X&)> df;
 
 			SolverResult<X> solve_eps(const X& x, const X& f_x, float epsilon,
-					X x_min, X f_x_min, double n_f_x_min) const;
+					X x_min, X f_x_min, double n_f_x_min, const L& linear_solver) const;
 			SolverResult<X> solve_iter(const X& x, const X& f_x, std::size_t n,
-					X x_min, X f_x_min, double n_f_x_min) const;
+					X x_min, X f_x_min, double n_f_x_min, const L& linear_solver) const;
 
 			public:
 			/**
@@ -105,7 +105,7 @@ namespace chemmisol {
 			 *
 			 * @param epsilon Required precision.
 			 */
-			SolverResult<X> solve_eps(float epsilon) const;
+			SolverResult<X> solve_eps(float epsilon, const L& linear_solver = L()) const;
 
 			/**
 			 * Runs the solver for n iterations and returns the found value
@@ -115,25 +115,29 @@ namespace chemmisol {
 			 * The algorithm is not guaranteed to converge if the initial x0 is
 			 * not close enough to the solution.
 			 */
-			SolverResult<X> solve_iter(std::size_t n) const;
+			SolverResult<X> solve_iter(std::size_t n, const L& linear_solver = L()) const;
 		};
 
 	template<typename X, typename M, typename G, typename L>
-		SolverResult<X> Newton<X, M, G, L>::solve_eps(float epsilon) const {
+		SolverResult<X> Newton<X, M, G, L>::solve_eps(
+				float epsilon, const L& linear_solver) const {
 			auto f_x0 = f(x0);
-			return solve_eps(x0, f(x0), epsilon, x0, f_x0, norm(f_x0));
+			return solve_eps(x0, f(x0), epsilon, x0, f_x0, norm(f_x0), linear_solver);
 		}
 
 	template<typename X, typename M, typename G, typename L>
-		SolverResult<X> Newton<X, M, G, L>::solve_iter(std::size_t n) const {
+		SolverResult<X> Newton<X, M, G, L>::solve_iter(
+				std::size_t n, const L& linear_solver) const {
 			auto f_x0 = f(x0);
-			return solve_iter(x0, f_x0, n, x0, f_x0, norm(f_x0));
+			return solve_iter(x0, f_x0, n, x0, f_x0, norm(f_x0), linear_solver);
 		}
 
 
 	template<typename X, typename M, typename G, typename L>
-		SolverResult<X> Newton<X, M, G, L>::solve_eps(const X& x, const X& f_x, float epsilon,
-				X x_min, X f_x_min, double n_f_x_min) const {
+		SolverResult<X> Newton<X, M, G, L>::solve_eps(
+				const X& x, const X& f_x, float epsilon,
+				X x_min, X f_x_min, double n_f_x_min,
+				const L& linear_solver) const {
 			CHEM_LOG(TRACE) << "[NEWTON] Current X: " << x;
 			CHEM_LOG(TRACE) << "[NEWTON] Current F(X): " << f_x;
 			CHEM_LOG(TRACE) << "[NEWTON] (e=" << epsilon << ") Epsilon: " << norm(f_x);
@@ -141,11 +145,11 @@ namespace chemmisol {
 			double _epsilon = norm(f_x);
 			if(!std::isfinite(_epsilon) || _epsilon < epsilon)
 				return {x, f_x};
-			X _x = L::solve(df(x), -f_x);
+			X _x = linear_solver.solve(df(x), -f_x);
 			X x1 = G::call(_x + x);
 			auto n_f_x = norm(f_x);
 			if (n_f_x < n_f_x_min)
-				return solve_eps(x1, f(x1), epsilon, x1, f_x, n_f_x);
+				return solve_eps(x1, f(x1), epsilon, x1, f_x, n_f_x, linear_solver);
 			if (n_f_x == n_f_x_min) {
 				// Maybe we are in a cycle
 				if(x_min == x1) {
@@ -155,23 +159,24 @@ namespace chemmisol {
 					return {x_min, f_x_min};
 				}
 			}
-			return solve_eps(x1, f(x1), epsilon, x_min, f_x_min, n_f_x_min);
+			return solve_eps(x1, f(x1), epsilon, x_min, f_x_min, n_f_x_min, linear_solver);
 		}
 
 	template<typename X, typename M, typename G, typename L>
 		SolverResult<X> Newton<X, M, G, L>::solve_iter(
 				const X& x, const X& f_x, std::size_t n,
-				X x_min, X f_x_min, double n_f_x_min) const {
+				X x_min, X f_x_min, double n_f_x_min,
+				const L& linear_solver) const {
 			CHEM_LOG(TRACE) << "[NEWTON] Current X: " << x;
 			CHEM_LOG(TRACE) << "[NEWTON] Current F(X): " << f_x;
 			CHEM_LOG(TRACE) << "[NEWTON] (n=" << n << ") Epsilon: " << norm(f_x);
 			if(!std::isfinite(norm(f_x)) || n == 0 || norm(f_x) == typename X::value_type(0))
 				return {x, f_x};
-			X _x = L::solve(df(x), -f_x);
+			X _x = linear_solver.solve(df(x), -f_x);
 			X x1 = G::call(_x + x);
 			auto n_f_x = norm(f_x);
 			if (n_f_x < n_f_x_min)
-				return solve_iter(x1, f(x1), n-1, x1, f_x, n_f_x);
+				return solve_iter(x1, f(x1), n-1, x1, f_x, n_f_x, linear_solver);
 			if (n_f_x == n_f_x_min) {
 				// Maybe we are in a cycle
 				if(x_min == x1) {
@@ -182,7 +187,7 @@ namespace chemmisol {
 					return {x_min, f_x_min};
 				}
 			}
-			return solve_iter(x1, f(x1), n-1, x_min, f_x_min, n_f_x_min);
+			return solve_iter(x1, f(x1), n-1, x_min, f_x_min, n_f_x_min, linear_solver);
 		}
 
 	/**
