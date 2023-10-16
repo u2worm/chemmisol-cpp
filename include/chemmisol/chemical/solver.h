@@ -40,8 +40,31 @@ namespace chemmisol {
 
 		template<typename M, typename X>
 		struct ChemicalLinearSolver {
-			static X solve(const M& df, const X& f) {
-				CHEM_LOGV(9) << "Prepare";
+			//std::size_t n_c;
+			//std::size_t n_s;
+
+			//ChemicalLinearSolver(std::size_t n_c, std::size_t n_s)
+				//: n_c(n_c), n_s(n_s) {
+				//}
+
+			X solve(const M& df, const X& f) const {
+				CHEM_LOGV(9) << "Prepare" << mview(df);
+
+/*
+ *                auto D = mview(df, n_c, n_s, n_c, n_s);
+ *                CHEM_LOGV(9) << "D = " << D;
+ *                auto inv_D = inv_diag(D);
+ *                auto C = mview(df, 0, n_c, n_c, n_s);
+ *                auto B = mview(df, n_c, n_s, 0, n_c);
+ *                auto I = Unit<M>::unit(n_c, n_c, 0, 0, n_c, n_c);
+ *
+ *                auto C_inv_D = C * mview(inv_D, n_c, n_c, n_s, n_s);
+ *                auto C_inv_D_view = mview(C_inv_D, 0, n_s-n_c, n_c, n_s);
+ *                auto A = mview(I) - mview(C_inv_D_view*B, 0, n_s-n_c, n_c, n_s);
+ *                auto Y = xview(f, 0, n_c) - xview(C_inv_D_view * xview(f, n_c, n_s));
+ *                gauss::Gauss<M, X>::solve(A, Y);
+ */
+
 				M _df = df;
 				for(std::size_t i = 0; i < _df.size(); i++) {
 					CHEM_LOGV(9) << i << ": " << _df[i];
@@ -521,6 +544,9 @@ namespace chemmisol {
 		};
 
 		class AbsoluteNewton : public Solver {
+			private:
+				chemmisol::AbsoluteNewton<X, M, ChemicalLinearSolver<M, X>>
+					absolute_newton;
 			public:
 				/**
 				 * Finds and returns activities that correspond to the system to
@@ -583,6 +609,8 @@ namespace chemmisol {
 		template<typename R>
 		class HomotopyContinuation : public Solver {
 			private:
+				Homotopy<CX, CM, Newton<CX, CM, I<CX>, ChemicalLinearSolver<CM, CX>>>
+					homotopy_solver;
 				mutable R random_gen;
 				std::size_t homotopy_n;
 				std::size_t local_solver_n;
@@ -609,14 +637,12 @@ namespace chemmisol {
 			G g(reduced_system, random_gen);
 
 			CHEM_LOG(TRACE) << "[HOMOTOPY] Init values: " << g.initValues();
-			Homotopy<CX, CM, Newton<CX, CM, I<CX>, ChemicalLinearSolver<CM, CX>>> homotopy(
+			std::vector<SolverResult<CX>> solutions = homotopy_solver.solve(
 					g.initValues(),
 					[&f] (const CX& x) {return f.f(x);},
 					[&f] (const CX& x) {return f.df(x);},
 					[&g] (const CX& x) {return g.g(x);},
-					[&g] (const CX& x) {return g.dg(x);}
-					);
-			std::vector<SolverResult<CX>> solutions = homotopy.solve(
+					[&g] (const CX& x) {return g.dg(x);},
 					homotopy_n, local_solver_n
 					);
 			CX closest_solution(reduced_system.xSize());

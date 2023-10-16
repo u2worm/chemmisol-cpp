@@ -69,32 +69,26 @@ namespace chemmisol {
 	 */
 	template<typename X, typename M, typename G=I<X>, typename L = gauss::Gauss<M, X>>
 		class Newton {
-			X x0;
-			std::function<X(const X&)> f;
-			std::function<M(const X&)> df;
+			L linear_solver;
 
-			SolverResult<X> solve_eps(const X& x, const X& f_x, float epsilon,
-					X x_min, X f_x_min, double n_f_x_min, const L& linear_solver) const;
-			SolverResult<X> solve_iter(const X& x, const X& f_x, std::size_t n,
-					X x_min, X f_x_min, double n_f_x_min, const L& linear_solver) const;
+			SolverResult<X> solve_eps(
+					const std::function<X(const X&)>& f,
+					const std::function<M(const X&)>& df,
+					const X& x, const X& f_x, float epsilon,
+					X x_min, X f_x_min, double n_f_x_min) const;
+			SolverResult<X> solve_iter(
+					const std::function<X(const X&)>& f,
+					const std::function<M(const X&)>& df,
+					const X& x, const X& f_x, std::size_t n,
+					X x_min, X f_x_min, double n_f_x_min) const;
 
 			public:
-			/**
-			 * Defines a Newton solver.
-			 *
-			 * @param x0 Initial x value, that should be "close enough" to the
-			 * solution to guarantee convergence.
-			 * @param f Function to solve so that `f(x)=0`.
-			 * @param df Derivative of f, that returns the values of the
-			 * Jacobian matrix of f for a specified x.
-			 */
-			Newton(
-					const X& x0,
-					std::function<X(const X&)> f,
-					std::function<M(const X&)> df)
-				: x0(x0), f(f), df(df) {
-				}
+			Newton() : linear_solver() {
+			}
 
+			Newton(const L& linear_solver) : linear_solver(linear_solver) {
+			}
+			
 			/**
 			 * Runs the solver until `f(x) < eps` for n iterations and
 			 * returns the found value of x such that `f(x) < eps`.
@@ -103,9 +97,18 @@ namespace chemmisol {
 			 * The algorithm is not guaranteed to converge if the initial x0 is
 			 * not close enough to the solution.
 			 *
+			 * @param x0 Initial x value, that should be "close enough" to the
+			 * solution to guarantee convergence.
+			 * @param f Function to solve so that `f(x)=0`.
+			 * @param df Derivative of f, that returns the values of the
+			 * Jacobian matrix of f for a specified x.
 			 * @param epsilon Required precision.
 			 */
-			SolverResult<X> solve_eps(float epsilon, const L& linear_solver = L()) const;
+			SolverResult<X> solve_eps(
+					const X& x0,
+					std::function<X(const X&)> f,
+					std::function<M(const X&)> df,
+					float epsilon) const;
 
 			/**
 			 * Runs the solver for n iterations and returns the found value
@@ -115,29 +118,40 @@ namespace chemmisol {
 			 * The algorithm is not guaranteed to converge if the initial x0 is
 			 * not close enough to the solution.
 			 */
-			SolverResult<X> solve_iter(std::size_t n, const L& linear_solver = L()) const;
+			SolverResult<X> solve_iter(
+					const X& x0,
+					std::function<X(const X&)> f,
+					std::function<M(const X&)> df,
+					std::size_t n) const;
 		};
 
 	template<typename X, typename M, typename G, typename L>
 		SolverResult<X> Newton<X, M, G, L>::solve_eps(
-				float epsilon, const L& linear_solver) const {
+				const X& x0,
+				std::function<X(const X&)> f,
+				std::function<M(const X&)> df,
+				float epsilon) const {
 			auto f_x0 = f(x0);
-			return solve_eps(x0, f(x0), epsilon, x0, f_x0, norm(f_x0), linear_solver);
+			return solve_eps(f, df, x0, f(x0), epsilon, x0, f_x0, norm(f_x0));
 		}
 
 	template<typename X, typename M, typename G, typename L>
 		SolverResult<X> Newton<X, M, G, L>::solve_iter(
-				std::size_t n, const L& linear_solver) const {
+				const X& x0,
+				std::function<X(const X&)> f,
+				std::function<M(const X&)> df,
+				std::size_t n) const {
 			auto f_x0 = f(x0);
-			return solve_iter(x0, f_x0, n, x0, f_x0, norm(f_x0), linear_solver);
+			return solve_iter(f, df, x0, f_x0, n, x0, f_x0, norm(f_x0));
 		}
 
 
 	template<typename X, typename M, typename G, typename L>
 		SolverResult<X> Newton<X, M, G, L>::solve_eps(
+				const std::function<X(const X&)>& f,
+				const std::function<M(const X&)>& df,
 				const X& x, const X& f_x, float epsilon,
-				X x_min, X f_x_min, double n_f_x_min,
-				const L& linear_solver) const {
+				X x_min, X f_x_min, double n_f_x_min) const {
 			CHEM_LOG(TRACE) << "[NEWTON] Current X: " << x;
 			CHEM_LOG(TRACE) << "[NEWTON] Current F(X): " << f_x;
 			CHEM_LOG(TRACE) << "[NEWTON] (e=" << epsilon << ") Epsilon: " << norm(f_x);
@@ -149,7 +163,7 @@ namespace chemmisol {
 			X x1 = G::call(_x + x);
 			auto n_f_x = norm(f_x);
 			if (n_f_x < n_f_x_min)
-				return solve_eps(x1, f(x1), epsilon, x1, f_x, n_f_x, linear_solver);
+				return solve_eps(f, df, x1, f(x1), epsilon, x1, f_x, n_f_x);
 			if (n_f_x == n_f_x_min) {
 				// Maybe we are in a cycle
 				if(x_min == x1) {
@@ -159,14 +173,15 @@ namespace chemmisol {
 					return {x_min, f_x_min};
 				}
 			}
-			return solve_eps(x1, f(x1), epsilon, x_min, f_x_min, n_f_x_min, linear_solver);
+			return solve_eps(f, df, x1, f(x1), epsilon, x_min, f_x_min, n_f_x_min);
 		}
 
 	template<typename X, typename M, typename G, typename L>
 		SolverResult<X> Newton<X, M, G, L>::solve_iter(
+				const std::function<X(const X&)>& f,
+				const std::function<M(const X&)>& df,
 				const X& x, const X& f_x, std::size_t n,
-				X x_min, X f_x_min, double n_f_x_min,
-				const L& linear_solver) const {
+				X x_min, X f_x_min, double n_f_x_min) const {
 			CHEM_LOG(TRACE) << "[NEWTON] Current X: " << x;
 			CHEM_LOG(TRACE) << "[NEWTON] Current F(X): " << f_x;
 			CHEM_LOG(TRACE) << "[NEWTON] (n=" << n << ") Epsilon: " << norm(f_x);
@@ -176,7 +191,7 @@ namespace chemmisol {
 			X x1 = G::call(_x + x);
 			auto n_f_x = norm(f_x);
 			if (n_f_x < n_f_x_min)
-				return solve_iter(x1, f(x1), n-1, x1, f_x, n_f_x, linear_solver);
+				return solve_iter(f, df, x1, f(x1), n-1, x1, f_x, n_f_x);
 			if (n_f_x == n_f_x_min) {
 				// Maybe we are in a cycle
 				if(x_min == x1) {
@@ -187,7 +202,7 @@ namespace chemmisol {
 					return {x_min, f_x_min};
 				}
 			}
-			return solve_iter(x1, f(x1), n-1, x_min, f_x_min, n_f_x_min, linear_solver);
+			return solve_iter(f, df, x1, f(x1), n-1, x_min, f_x_min, n_f_x_min);
 		}
 
 	/**
