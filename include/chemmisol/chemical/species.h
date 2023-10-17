@@ -175,6 +175,8 @@ namespace chemmisol {
 
 			virtual std::complex<double> quantity(std::complex<double> activity) const = 0;
 
+			virtual double dQdA() const = 0;
+
 			/**
 			 * Sets the activity of the chemical species. The quantity() and
 			 * concentration() values are updated accordingly.
@@ -276,6 +278,10 @@ namespace chemmisol {
 				return A;
 			}
 
+			double dQdA() const override {
+				return 0.0;
+			}
+
 			/**
 			 * This method has no effect for a fixed component: the fixed
 			 * activity is not changed.
@@ -356,6 +362,10 @@ namespace chemmisol {
 
 			double activity(double concentration) const override {
 				return concentration/(1*mol/l);
+			}
+
+			double dQdA() const override {
+				return V*(1*mol/l);
 			}
 
 			void setActivity(double activity) override {
@@ -568,6 +578,10 @@ namespace chemmisol {
 
 			void setActivity(double activity) override {
 				fraction = activity;
+			}
+
+			double dQdA() const override {
+				return N;
 			}
 	};
 

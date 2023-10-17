@@ -56,7 +56,8 @@ class SohTest : public BasicMineralChemicalSystemTest {
 		std::vector<std::vector<double>> analytical_df(
 				const std::vector<std::size_t>& components_indexes,
 				const std::vector<std::size_t>& species_indexes,
-				const std::vector<double>& /*activities*/) const {
+				const std::vector<double>& /*activities*/,
+				double sites_quantity) const {
 			std::vector<std::vector<double>> df_x(
 					// Mass conservation of SOH
 					1
@@ -77,8 +78,8 @@ class SohTest : public BasicMineralChemicalSystemTest {
 					// =SOH
 					auto& df = df_x[components_indexes[chemical_system.getComponent("=SOH").getIndex()]];
 					df.resize(chemical_system.getSpecies().size()-N);
-					df[species_indexes[chemical_system.getSpecies("=SOH").getIndex()]] = 1.0;
-					df[species_indexes[chemical_system.getSpecies("=SOH2").getIndex()]] = 1.0;
+					df[species_indexes[chemical_system.getSpecies("=SOH").getIndex()]] = sites_quantity;
+					df[species_indexes[chemical_system.getSpecies("=SOH2").getIndex()]] = sites_quantity;
 					// df = 0.0 for other species
 				}
 			}
@@ -231,7 +232,9 @@ TEST_F(SohTest, reaction_df) {
 	auto analytical_dF = analytical_df(
 			reduced_system.componentsIndexes(),
 			reduced_system.speciesIndexes(),
-			activities);
+			activities,
+			chemical_system.sitesQuantity()
+			);
 
 	CHEM_LOGV(5) << "Computed jacobian:";
 	print_df(chemical_system, reduced_system, dF, 1);
@@ -281,6 +284,15 @@ TEST_F(SohTest, reaction_df) {
 TEST_F(SohTest, solve_equilibrium_absolute_newton) {
 	chemical_system.setMaxIteration(10);
 	chemical_system.solveEquilibrium(absolute_newton);
+
+	checkEquilibrium();
+}
+
+TEST_F(SohTest, solve_equilibrium_homotopy) {
+	solver::HomotopyContinuation<std::minstd_rand> homotopy(
+			std::minstd_rand {}, 10, 10
+			);
+	chemical_system.solveEquilibrium(homotopy);
 
 	checkEquilibrium();
 }

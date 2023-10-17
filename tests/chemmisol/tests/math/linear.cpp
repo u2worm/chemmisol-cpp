@@ -205,25 +205,28 @@ TEST(LinearTest, minus_matrix_array_view) {
 }
 
 TEST(LinearTest, product_array_view) {
-	M<double, 4> m1({{
-			{{1, 2, 3, 4}},
-			{{5, 3, 7, 9}},
-			{{3, 0, 2, 7}},
-			{{4, 4, 1, 12}}
-	}});
+	double x {};
+	M<double, 4, 6> m1({{
+			{{x, x, x, x, x, x}},
+			{{x, x, 2, 3, 4, x}},
+			{{x, x, 3, 7, 9, x}},
+			{{x, x, x, x, x, x}}
+			}});
 
-	X<double, 4> x = {{
-		6,
-		3,
-		1.5,
-		1
+	X<double, 6> y = {{
+		x,
+			3,
+			1.5,
+			1,
+			x,
+			x
 	}};
 
-	X<double, 4> x1 = mview(m1,0, 2, 0, 3) * xview(x, 0, 3);
+	X<double, 4> x1 = mview(m1,1, 3, 2, 5) * xview(y, 1, 4);
 	ASSERT_THAT(x1, ElementsAre(
-				Eq(1*6 + 2*3 + 3*1.5),
-				Eq(5*6 + 3*3 + 7*1.5),
-				Eq(3*6 + 0*3 + 2*1.5),
+				_,
+				Eq(2*3+3*1.5+4*1),
+				Eq(3*3+7*1.5+9*1),
 				_
 				));
 }
@@ -325,12 +328,12 @@ TEST(LinearTest, inv_diag_array_view) {
 			{{4, 4, 0, 12}}
 	}});
 
-	M<double, 4> m1 = inv_diag(mview(m, 2, 2, 4, 4));
+	M<double, 4> m1 = inv_diag(mview(m, 0, 2, 1, 3));
 	ASSERT_THAT(m1, ElementsAre(
+				ElementsAre(_, 1.0/2, 3, _),
+				ElementsAre(_, 3, 1.0/7, _),
 				ElementsAre(_, _, _, _),
-				ElementsAre(_, _, _, _),
-				ElementsAre(_, _, 1.0/2, 0),
-				ElementsAre(_, _, 0, 1.0/12)
+				ElementsAre(_, _, _, _)
 				));
 }
 
@@ -513,25 +516,28 @@ TEST(LinearTest, minus_matrix_vec_view) {
 }
 
 TEST(LinearTest, product_vec_view) {
+	double x {};
 	VecM<double> m1({{
-			{{1, 2, 3, 4}},
-			{{5, 3, 7, 9}},
-			{{3, 0, 2, 7}},
-			{{4, 4, 1, 12}}
+			{{x, x, x, x, x, x}},
+			{{x, x, 2, 3, 4, x}},
+			{{x, x, 3, 7, 9, x}},
+			{{x, x, x, x, x, x}}
 	}});
 
-	VecX<double> x = {{
-		6,
+	VecX<double> y = {{
+		x,
 		3,
 		1.5,
-		1
+		1,
+		x,
+		x
 	}};
 
-	VecX<double> x1 = mview(m1,0, 2, 0, 3) * xview(x, 0, 3);
+	VecX<double> x1 = mview(m1,1, 3, 2, 5) * xview(y, 1, 4);
 	ASSERT_THAT(x1, ElementsAre(
-				Eq(1*6 + 2*3 + 3*1.5),
-				Eq(5*6 + 3*3 + 7*1.5),
-				Eq(3*6 + 0*3 + 2*1.5),
+				_,
+				Eq(2*3+3*1.5+4*1),
+				Eq(3*3+7*1.5+9*1),
 				_
 				));
 }
@@ -633,12 +639,12 @@ TEST(LinearTest, inv_diag_vec_view) {
 			{{4, 4, 0, 12}}
 	}});
 
-	VecM<double> m1 = inv_diag(mview(m, 2, 2, 4, 4));
+	VecM<double> m1 = inv_diag(mview(m, 0, 2, 1, 3));
 	ASSERT_THAT(m1, ElementsAre(
+				ElementsAre(_, 1.0/2, 3, _),
+				ElementsAre(_, 3, 1.0/7, _),
 				ElementsAre(_, _, _, _),
-				ElementsAre(_, _, _, _),
-				ElementsAre(_, _, 1.0/2, 0),
-				ElementsAre(_, _, 0, 1.0/12)
+				ElementsAre(_, _, _, _)
 				));
 }
 

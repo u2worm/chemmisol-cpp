@@ -11,5 +11,9 @@ namespace chemmisol {
 			const solver::ReducedChemicalSystem<solver::X>& reduced_system,
 			std::vector<std::vector<double>>& df,
 			std::size_t unfixed_components);
+
+	std::vector<std::minstd_rand::result_type> gen_seeds();
+
+	static const std::vector<std::minstd_rand::result_type> seeds = gen_seeds();
 }
 

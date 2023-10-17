@@ -221,11 +221,13 @@ namespace chemmisol {
 	template<typename T, std::size_t N, std::size_t P>
 		X<T, N> operator*(
 				const MView<M<T, N, P>>& m_view, const XView<X<T, P>>& x_view) {
+			assert(m_view.b1 - m_view.b0 == x_view.a1 - x_view.a0);
 			X<T, N> x1;
-			for(std::size_t i = x_view.a0; i < x_view.a1; i++) {
-				x1[i] = 0;
-				for(std::size_t j = m_view.b0; j < m_view.b1; j++) {
-					x1[i] += m_view.m[i][j] * x_view.x[j];
+			for(std::size_t i = 0; i < x_view.a1-x_view.a0; i++) {
+				x1[m_view.a0+i] = 0;
+				for(std::size_t j = 0; j < m_view.b1-m_view.b0; j++) {
+					x1[m_view.a0+i] += m_view.m[m_view.a0+i][m_view.b0+j]
+						* x_view.x[x_view.a0+j];
 				}
 			}
 			return x1;
@@ -326,16 +328,16 @@ namespace chemmisol {
 
 	template<typename T, std::size_t N, std::size_t P>
 		M<T, N, P> inv_diag(const MView<M<T, N, P>>& m_view) {
-			assert(m_view.b0-m_view.a0 == m_view.b1-m_view.a1);
+			assert(m_view.a1-m_view.a0 == m_view.b1-m_view.b0);
 			M<T, N, P> result;
-			for(std::size_t i = m_view.a0; i < m_view.b0; i++) {
-				for(std::size_t j = m_view.a1; j < m_view.b1; j++) {
+			for(std::size_t i = m_view.a0; i < m_view.a1; i++) {
+				for(std::size_t j = m_view.b0; j < m_view.b1; j++) {
 					result[i][j] = m_view.m[i][j];
 				}
 			}
-			for(std::size_t i = 0; i < m_view.b0-m_view.a0; i++) {
-				result[m_view.a0+i][m_view.a1+i]
-					= 1/m_view.m[m_view.a0+i][m_view.a1+i];
+			for(std::size_t i = 0; i < m_view.a1-m_view.a0; i++) {
+				result[m_view.a0+i][m_view.b0+i]
+					= 1/m_view.m[m_view.a0+i][m_view.b0+i];
 			}
 			return result;
 		}
@@ -522,11 +524,13 @@ namespace chemmisol {
 
 	template<typename T>
 		VecX<T> operator*(const MView<VecM<T>>& m_view, const XView<VecX<T>>& x_view) {
-			VecX<T> x1(x_view.x.size());
-			for(std::size_t i = x_view.a0; i < x_view.a1; i++) {
-				x1[i] = 0;
-				for(std::size_t j = m_view.b0; j < m_view.b1; j++) {
-					x1[i] += m_view.m[i][j] * x_view.x[j];
+			assert(m_view.b1 - m_view.b0 == x_view.a1 - x_view.a0);
+			VecX<T> x1(m_view.m.size());
+			for(std::size_t i = 0; i < x_view.a1-x_view.a0; i++) {
+				x1[m_view.a0+i] = 0;
+				for(std::size_t j = 0; j < m_view.b1-m_view.b0; j++) {
+					x1[m_view.a0+i] += m_view.m[m_view.a0+i][m_view.b0+j]
+						* x_view.x[x_view.a0+j];
 				}
 			}
 			return x1;
@@ -618,19 +622,19 @@ namespace chemmisol {
 
 	template<typename T>
 		VecM<T> inv_diag(const MView<VecM<T>>& m_view) {
-			assert(m_view.b0-m_view.a0 == m_view.b1-m_view.a1);
+			assert(m_view.a1-m_view.a0 == m_view.b1-m_view.b0);
 			VecM<T> result(m_view.m.size());
 			for(std::size_t i = 0; i < result.size(); i++)
 				result[i].resize(m_view.m[i].size());
 
-			for(std::size_t i = m_view.a0; i < m_view.b0; i++) {
-				for(std::size_t j = m_view.a1; j < m_view.b1; j++) {
+			for(std::size_t i = m_view.a0; i < m_view.a1; i++) {
+				for(std::size_t j = m_view.b0; j < m_view.b1; j++) {
 					result[i][j] = m_view.m[i][j];
 				}
 			}
-			for(std::size_t i = 0; i < m_view.b0-m_view.a0; i++) {
-				result[m_view.a0+i][m_view.a1+i]
-					= T(1)/m_view.m[m_view.a0+i][m_view.a1+i];
+			for(std::size_t i = 0; i < m_view.a1-m_view.a0; i++) {
+				result[m_view.a0+i][m_view.b0+i]
+					= T(1)/m_view.m[m_view.a0+i][m_view.b0+i];
 			}
 			return result;
 		}

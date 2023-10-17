@@ -45,5 +45,17 @@ namespace chemmisol {
 			CHEM_LOGV(5) << s.str();
 		}
 	}
+
+	std::vector<std::minstd_rand::result_type> gen_seeds() {
+		std::vector<int> gen;
+		for(int i = 0; i < 10; i++)
+			gen.push_back(i);
+		std::seed_seq seq(gen.begin(), gen.end());
+
+		std::vector<std::minstd_rand::result_type> seeds(10);
+		seq.generate(seeds.begin(), seeds.end());
+
+		return seeds;
+	}
 }
 

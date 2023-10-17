@@ -9,10 +9,18 @@ namespace chemmisol {
 
 		X AbsoluteNewton::solve(const ChemicalSystem& system) const {
 			ReducedChemicalSystem<X> reduced_system(system);
+
+			ChemicalLinearSolver<M, X> linear_solver(
+					reduced_system.nComponents(),
+					reduced_system.nSpecies()
+					);
+			chemmisol::AbsoluteNewton<X, M, ChemicalLinearSolver<M, X>>
+				absolute_newton(linear_solver);
+
 			F<X, M> f(reduced_system, system);
 			// Initial activities in the system
 			X reduced_activities = reduced_system.reducedActivities();
-			auto results =absolute_newton.solve_iter(
+			auto results = absolute_newton.solve_iter(
 						reduced_activities,
 						[&f] (const X& x) {return f.f(x);},
 						[&f] (const X& x) {return f.df(x);},
@@ -48,8 +56,10 @@ namespace chemmisol {
 			for(std::size_t i = 0; i < reduced_system.xSize(); i++) {
 				dg[i].resize(reduced_system.fxSize());
 				// All other derivatives are equal to 0.0
-				dg[i][i] = a[i] * degrees[i]
-					* std::pow(reduced_activities[i], degrees[i]-1);
+				if(reduced_activities[i] != CX::value_type(0)) {
+					dg[i][i] = a[i] * degrees[i]
+						* std::pow(reduced_activities[i], degrees[i]-1);
+				}
 			}
 			return dg;
 		}

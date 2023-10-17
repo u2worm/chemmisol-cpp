@@ -40,45 +40,56 @@ namespace chemmisol {
 
 		template<typename M, typename X>
 		struct ChemicalLinearSolver {
-			//std::size_t n_c;
-			//std::size_t n_s;
+			std::size_t n_c;
+			std::size_t n_s;
 
-			//ChemicalLinearSolver(std::size_t n_c, std::size_t n_s)
-				//: n_c(n_c), n_s(n_s) {
-				//}
+			ChemicalLinearSolver(std::size_t n_c, std::size_t n_s)
+				: n_c(n_c), n_s(n_s) {
+				}
 
 			X solve(const M& df, const X& f) const {
-				CHEM_LOGV(9) << "Prepare" << mview(df);
+				CHEM_LOGV(9) << "Prepare";
+				CHEM_LOGV(9) << "df=" << mview(df);
+				CHEM_LOGV(9) << "f=" << xview(f);
 
+				const MView<M> D2 = mview(df, n_c, n_s, n_c, n_s);
+				const M inv_D2 = inv_diag(D2);
+				const MView<M> inv_D2_view = mview(inv_D2, n_c, n_s, n_c, n_s);
+				const MView<M> C = mview(df, 0, n_c, n_c, n_s);
+				const MView<M> B = mview(df, n_c, n_s, 0, n_c);
+				const MView<M> D1 = mview(df, 0, n_c, 0, n_c);
+
+				const M C_inv_D2 = C * mview(inv_D2, n_c, n_s, n_c, n_s);
+				const MView<M> C_inv_D2_view = mview(C_inv_D2, 0, n_c, n_c, n_s);
+				const M A = D1 - mview(C_inv_D2_view*B, 0, n_c, 0, n_c);
+				const X Y = xview(f, 0, n_c) - xview(
+						C_inv_D2_view * xview(f, n_c, n_s), 0, n_c);
+
+				const X x1 = gauss::Gauss<MView<M>, XView<X>>::solve(
+						mview(A, 0, n_c, 0, n_c), xview(Y, 0, n_c));
+
+				const X x2 = inv_D2_view*xview(
+						xview(f, n_c, n_s)-
+						xview(B*xview(x1, 0, n_c), n_c, n_s),
+						n_c, n_s
+						);
+
+				X x(n_s);
+				for(std::size_t i = 0; i < n_c; i++)
+					x[i] = x1[i];
+				for(std::size_t i = n_c; i < n_s; i++)
+					x[i] = x2[i];
+				CHEM_LOGV(9) << "x=" << x;
 /*
- *                auto D = mview(df, n_c, n_s, n_c, n_s);
- *                CHEM_LOGV(9) << "D = " << D;
- *                auto inv_D = inv_diag(D);
- *                auto C = mview(df, 0, n_c, n_c, n_s);
- *                auto B = mview(df, n_c, n_s, 0, n_c);
- *                auto I = Unit<M>::unit(n_c, n_c, 0, 0, n_c, n_c);
+ *                {
+ *                    M _df = df;
+ *                    X _f = f;
  *
- *                auto C_inv_D = C * mview(inv_D, n_c, n_c, n_s, n_s);
- *                auto C_inv_D_view = mview(C_inv_D, 0, n_s-n_c, n_c, n_s);
- *                auto A = mview(I) - mview(C_inv_D_view*B, 0, n_s-n_c, n_c, n_s);
- *                auto Y = xview(f, 0, n_c) - xview(C_inv_D_view * xview(f, n_c, n_s));
- *                gauss::Gauss<M, X>::solve(A, Y);
+ *                    X _x = gauss::Gauss<M, X>::solve(_df, _f);
+ *                    CHEM_LOGV(9) << "Method 3 x=" << _x;
+ *                    return _x;
+ *                }
  */
-
-				M _df = df;
-				for(std::size_t i = 0; i < _df.size(); i++) {
-					CHEM_LOGV(9) << i << ": " << _df[i];
-				}
-
-				std::reverse(_df.begin(), _df.end());
-				for(auto& row : _df) {
-					std::reverse(row.begin(), row.end());
-				}
-				X _f = f;
-				std::reverse(_f.begin(), _f.end());
-
-				X x = gauss::Gauss<M, X>::solve(_df, _f);
-				std::reverse(x.begin(), x.end());
 				return x;
 			}
 		};
@@ -93,6 +104,8 @@ namespace chemmisol {
 				static const std::size_t INVALID_INDEX;
 			private:
 				const ChemicalSystem& _system;
+				std::size_t n_components;
+				std::size_t n_species;
 				std::size_t x_size;
 				std::size_t f_x_size;
 				std::size_t reaction_offset;
@@ -106,6 +119,14 @@ namespace chemmisol {
 
 				const ChemicalSystem& system() const {
 					return _system;
+				}
+
+				std::size_t nComponents() const {
+					return n_components;
+				}
+
+				std::size_t nSpecies() const {
+					return n_species;
 				}
 
 				std::size_t xSize() const {
@@ -212,6 +233,8 @@ namespace chemmisol {
 		template<typename X>
 		ReducedChemicalSystem<X>::ReducedChemicalSystem(const ChemicalSystem& system) :
 			_system(system),
+			n_components(system.getComponents().size()),
+			n_species(system.getSpecies().size()),
 			x_size(system.getSpecies().size()),
 			f_x_size(system.getComponents().size()
 					+ system.getReactions().size()),
@@ -227,10 +250,11 @@ namespace chemmisol {
 
 				std::vector<std::size_t> species_offsets(system.getSpecies().size());
 				for(const auto& component : system.getComponents()) {
-					CHEM_LOGV(6) << "C:" << component->getSpecies()->getName();
 					if(component->isFixed()) {
 						fixed_activities[component->getIndex()]
 							= component->getSpecies()->activity();
+						--n_components;
+						--n_species;
 						--x_size;
 						--f_x_size;
 						--reaction_offset;
@@ -406,7 +430,8 @@ namespace chemmisol {
 						!= ReducedChemicalSystem<X>::INVALID_INDEX) {
 					auto& d_f = jacobian[components_indexes[component->getIndex()]];
 					d_f.resize(reduced_system.xSize());
-					d_f[species_indexes[component->getSpecies()->getIndex()]] = 1.0;
+					d_f[species_indexes[component->getSpecies()->getIndex()]]
+						= component->getSpecies()->dQdA();
 				}
 			}
 			for(const auto& reaction : system.getReactions()) {
@@ -417,11 +442,12 @@ namespace chemmisol {
 				// necessarily valid.
 				for(const auto& reagent : system.getComponentReagents(*reaction)) {
 					if(components_indexes[reagent.component->getIndex()]
-							!= ReducedChemicalSystem<X>::INVALID_INDEX)
+							!= ReducedChemicalSystem<X>::INVALID_INDEX) {
 						jacobian
 							[components_indexes[reagent.component->getIndex()]]
 							[species_indexes[species.species->getIndex()]]
-								= reagent.coefficient/(-species.coefficient);
+								= reagent.coefficient/(-species.coefficient)*species.species->dQdA();
+					}
 				}
 			}
 			// End mass conservation law equations
@@ -515,18 +541,24 @@ namespace chemmisol {
 							std::size_t index = species_indexes[dx_species->getIndex()];
 							T activity = activities[index];
 							// d x^a/dx = a * x^(a-1)
-							if(species_coefficient_in_reactions < 0)
+							if(species_coefficient_in_reactions < 0) {
+								if(activity != T(0)) {
 								d_f[index] = -species_coefficient_in_reactions
 									* std::pow(
 											activity,
 											-species_coefficient_in_reactions-1
 											) * d_products;
-							else
+								} else {
+									d_f[index] = -species_coefficient_in_reactions;
+								}
+
+							} else {
 								d_f[index] = species_coefficient_in_reactions
 									* std::pow(
 											activity,
 											species_coefficient_in_reactions-1
 											) * d_reactives;
+							}
 						}
 					}
 				}
@@ -544,9 +576,6 @@ namespace chemmisol {
 		};
 
 		class AbsoluteNewton : public Solver {
-			private:
-				chemmisol::AbsoluteNewton<X, M, ChemicalLinearSolver<M, X>>
-					absolute_newton;
 			public:
 				/**
 				 * Finds and returns activities that correspond to the system to
@@ -609,8 +638,6 @@ namespace chemmisol {
 		template<typename R>
 		class HomotopyContinuation : public Solver {
 			private:
-				Homotopy<CX, CM, Newton<CX, CM, I<CX>, ChemicalLinearSolver<CM, CX>>>
-					homotopy_solver;
 				mutable R random_gen;
 				std::size_t homotopy_n;
 				std::size_t local_solver_n;
@@ -635,6 +662,16 @@ namespace chemmisol {
 			ReducedChemicalSystem<CX> reduced_system(system);
 			F<CX, CM> f(reduced_system, system);
 			G g(reduced_system, random_gen);
+
+			ChemicalLinearSolver<CM, CX> linear_solver(
+					reduced_system.nComponents(),
+					reduced_system.nSpecies()
+					);
+			Newton<CX, CM, I<CX>, ChemicalLinearSolver<CM, CX>> local_solver(
+					linear_solver
+					);
+			Homotopy<CX, CM, Newton<CX, CM, I<CX>, ChemicalLinearSolver<CM, CX>>>
+				homotopy_solver(local_solver);
 
 			CHEM_LOG(TRACE) << "[HOMOTOPY] Init values: " << g.initValues();
 			std::vector<SolverResult<CX>> solutions = homotopy_solver.solve(
