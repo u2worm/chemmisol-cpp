@@ -286,6 +286,7 @@ TEST_F(PO4ChemicalSystemTest, solve_equilibrium_absolute_newton) {
 class PO4ChemicalSystemHomotopyTest :
 	public PO4ChemicalSystemTest, public WithParamInterface<int> {
 		protected:
+			// seeds are defined in utils.h
 			solver::HomotopyContinuation<std::minstd_rand> homotopy {
 					std::minstd_rand {seeds[GetParam()]}, 100, 100
 					};
@@ -293,8 +294,6 @@ class PO4ChemicalSystemHomotopyTest :
 
 
 TEST_P(PO4ChemicalSystemHomotopyTest, solve_equilibrium_homotopy) {
-	// Run the solver several times to ensure the algorithm converges from any
-	// random a/b selected to build G.
 	chemical_system.solveEquilibrium(homotopy);
 	checkEquilibrium();
 	checkPh(default_ph);
@@ -303,7 +302,7 @@ INSTANTIATE_TEST_SUITE_P(HomotopyTest, PO4ChemicalSystemHomotopyTest, Range(0, 1
 
 TEST_F(PO4ChemicalSystemTest, solve_equilibrium_brutal_ph_homotopy) {
 	solver::HomotopyContinuation<std::minstd_rand> homotopy(
-			std::minstd_rand {}, 1000, 100
+			std::minstd_rand {}, 100, 100
 			);
 
 	chemical_system.fixPH(10);

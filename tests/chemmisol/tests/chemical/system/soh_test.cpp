@@ -288,11 +288,18 @@ TEST_F(SohTest, solve_equilibrium_absolute_newton) {
 	checkEquilibrium();
 }
 
-TEST_F(SohTest, solve_equilibrium_homotopy) {
-	solver::HomotopyContinuation<std::minstd_rand> homotopy(
-			std::minstd_rand {}, 10, 10
-			);
+class SohHomotopyTest :
+	public SohTest, public WithParamInterface<int> {
+		protected:
+			// seeds are defined in utils.h
+			solver::HomotopyContinuation<std::minstd_rand> homotopy {
+					std::minstd_rand {seeds[GetParam()]}, 100, 100
+					};
+};
+
+TEST_P(SohHomotopyTest, solve_equilibrium_homotopy) {
 	chemical_system.solveEquilibrium(homotopy);
 
 	checkEquilibrium();
 }
+INSTANTIATE_TEST_SUITE_P(HomotopyTest, SohHomotopyTest, Range(0, 10));

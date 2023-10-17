@@ -368,19 +368,21 @@ TEST_F(NaClChemicalSystemTest, homotopy_G0) {
 	}
 }
 
-TEST_F(NaClChemicalSystemTest, solve_equilibrium_homotopy) {
-	solver::HomotopyContinuation<std::minstd_rand> homotopy(
-			std::minstd_rand {}, 1000, 100
-			);
+class NaClChemicalSystemHomotopyTest :
+	public NaClChemicalSystemTest, public WithParamInterface<int> {
+		protected:
+			// seeds are defined in utils.h
+			solver::HomotopyContinuation<std::minstd_rand> homotopy {
+					std::minstd_rand {seeds[GetParam()]}, 100, 100
+					};
+};
 
-	// Run the solver several times to ensure the algorithm converges from any
-	// random a/b selected to build G.
-	for(std::size_t i = 0; i < 10; i++) {
-		chemical_system.solveEquilibrium(homotopy);
-		checkEquilibrium();
-		checkPh(default_ph);
-	}
+TEST_P(NaClChemicalSystemHomotopyTest, solve_equilibrium_homotopy) {
+	chemical_system.solveEquilibrium(homotopy);
+	checkEquilibrium();
+	checkPh(default_ph);
 }
+INSTANTIATE_TEST_SUITE_P(HomotopyTest, NaClChemicalSystemHomotopyTest, Range(0, 10));
 
 TEST_F(NaClChemicalSystemTest, solve_equilibrium_brutal_ph_homotopy) {
 	solver::HomotopyContinuation<std::minstd_rand> homotopy(

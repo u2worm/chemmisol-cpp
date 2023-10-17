@@ -380,26 +380,27 @@ TEST_F(AgClChemicalSystemTest, solve_equilibrium_absolute_newton) {
 	checkPh(default_ph);
 }
 
-TEST_F(AgClChemicalSystemTest, solve_equilibrium_homotopy) {
-	solver::HomotopyContinuation<std::minstd_rand> homotopy(
-			std::minstd_rand {}, 1000, 100
-			);
+class AgClChemicalSystemHomotopyTest :
+	public AgClChemicalSystemTest, public WithParamInterface<int> {
+		protected:
+			// seeds are defined in utils.h
+			solver::HomotopyContinuation<std::minstd_rand> homotopy {
+					std::minstd_rand {seeds[GetParam()]}, 500, 100
+					};
+};
 
-	// Run the solver several times to ensure the algorithm converges from any
-	// random a/b selected to build G.
-	for(std::size_t i = 0; i < 10; i++) {
-		chemical_system.solveEquilibrium(homotopy);
-		checkEquilibrium();
-		checkPh(default_ph);
-	}
+TEST_P(AgClChemicalSystemHomotopyTest, solve_equilibrium_homotopy) {
+	chemical_system.solveEquilibrium(homotopy);
+	checkEquilibrium();
+	checkPh(default_ph);
 }
+INSTANTIATE_TEST_SUITE_P(HomotopyTest, AgClChemicalSystemHomotopyTest, Range(0, 10));
 
 TEST_F(AgClChemicalSystemTest, solve_equilibrium_brutal_ph_homotopy) {
 	solver::HomotopyContinuation<std::minstd_rand> homotopy(
-			std::minstd_rand {}, 1000, 100
+			std::minstd_rand {}, 500, 100
 			);
 
-	chemical_system.setMaxIteration(1000);
 	chemical_system.fixPH(10);
 	chemical_system.solveEquilibrium(homotopy);
 	checkEquilibrium();

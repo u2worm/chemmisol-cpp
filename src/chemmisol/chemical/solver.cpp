@@ -57,8 +57,9 @@ namespace chemmisol {
 				dg[i].resize(reduced_system.fxSize());
 				// All other derivatives are equal to 0.0
 				if(reduced_activities[i] != CX::value_type(0)) {
-					dg[i][i] = a[i] * degrees[i]
-						* std::pow(reduced_activities[i], degrees[i]-1);
+					dg[i][i] = a[i] * degrees[i];
+					if(degrees[i] > 1)
+						dg[i][i] *= std::pow(reduced_activities[i], degrees[i]-1);
 				}
 			}
 			return dg;

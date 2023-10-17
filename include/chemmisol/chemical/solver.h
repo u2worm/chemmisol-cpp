@@ -542,22 +542,25 @@ namespace chemmisol {
 							T activity = activities[index];
 							// d x^a/dx = a * x^(a-1)
 							if(species_coefficient_in_reactions < 0) {
-								if(activity != T(0)) {
 								d_f[index] = -species_coefficient_in_reactions
-									* std::pow(
+									* d_products;
+								if(species_coefficient_in_reactions < -1) {
+									// Prevents std::pow(0, 0) issues
+									d_f[index] *= std::pow(
 											activity,
 											-species_coefficient_in_reactions-1
-											) * d_products;
-								} else {
-									d_f[index] = -species_coefficient_in_reactions;
+											);
 								}
-
 							} else {
 								d_f[index] = species_coefficient_in_reactions
-									* std::pow(
+									* d_reactives;
+								if(species_coefficient_in_reactions > 1) {
+									// Prevents std::pow(0, 0) issues
+									d_f[index] *= std::pow(
 											activity,
 											species_coefficient_in_reactions-1
-											) * d_reactives;
+											);
+								}
 							}
 						}
 					}
